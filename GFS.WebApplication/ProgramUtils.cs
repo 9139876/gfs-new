@@ -42,7 +42,8 @@ namespace GFS.WebApplication
                     .Build();
 
                 Log.Information("Migration starting...");
-                await Task.Run(async () => { await MigrateDatabaseAsync<TDbContext, TSeeder>(webHost); });
+                //await Task.Run(async () => { await MigrateDatabaseAsync<TDbContext, TSeeder>(webHost); });
+                await MigrateDatabaseAsync<TDbContext, TSeeder>(webHost);
                 Log.Information("Migration finished");
 
                 await webHost.RunAsync();
@@ -106,7 +107,7 @@ namespace GFS.WebApplication
             {
                 Log.Information("Seeding...");
                 await seeder.Seed();
-                Log.Information("Seeding is finished");
+                Log.Information("Seeding is finished");                
             }
             else
                 Log.Information("Seeder is not specified.");
