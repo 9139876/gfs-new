@@ -5,13 +5,13 @@ namespace GFS.Common.Extensions
 {
     public static class CommonExtensions
     {
-        public static void RequiredNotNull(this object value, string paramName, object @object = null)
+        public static void RequiredNotNull(this object value, string paramName, object? @object = null)
         {
             if (value == null)
                 throw new InvalidOperationException(Compose(paramName, @object));
         }
 
-        public static void RequiredNotNull(this string value, string paramName, object @object = null)
+        public static void RequiredNotNull(this string value, string paramName, object? @object = null)
         {
             if (string.IsNullOrEmpty(value))
                 throw new InvalidOperationException(Compose(paramName, @object));
@@ -70,7 +70,7 @@ namespace GFS.Common.Extensions
             return instance;
         }
 
-        private static string Compose(string paramName, object @object)
+        private static string Compose(string paramName, object? @object)
         {
             return @object == null ? paramName : $"{paramName} for object:{JsonConvert.SerializeObject(@object)}";
         }

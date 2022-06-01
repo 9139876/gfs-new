@@ -37,7 +37,7 @@ namespace GFS.WebApplication
             try
             {
                 //@FixMe: application name
-                Log.Information($"Start aplication");
+                Log.Information($"Start application");
                 var webHost = CreateWebHostBuilder<TStartup>(args)
                     .Build();
 
