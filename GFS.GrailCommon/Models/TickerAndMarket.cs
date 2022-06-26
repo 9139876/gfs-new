@@ -1,4 +1,4 @@
-﻿namespace GFS.GraalCommon.Models
+﻿namespace GFS.GrailCommon.Models
 {
     /// <summary>
     /// Универсальный идентификатор инструмента

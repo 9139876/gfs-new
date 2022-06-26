@@ -1,6 +1,6 @@
-﻿using GFS.GraalCommon.Enums;
+﻿using GFS.GrailCommon.Enums;
 
-namespace GFS.GraalCommon.Models
+namespace GFS.GrailCommon.Models
 {
     /// <summary>
     /// Точка тенденции

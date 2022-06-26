@@ -1,4 +1,4 @@
-﻿namespace GFS.GraalCommon.Enums
+﻿namespace GFS.GrailCommon.Enums
 {
     /// <summary>
     /// Тип точки тенденции

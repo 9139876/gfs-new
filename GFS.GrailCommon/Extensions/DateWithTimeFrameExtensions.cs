@@ -1,8 +1,8 @@
-﻿using GFS.GraalCommon.Enums;
+﻿using GFS.GrailCommon.Enums;
 
-namespace GFS.GraalCommon.Extensions
+namespace GFS.GrailCommon.Extensions
 {
-    public static class DateWithTimeFrameExtetensions
+    public static class DateWithTimeFrameExtensions
     {
         /// <summary>
         /// Возвращает дату, отстоящую от заданной на указанное число единиц времени таймфрейма.

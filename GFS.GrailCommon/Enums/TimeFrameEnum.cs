@@ -1,6 +1,6 @@
 ﻿using GFS.Common.Attributes;
 
-namespace GFS.GraalCommon.Enums
+namespace GFS.GrailCommon.Enums
 {
     /// <summary>
     /// Таймфрейм

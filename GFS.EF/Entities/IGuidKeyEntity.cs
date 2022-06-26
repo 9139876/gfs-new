@@ -1,7 +1,6 @@
 ﻿namespace GFS.EF.Entities
 {
-    public interface IGuidKeyEntity
+    public interface IGuidKeyEntity : IEntityWithKey<Guid>
     {
-        Guid Id { get; set; }
     }
 }
