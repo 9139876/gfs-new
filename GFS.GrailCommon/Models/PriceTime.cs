@@ -1,4 +1,6 @@
-﻿namespace GFS.GrailCommon.Models
+﻿using System;
+
+namespace GFS.GrailCommon.Models
 {
     public class PriceTime
     {

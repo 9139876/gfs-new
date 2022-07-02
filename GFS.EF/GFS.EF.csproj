@@ -20,4 +20,8 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GFS.Common\GFS.Common.csproj" />
+  </ItemGroup>
+
 </Project>

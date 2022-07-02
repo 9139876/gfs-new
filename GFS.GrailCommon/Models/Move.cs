@@ -1,4 +1,6 @@
-﻿namespace GFS.GrailCommon.Models
+﻿using System;
+
+namespace GFS.GrailCommon.Models
 {
     /// <summary>
     /// Движение
@@ -8,7 +10,8 @@
         public Move(TendentionPoint begin, TendentionPoint end)
         {
             if (end.Date <= begin.Date)
-                throw new InvalidOperationException($"Дата конечной точки {end.Date} должна быть больше даты начальной точки {begin.Date}");
+                throw new InvalidOperationException(
+                    $"Дата конечной точки {end.Date} должна быть больше даты начальной точки {begin.Date}");
 
             Begin = begin;
             End = end;

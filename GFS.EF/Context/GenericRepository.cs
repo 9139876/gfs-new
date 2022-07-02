@@ -1,4 +1,7 @@
-﻿using GFS.EF.Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using GFS.EF.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace GFS.EF.Context

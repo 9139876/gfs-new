@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Linq;
+using System.Reflection;
 
 namespace GFS.Common.Attributes
 {   
@@ -47,17 +49,8 @@ namespace GFS.Common.Attributes
 
         public static bool TryGetValueFromDescription<T>(string desc, out T value) where T : Enum
         {
-            foreach (T val in Enum.GetValues(typeof(T)))
-            {
-                if (GetDescription(val) == desc)
-                {
-                    value = val;
-                    return true;
-                }
-            }
-
-            value = default;
-            return false;
+            value = Enum.GetValues(typeof(T)).Cast<T>().Where(t => GetDescription(t) == desc).FirstOrDefault();
+            return !Equals(value, default(T));
         }
     }
 }

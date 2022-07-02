@@ -1,4 +1,6 @@
-﻿namespace GFS.Common.Extensions
+﻿using System;
+
+namespace GFS.Common.Extensions
 {
     public static class ExceptionExtension
     {
@@ -47,7 +49,7 @@
             value.ThrowIfNull(exceptionFactory());
         }
 
-        /// <exception cref="ArgumentOutOfRangeException"></exception>        
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public static void ThrowIfFalse(this bool value)
         {
             value.ThrowIfFalse(() => new ArgumentOutOfRangeException(nameof(value)));

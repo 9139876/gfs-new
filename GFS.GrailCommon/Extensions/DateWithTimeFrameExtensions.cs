@@ -1,4 +1,5 @@
-﻿using GFS.GrailCommon.Enums;
+﻿using System;
+using GFS.GrailCommon.Enums;
 
 namespace GFS.GrailCommon.Extensions
 {

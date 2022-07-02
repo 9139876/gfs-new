@@ -2,26 +2,20 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GFS.Common.Extensions
 {
     public static class CollectionsExtensions
     {
-        public static bool EqualsAllElements<T>(this List<T> list1, List<T> list2)
+        public static bool EqualsAllElements<T>(this List<T>? list1, List<T>? list2)
         {
             if (list1 == null || list2 == null || list1.Count != list2.Count)
                 return false;
 
-            for (int i = 0; i < list1.Count; i++)
-                if (!list1[i].Equals(list2[i]))
-                    return false;
-
-            return true;
+            return !list1.Where((t, i) => t != null && !t.Equals(list2[i])).Any();
         }
 
-        public static int GetTrueHashCode<T>(this List<T> list)
+        public static int GetTrueHashCode<T>(this List<T>? list)
         {
             if (list == null || !list.Any())
                 return -1;

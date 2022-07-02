@@ -1,5 +1,10 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using GFS.Common.Exceptions;
 using GFS.EF.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,25 +24,86 @@ namespace GFS.EF.Data
         public async Task<TEntity?> TryGetOneAsync<TEntity>(Expression<Func<TEntity, bool>> predicate)
             where TEntity : class
         {
-            return await Set<TEntity>().Where(predicate).FirstOrDefaultAsync();
+            return await Set<TEntity>()
+                .AsNoTracking()
+                .Where(predicate)
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<TEntity?> GetOrFailAsync<TEntity, TKey>(TKey id)
+        /// <exception cref="NotFoundException"></exception>
+        public async Task<TEntity> GetOrFailAsync<TEntity, TKey>(TKey id)
             where TEntity : class, IEntityWithKey<TKey>
             where TKey : IComparable
         {
-            return await TryGetOneAsync<TEntity,TKey>(id) ?? throw new NotFoundException(typeof(TEntity));
+            return await TryGetOneAsync<TEntity, TKey>(id) ?? throw new NotFoundException(typeof(TEntity));
         }
 
-        public async Task<TEntity?> GetOrFailAsync<TEntity>(Expression<Func<TEntity, bool>> predicate)
+        /// <exception cref="NotFoundException"></exception>
+        public async Task<TEntity> GetOrFailAsync<TEntity>(Expression<Func<TEntity, bool>> predicate)
             where TEntity : class
         {
-            return await TryGetOneAsync<TEntity>(predicate) ?? throw new NotFoundException(typeof(TEntity));
+            return await TryGetOneAsync(predicate) ?? throw new NotFoundException(typeof(TEntity));
         }
 
-        //ToDo: GetSingleOrFailAsync
-        //ToDo: ExistAsync
+        public async Task<bool> ExistAsync<TEntity, TKey>(TKey id)
+            where TEntity : class, IEntityWithKey<TKey>
+            where TKey : IComparable
+        {
+            Expression<Func<TEntity, bool>> predicate = entity => entity.Id.Equals(id);
 
+            return await ExistAsync(predicate);
+        }
+
+        public async Task<bool> ExistAsync<TEntity>(Expression<Func<TEntity, bool>> predicate)
+            where TEntity : class
+        {
+            return await Set<TEntity>().Where(predicate).AnyAsync();
+        }
+
+        public async Task<TEntity> GetSingleOrFailAsync<TEntity, TKey>(TKey id)
+            where TEntity : class, IEntityWithKey<TKey>
+            where TKey : IComparable
+        {
+            Expression<Func<TEntity, bool>> predicate = entity => entity.Id.Equals(id);
+
+            return await GetSingleOrFailAsync(predicate);
+        }
+
+        /// <exception cref="NotFoundException"></exception>
+        /// <exception cref="SingleException"></exception>
+        public async Task<TEntity> GetSingleOrFailAsync<TEntity>(Expression<Func<TEntity, bool>> predicate)
+            where TEntity : class
+        {
+            var result = await Set<TEntity>()
+                .AsNoTracking()
+                .Where(predicate)
+                .Take(2)
+                .ToListAsync();
+
+            if (result.FirstOrDefault() == null)
+                throw new NotFoundException(typeof(TEntity));
+            else if (result.LastOrDefault() != null)
+                throw new SingleException();
+
+            return result.First();
+        }
+
+        public async Task<List<TEntity>> GetAsync<TEntity>(Expression<Func<TEntity, bool>> predicate)
+            where TEntity : class
+        {
+            return await Set<TEntity>()
+                .AsNoTracking()
+                .Where(predicate)
+                .ToListAsync();
+        }
+
+        public async Task<List<TEntity>> GetAsync<TEntity>(IQueryable<TEntity> query)
+            where TEntity : class
+        {
+            return await query
+                .AsNoTracking()
+                .ToListAsync();
+        }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
@@ -65,7 +131,7 @@ namespace GFS.EF.Data
                 if (createdEntityEntry.Entity is ICreateTrackingEntity createTrackingEntity)
                     createTrackingEntity.CreatedAt = utcNow;
 
-                if(createdEntityEntry.Entity is IUpdateTrackingEntity updateTrackingEntity)
+                if (createdEntityEntry.Entity is IUpdateTrackingEntity updateTrackingEntity)
                     updateTrackingEntity.UpdatedAt = null;
             }
 

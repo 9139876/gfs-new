@@ -1,10 +1,11 @@
-﻿using GFS.Common.Extensions;
+﻿using System;
+using System.Threading.Tasks;
+using GFS.Common.Extensions;
 using GFS.EF.Migrations;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
@@ -64,8 +65,7 @@ namespace GFS.WebApplication
         {
             var builder = new WebHostBuilder();
 
-            if (args != null)
-                builder.UseConfiguration(new ConfigurationBuilder().AddCommandLine(args).Build());
+            builder.UseConfiguration(new ConfigurationBuilder().AddCommandLine(args).Build());
 
             builder
                 .UseSerilog()

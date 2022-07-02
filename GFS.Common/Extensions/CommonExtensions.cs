@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace GFS.Common.Extensions
@@ -31,40 +34,39 @@ namespace GFS.Common.Extensions
             return JsonConvert.SerializeObject(value, jsonSerializerSettings);
         }
 
-        public static T Deserialize<T>(this string value)
+        public static T? Deserialize<T>(this string value)
+            where T : class
         {
             var jsonSerializerSettings = _jsonSerializerDefaultSettings;
+            
             if (IfContainAbstractMembers(value.GetType()))
-            {
                 jsonSerializerSettings.TypeNameHandling = TypeNameHandling.All;
-            }
 
             return JsonConvert.DeserializeObject<T>(value, jsonSerializerSettings);
         }
 
-        public static List<KeyValuePair<string, string>> ToPropertiesCollection(this object obj)
+        public static List<KeyValuePair<string, string?>>? ToPropertiesCollection(this object? obj)
         {
             return obj
-                .GetType()
+                ?.GetType()
                 .GetProperties()
-                .Select(x => new KeyValuePair<string, string>(x.Name, x.GetValue(obj)?.ToString()))
+                .Select(x => new KeyValuePair<string, string?>(x.Name, x.GetValue(obj)?.ToString()))
                 .ToList();
         }
 
         public static T ToModel<T>(this List<KeyValuePair<string, string>> propertiesCollection)
+            where T: class, new()
         {
-            var instance = (T)Activator.CreateInstance(typeof(T));
+            var instance = new T();
 
             var instanceProperties = instance.GetType().GetProperties();
 
-            foreach (var property in propertiesCollection)
+            foreach (var (key, value) in propertiesCollection)
             {
-                var currentProperty = instanceProperties.SingleOrDefault(x => x.Name == property.Key);
+                var currentProperty = instanceProperties.SingleOrDefault(x => x.Name == key);
 
                 if (currentProperty != null)
-                {
-                    currentProperty.SetValue(instance, property.Value);
-                }
+                    currentProperty.SetValue(instance, value);
             }
 
             return instance;
@@ -86,7 +88,8 @@ namespace GFS.Common.Extensions
                     return true;
                 }
 
-                if (propertyType.Name != "DateTime" && IfContainAbstractMembers(propertyType)) // DateTime содержит в себе свойство DateTime => бесконечная рекурсия
+                if (propertyType.Name != "DateTime" && IfContainAbstractMembers(propertyType)
+                ) // DateTime содержит в себе свойство DateTime => бесконечная рекурсия
                 {
                     return true;
                 }
@@ -95,9 +98,9 @@ namespace GFS.Common.Extensions
             return false;
         }
 
-        private static readonly JsonSerializerSettings _jsonSerializerDefaultSettings = new()
+        private static readonly JsonSerializerSettings _jsonSerializerDefaultSettings = new JsonSerializerSettings()
         {
-            Converters = new List<JsonConverter> { new StringEnumConverter() },
+            Converters = new List<JsonConverter> {new StringEnumConverter()},
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             NullValueHandling = NullValueHandling.Ignore,
             Formatting = Formatting.Indented

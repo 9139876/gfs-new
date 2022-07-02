@@ -1,6 +1,15 @@
-﻿namespace WebApplication1.Controllers
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace WebApplication1.Controllers
 {
-    public class TestController
+    [ApiController]
+    [Route("[controller]")]
+    public class TestController : ControllerBase
     {
+        [HttpGet]
+        public string GetHelloWord()
+        {
+            return "Hello word!";
+        }
     }
 }
