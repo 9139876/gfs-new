@@ -12,18 +12,18 @@ namespace GFS.EF.Context
         Task<T> GetById(Guid id);
         Task<bool> Add(T entity);
         Task<bool> Delete(Guid id);
-        Task<bool> Upsert(T entity);        
+        Task<bool> Upsert(T entity);
     }
 
     public class GenericRepository<T> : IGenericRepository<T> where T : class, IGuidKeyEntity
     {
         protected DbContext _context;
         internal DbSet<T> _dbSet;
-        
+
         public GenericRepository(DbContext context)
         {
             _context = context;
-            _dbSet = context.Set<T>();            
+            _dbSet = context.Set<T>();
         }
 
         public virtual async Task<T> GetById(Guid id)

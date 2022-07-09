@@ -1,0 +1,39 @@
+using System;
+using System.Threading.Tasks;
+using GFS.Api.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+
+namespace GFS.Api.Services
+{
+    [ApiController]
+    public abstract class ApiService
+    {
+        private readonly ILogger _logger;
+
+        protected ApiService(ILogger logger)
+        {
+            _logger = logger;
+        }
+        
+        [HttpPost(ApiServiceParameters.PATH)]
+        public async Task<ApiEmptyResponse> Execute(ApiEmptyRequest request)
+        {
+            try
+            {
+                await ExecuteInternal();
+                var response = ApiEmptyResponse.CreateSuccessResponse(request.TraceId);
+                _logger.Log(LogLevel.Debug, request.TraceId.GetHashCode(), ApiServiceHelpers.GetSuccessMessage(request), request, response);
+                
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.Log(LogLevel.Error, request.TraceId.GetHashCode(), ex, ApiServiceHelpers.GetFailMessage(request), request);
+                return ApiEmptyResponse.CreateFailResponse(request.TraceId, ex);
+            }
+        }
+        
+        protected abstract Task ExecuteInternal();
+    }
+}

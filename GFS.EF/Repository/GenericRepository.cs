@@ -7,12 +7,13 @@ namespace GFS.EF.Repository
     public class GenericRepository<T> where T : class, IGuidKeyEntity
     {
         protected GfsDbContext _context;
+
         private readonly DbSet<T> _dbSet;
         //public readonly ILogger _logger;
 
         public GenericRepository(
-            GfsDbContext context)
-        //ILogger logger)
+                GfsDbContext context)
+            //ILogger logger)
         {
             _context = context;
             _dbSet = context.Set<T>();

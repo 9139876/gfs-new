@@ -38,7 +38,7 @@ namespace GFS.Common.Extensions
             where T : class
         {
             var jsonSerializerSettings = _jsonSerializerDefaultSettings;
-            
+
             if (IfContainAbstractMembers(value.GetType()))
                 jsonSerializerSettings.TypeNameHandling = TypeNameHandling.All;
 
@@ -55,7 +55,7 @@ namespace GFS.Common.Extensions
         }
 
         public static T ToModel<T>(this List<KeyValuePair<string, string>> propertiesCollection)
-            where T: class, new()
+            where T : class, new()
         {
             var instance = new T();
 

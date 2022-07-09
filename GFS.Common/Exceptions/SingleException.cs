@@ -15,7 +15,7 @@ namespace GFS.Common.Exceptions
             : base($"{type} violates the requirement Single")
         {
         }
-        
+
         public SingleException(Type type, object key)
             : base($"{type} violates the requirement Single by key {key}")
         {

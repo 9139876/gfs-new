@@ -10,47 +10,46 @@ namespace GFS.GrailCommon.Enums
         /// <summary>
         /// Тиковый
         /// </summary>
-        [Description("Тиковый")]
-        tick = 10,
+        [Description("Тиковый")] tick = 10,
+
         /// <summary>
         /// 1-минутный
         /// </summary>
-        [Description("1-минутный")]
-        min1 = 20,
+        [Description("1-минутный")] min1 = 20,
+
         /// <summary>
         /// 4-минутный
         /// </summary>
-        [Description("4-минутный")]
-        min4 = 30,
+        [Description("4-минутный")] min4 = 30,
+
         /// <summary>
         /// Часовой
         /// </summary>
-        [Description("Часовой")]
-        H1 = 40,
+        [Description("Часовой")] H1 = 40,
+
         /// <summary>
         /// Дневной
         /// </summary>
-        [Description("Дневной")]
-        D1 = 50,
+        [Description("Дневной")] D1 = 50,
+
         /// <summary>
         /// Недельный
         /// </summary>
-        [Description("Недельный")]
-        W1 = 60,
+        [Description("Недельный")] W1 = 60,
+
         /// <summary>
         /// Месячный
         /// </summary>
-        [Description("Месячный")]
-        M1 = 70,
+        [Description("Месячный")] M1 = 70,
+
         /// <summary>
         /// Сезонный
         /// </summary>
-        [Description("Сезонный")]
-        Seasonly = 80,
+        [Description("Сезонный")] Seasonly = 80,
+
         /// <summary>
         /// Годовой
         /// </summary>
-        [Description("Годовой")]
-        Y1 = 90
+        [Description("Годовой")] Y1 = 90
     }
 }

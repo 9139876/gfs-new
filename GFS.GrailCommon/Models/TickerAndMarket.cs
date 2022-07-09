@@ -19,8 +19,8 @@ namespace GFS.GrailCommon.Models
 
         public override bool Equals(object? obj) =>
             obj is TickerAndMarket tickerAndMarket
-                && MarketName == tickerAndMarket.MarketName
-                && TickerName == tickerAndMarket.TickerName;
+            && MarketName == tickerAndMarket.MarketName
+            && TickerName == tickerAndMarket.TickerName;
 
 
         public override int GetHashCode() => HashCode.Combine(MarketName, TickerName);

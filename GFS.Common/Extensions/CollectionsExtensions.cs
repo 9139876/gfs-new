@@ -23,7 +23,7 @@ namespace GFS.Common.Extensions
             var hashCode = 301429547;
 
             list.ForEach(item => hashCode = hashCode * -1521134295 + item?.GetHashCode() ?? 301429547);
-            
+
             return hashCode;
         }
 

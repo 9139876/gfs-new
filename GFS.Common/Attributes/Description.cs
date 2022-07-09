@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 
 namespace GFS.Common.Attributes
-{   
+{
     public class Description : Attribute
     {
         public string Text;
@@ -24,7 +24,7 @@ namespace GFS.Common.Attributes
                 object[] attrs = memInfo[0].GetCustomAttributes(typeof(Description), false);
 
                 if (attrs != null && attrs.Length > 0)
-                    return ((Description)attrs[0]).Text;
+                    return ((Description) attrs[0]).Text;
             }
 
             return en.ToString();

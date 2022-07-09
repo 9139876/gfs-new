@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,32 +13,30 @@ namespace GFS.WebApplication
         protected abstract void ConfigureServiceCollection(IServiceCollection services);
         protected abstract void ConfigureMapper(IServiceCollection services);
 
-        //protected abstract void ConfigureServiceCollections(IServiceCollection services);
-
         protected CommonStartup()
         {
             Configuration = new ConfigurationBuilder()
                 .Build();
         }
 
-        public static IConfiguration Configuration { get; private set; }
+        public static IConfiguration? Configuration { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(Configuration);
-            services.AddControllers().AddNewtonsoftJson(options =>
+            services.AddSingleton(Configuration ?? throw new NullReferenceException(nameof(Configuration)));
+            services.AddControllers()
+                .AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
             });
 
+            services.AddEndpointsApiExplorer();
             //services.RegisterRemoteCall();
 
             services.AddMvc();
-
-            services.AddControllers();
 
             services.AddSwaggerGen(c =>
             {
@@ -51,9 +50,6 @@ namespace GFS.WebApplication
                 });
             });
 
-            //services.AddRazorPages().AddRazorRuntimeCompilation();
-
-
             ConfigureServiceCollection(services);
             ConfigureMapper(services);
         }
@@ -61,6 +57,16 @@ namespace GFS.WebApplication
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseRouting();
+            
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
+            
             //if (_allowCORS)
             //{
             //    app.UseCorsMiddleware();

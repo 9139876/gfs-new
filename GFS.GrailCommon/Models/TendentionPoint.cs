@@ -26,9 +26,9 @@ namespace GFS.GrailCommon.Models
         public override bool Equals(object? obj)
         {
             return obj is TendentionPoint tp
-                && tp.Date == Date
-                && tp.Price == Price
-                && tp.TendentionPointType == TendentionPointType;
+                   && tp.Date == Date
+                   && tp.Price == Price
+                   && tp.TendentionPointType == TendentionPointType;
         }
 
         public static bool operator ==(TendentionPoint left, TendentionPoint right)

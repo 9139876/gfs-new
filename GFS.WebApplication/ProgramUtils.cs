@@ -2,10 +2,12 @@
 using System.Threading.Tasks;
 using GFS.Common.Extensions;
 using GFS.EF.Migrations;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
@@ -14,14 +16,15 @@ namespace GFS.WebApplication
 {
     public static class ProgramUtils
     {
-        public static async Task RunWebhost<TStartup, TDbContext, TSeeder>(string[] args)
+        // public static async Task RunWebhost<TStartup, TDbContext, TSeeder>(string[] args)
+        public static async Task RunWebhost<TStartup>(string[] args)
             where TStartup : CommonStartup
-            where TDbContext : DbContext
-            where TSeeder : class, ISeeder
+            // where TDbContext : DbContext
+            // where TSeeder : class, ISeeder
         {
             var config = new ConfigurationBuilder()
                 //.SetBasePath(Directory.GetCurrentDirectory())
-                //.AddJsonFile("appsettings.json", false)
+                .AddJsonFile("appsettings.json", false)
                 //.AddEnvironmentVariables()
                 .Build();
             Log.Logger = new LoggerConfiguration()
@@ -42,10 +45,10 @@ namespace GFS.WebApplication
                 var webHost = CreateWebHostBuilder<TStartup>(args)
                     .Build();
 
-                Log.Information("Migration starting...");
-                //await Task.Run(async () => { await MigrateDatabaseAsync<TDbContext, TSeeder>(webHost); });
-                await MigrateDatabaseAsync<TDbContext, TSeeder>(webHost);
-                Log.Information("Migration finished");
+                // Log.Information("Migration starting...");
+                // //await Task.Run(async () => { await MigrateDatabaseAsync<TDbContext, TSeeder>(webHost); });
+                // await MigrateDatabaseAsync<TDbContext, TSeeder>(webHost);
+                // Log.Information("Migration finished");
 
                 await webHost.RunAsync();
             }
@@ -63,7 +66,8 @@ namespace GFS.WebApplication
         public static IWebHostBuilder CreateWebHostBuilder<TStartup>(string[] args)
             where TStartup : class
         {
-            var builder = new WebHostBuilder();
+            //var builder = new WebHostBuilder();
+            var builder = WebHost.CreateDefaultBuilder(args);
 
             builder.UseConfiguration(new ConfigurationBuilder().AddCommandLine(args).Build());
 
@@ -83,7 +87,7 @@ namespace GFS.WebApplication
 
             var context = services.GetService<TDbContext>();
             context.ThrowIfNull(new InvalidOperationException("DbContext is not specified"));
-            
+
             var canConnect = await context.Database.CanConnectAsync();
             canConnect.ThrowIfFalse(new ArgumentOutOfRangeException(nameof(context.Database), "Database connection"));
 
@@ -107,7 +111,7 @@ namespace GFS.WebApplication
             {
                 Log.Information("Seeding...");
                 await seeder.Seed();
-                Log.Information("Seeding is finished");                
+                Log.Information("Seeding is finished");
             }
             else
                 Log.Information("Seeder is not specified.");
