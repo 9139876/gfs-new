@@ -16,10 +16,7 @@ namespace GFS.Common.Extensions
 
         public static void RequiredNotNull(this string value, string paramName, object? @object = null)
         {
-            if (string.IsNullOrEmpty(value))
-                throw new InvalidOperationException(Compose(paramName, @object));
-
-            if (value.Trim() == "")
+            if (string.IsNullOrEmpty(value?.Trim()))
                 throw new InvalidOperationException(Compose(paramName, @object));
         }
 

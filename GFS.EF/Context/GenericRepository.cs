@@ -15,7 +15,8 @@ namespace GFS.EF.Context
         Task<bool> Upsert(T entity);
     }
 
-    public class GenericRepository<T> : IGenericRepository<T> where T : class, IGuidKeyEntity
+    public class GenericRepository<T> : IGenericRepository<T> 
+        where T : class, IGuidKeyEntity
     {
         protected DbContext _context;
         internal DbSet<T> _dbSet;
