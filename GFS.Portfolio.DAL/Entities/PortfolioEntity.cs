@@ -22,6 +22,7 @@ namespace GFS.Portfolio.DAL.Entities
         {
             builder.ToTable("Portfolios");
             builder.HasKey(e => e.Id);
+            builder.HasIndex(e => e.Name).IsUnique();
         }
     }
 }

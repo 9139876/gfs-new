@@ -12,7 +12,7 @@ namespace GFS.Portfolio.DAL.Entities
         public int Count { get; set; }
         public Guid PortfolioId { get; set; }
 
-        public PortfolioEntity Portfolio { get; set; }
+        public PortfolioEntity? Portfolio { get; set; }
     }
 
     public class AssetEntityConfiguration : IEntityTypeConfiguration<AssetEntity>

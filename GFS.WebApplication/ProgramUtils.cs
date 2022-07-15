@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GFS.Common.Extensions;
-using GFS.EF.Migrations;
+using GFS.EF.Seed;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;

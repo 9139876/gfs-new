@@ -13,7 +13,7 @@ namespace GFS.WebApplication
             var builder = Microsoft.AspNetCore.Builder.WebApplication.CreateBuilder(args);
 
             var customConfigurationActions = new TCustomConfigurationActions();
-            customConfigurationActions.ConfigureServiceCollection(builder.Services);
+            customConfigurationActions.ConfigureServiceCollection(builder.Services, builder.Configuration);
             customConfigurationActions.ConfigureMapper(builder.Services);
 
             builder
@@ -30,7 +30,7 @@ namespace GFS.WebApplication
             
             app.MapControllers();
 
-            customConfigurationActions.ConfigureApplication(app);
+            await customConfigurationActions.ConfigureApplication(app);
 
             await app.RunAsync();
         }

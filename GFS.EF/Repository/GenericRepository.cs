@@ -1,54 +1,74 @@
-﻿using GFS.EF.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using GFS.EF.Context;
 using GFS.EF.Entities;
+using GFS.EF.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace GFS.EF.Repository
 {
-    public class GenericRepository<T> where T : class, IGuidKeyEntity
+    public interface IRepository<TEntity> 
+        where TEntity : class, IGuidKeyEntity
     {
-        protected GfsDbContext _context;
+        IQueryable<TEntity> Get(Expression<Func<TEntity, bool>>? predicate = null);
+        Task<TEntity> GetOrFailById(Guid id);
+        Task<TEntity> SingleOrFailById(Guid id);
+        void Insert(TEntity entity);
+        void InsertRange(IEnumerable<TEntity> entities);
+        void Update(TEntity entity);
+        void UpdateRange(IEnumerable<TEntity> entities);
+        void Delete(TEntity entity);
+        void DeleteRange(IEnumerable<TEntity> entities);
+        Task SaveChanges();
+    }
 
-        private readonly DbSet<T> _dbSet;
-        //public readonly ILogger _logger;
+    public class GenericRepository<TEntity> : IRepository<TEntity>
+        where TEntity : class, IGuidKeyEntity
+    {
+        private readonly GfsDbContext _context;
 
-        public GenericRepository(
-                GfsDbContext context)
-            //ILogger logger)
+        private readonly DbSet<TEntity> _dbSet;
+
+        public GenericRepository(GfsDbContext context)
         {
             _context = context;
-            _dbSet = context.Set<T>();
-            //_logger = logger;
+            _dbSet = context.Set<TEntity>();
         }
 
-        //public virtual async Task<T> GetById(Guid id)
-        //{
-        //    return await _dbSet.FindAsync(id);
-        //}
 
-        //public virtual async Task<bool> Add(T entity)
-        //{
-        //    await _dbSet.AddAsync(entity);
-        //    return true;
-        //}
+        public IQueryable<TEntity> Get(Expression<Func<TEntity, bool>>? predicate = null)
+            => predicate != null
+                ? _dbSet.Where(predicate)
+                : _dbSet;
 
-        //public virtual Task<bool> Delete(Guid id)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public Task<TEntity> GetOrFailById(Guid id)
+            => _dbSet.Where(e => e.Id == id).GetOrFailAsync();
 
-        //public virtual Task<IEnumerable<T>> All()
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public Task<TEntity> SingleOrFailById(Guid id)
+            => _dbSet.Where(e => e.Id == id).SingleOrFailAsync();
 
-        //public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate)
-        //{
-        //    return await _dbSet.Where(predicate).ToListAsync();
-        //}
+        public void Insert(TEntity entity)
+            => _dbSet.Add(entity);
 
-        //public virtual Task<bool> Upsert(T entity)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public void InsertRange(IEnumerable<TEntity> entities)
+            => _dbSet.AddRange(entities);
+
+        public void Update(TEntity entity)
+            => _dbSet.Update(entity);
+
+        public void UpdateRange(IEnumerable<TEntity> entities)
+            => _dbSet.UpdateRange(entities);
+
+        public void Delete(TEntity entity)
+            => _dbSet.Remove(entity);
+
+        public void DeleteRange(IEnumerable<TEntity> entities)
+            => _dbSet.RemoveRange(entities);
+
+        public Task SaveChanges()
+            => _context.SaveChangesAsync();
     }
 }

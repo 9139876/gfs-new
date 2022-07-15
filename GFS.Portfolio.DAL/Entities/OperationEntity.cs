@@ -18,7 +18,7 @@ namespace GFS.Portfolio.DAL.Entities
         
         public Guid PortfolioId { get; set; }
         
-        public PortfolioEntity Portfolio { get; set; }
+        public PortfolioEntity? Portfolio { get; set; }
     }
 
     public class OperationEntityConfiguration : IEntityTypeConfiguration<OperationEntity>

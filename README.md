@@ -14,3 +14,5 @@ Disclaimer: Плевал я на безопасность (токены, авт�
 
 Конфиги хранятся в БД, получаются из сервиса Configuration и хранятся локально в виде HotCache.
 НАХРЕН НЕ НАДО!!!
+
+dotnet ef migrations add --startup-project GFS.Portfolio.WebApp/ --project GFS.Portfolio.DAL --context PortfolioDbContext -v Init

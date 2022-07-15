@@ -2,16 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using GFS.Common.Exceptions;
 using GFS.EF.Entities;
+using GFS.EF.Repository;
 using Microsoft.EntityFrameworkCore;
 
-namespace GFS.EF.Data
+namespace GFS.EF.Context
 {
-    public class GfsDbContext : DbContext
+    public abstract class GfsDbContext : DbContext, IRepositoryCollection
     {
+        protected GfsDbContext(DbContextOptions options)
+            : base(options)
+        {
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.ApplyConfigurationsFromAssembly(GetEntitiesAssembly());
+        }
+
+        protected abstract Assembly GetEntitiesAssembly();
+
         public async Task<TEntity?> TryGetOneAsync<TEntity, TKey>(TKey id)
             where TEntity : class, IEntityWithKey<TKey>
             where TKey : IComparable
@@ -144,5 +159,9 @@ namespace GFS.EF.Data
                     updatedEntityEntry.Property(nameof(ICreateTrackingEntity.CreatedAt)).IsModified = false;
             }
         }
+
+        public IRepository<T> GetRepository<T>()
+            where T : class, IGuidKeyEntity
+            => new GenericRepository<T>(this);
     }
 }
