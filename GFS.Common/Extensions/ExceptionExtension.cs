@@ -4,6 +4,9 @@ namespace GFS.Common.Extensions
 {
     public static class ExceptionExtension
     {
+        
+        
+        
         public static void ThrowIf<T, TException>(this T value, Predicate<T> emitter, TException e)
             where TException : Exception
         {

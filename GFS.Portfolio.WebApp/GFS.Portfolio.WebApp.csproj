@@ -7,8 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\GFS.Api.Client\GFS.Api.Client.csproj" />
-      <ProjectReference Include="..\GFS.Portfolio.DAL\GFS.Portfolio.DAL.csproj" />
+      <ProjectReference Include="..\GFS.Portfolio.BL\GFS.Portfolio.BL.csproj" />
       <ProjectReference Include="..\GFS.WebApplication\GFS.WebApplication.csproj" />
     </ItemGroup>
 

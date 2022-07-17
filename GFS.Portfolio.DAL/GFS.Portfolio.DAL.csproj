@@ -8,7 +8,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\GFS.EF\GFS.EF.csproj" />
+      <ProjectReference Include="..\GFS.GrailCommon\GFS.GrailCommon.csproj" />
       <ProjectReference Include="..\GFS.Portfolio.Api\GFS.Portfolio.Api.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Migrations" />
     </ItemGroup>
 
 </Project>

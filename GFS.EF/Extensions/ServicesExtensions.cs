@@ -12,10 +12,10 @@ namespace GFS.EF.Extensions
     public static class ServicesExtensions
     {
         public static IServiceCollection RegisterDbContext<TDbContext>(this IServiceCollection services, string connectionString)
-            where TDbContext : DbContext, IRepositoryCollection
+            where TDbContext : DbContext, IDbContext
         {
             services.AddDbContext<TDbContext>(options => options.UseNpgsql(connectionString));
-            services.AddScoped<IRepositoryCollection>(provider => provider.GetRequiredService<TDbContext>());
+            services.AddScoped<IDbContext>(provider => provider.GetRequiredService<TDbContext>());
             services.AddScoped<DbContext>(provider => provider.GetRequiredService<TDbContext>());
             
             return services;

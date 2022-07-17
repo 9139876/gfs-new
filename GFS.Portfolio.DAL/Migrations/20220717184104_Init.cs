@@ -1,4 +1,5 @@
 ﻿using System;
+using GFS.GrailCommon.Models;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -14,32 +15,11 @@ namespace GFS.Portfolio.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    CashAmount = table.Column<decimal>(type: "numeric", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Portfolios", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Assets",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    AssetId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Count = table.Column<int>(type: "integer", nullable: false),
-                    PortfolioId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Assets", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Assets_Portfolios_PortfolioId",
-                        column: x => x.PortfolioId,
-                        principalTable: "Portfolios",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -49,8 +29,8 @@ namespace GFS.Portfolio.DAL.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     MomentUtc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     OperationType = table.Column<int>(type: "integer", nullable: false),
-                    AssetId = table.Column<Guid>(type: "uuid", nullable: true),
-                    AssetsChangeCount = table.Column<int>(type: "integer", nullable: true),
+                    AssetIdentifier = table.Column<AssetIdentifier>(type: "jsonb", nullable: true),
+                    AssetLotsChange = table.Column<int>(type: "integer", nullable: true),
                     AssetDealPrice = table.Column<decimal>(type: "numeric", nullable: true),
                     CashChange = table.Column<decimal>(type: "numeric", nullable: false),
                     PortfolioId = table.Column<Guid>(type: "uuid", nullable: false)
@@ -67,11 +47,6 @@ namespace GFS.Portfolio.DAL.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Assets_PortfolioId",
-                table: "Assets",
-                column: "PortfolioId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Operations_PortfolioId",
                 table: "Operations",
                 column: "PortfolioId");
@@ -85,9 +60,6 @@ namespace GFS.Portfolio.DAL.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Assets");
-
             migrationBuilder.DropTable(
                 name: "Operations");
 

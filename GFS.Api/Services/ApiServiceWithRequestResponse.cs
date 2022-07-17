@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using GFS.Api.Models;
+using GFS.Common.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -21,6 +22,9 @@ namespace GFS.Api.Services
         {
             try
             {
+                request.RequiredNotNull(nameof(request));
+                request!.Payload.RequiredNotNull(nameof(request.Payload));
+                
                 var response = ApiResponse<TResponsePayload>.CreateSuccessResponse(request.TraceId, await ExecuteInternal(request.Payload));
                 _logger.Log(LogLevel.Debug, request.TraceId.GetHashCode(), ApiServiceHelpers.GetSuccessMessage(request), request, response);
 

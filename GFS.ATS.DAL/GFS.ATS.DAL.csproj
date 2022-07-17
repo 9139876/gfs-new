@@ -7,8 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\GFS.Api\GFS.Api.csproj" />
-      <ProjectReference Include="..\GFS.GrailCommon\GFS.GrailCommon.csproj" />
+      <ProjectReference Include="..\GFS.ATS.Api\GFS.ATS.Api.csproj" />
     </ItemGroup>
 
 </Project>

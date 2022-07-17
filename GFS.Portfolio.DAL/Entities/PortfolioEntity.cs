@@ -10,10 +10,8 @@ namespace GFS.Portfolio.DAL.Entities
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public decimal CashAmount { get; set; }
 
         public List<OperationEntity> Operations { get; set; } = new();
-        public List<AssetEntity> Assets { get; set; } = new();
     }
 
     public class PortfolioEntityConfiguration : IEntityTypeConfiguration<PortfolioEntity>

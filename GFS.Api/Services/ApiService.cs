@@ -1,8 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using GFS.Api.Models;
+using GFS.Common.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace GFS.Api.Services
 {
@@ -21,6 +23,8 @@ namespace GFS.Api.Services
         {
             try
             {
+                request.RequiredNotNull(nameof(request));
+                
                 await ExecuteInternal();
                 var response = ApiEmptyResponse.CreateSuccessResponse(request.TraceId);
                 _logger.Log(LogLevel.Debug, request.TraceId.GetHashCode(), ApiServiceHelpers.GetSuccessMessage(request), request, response);

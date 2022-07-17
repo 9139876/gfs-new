@@ -13,6 +13,11 @@ namespace GFS.Common.Extensions
             if (value == null)
                 throw new InvalidOperationException(Compose(paramName, @object));
         }
+        
+        public static void RequiredNotNull(this object value)
+        {
+            RequiredNotNull(value, nameof(value), null);
+        }
 
         public static void RequiredNotNull(this string value, string paramName, object? @object = null)
         {

@@ -11,7 +11,7 @@ namespace GFS.Common.Extensions
     {
         private static readonly List<string> _servicePostfix = new() {"Service"};
 
-        public static void RegisterCurrentAssemblyServices(this IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
+        public static IServiceCollection RegisterCurrentAssemblyServices(this IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
             bool optional = false)
         {
             RegisterClasses(services: services,
@@ -19,9 +19,11 @@ namespace GFS.Common.Extensions
                 classesPostfix: _servicePostfix,
                 serviceLifetime: serviceLifetime,
                 optional: optional);
+
+            return services;
         }
 
-        public static void RegisterAssemblyServices(this IServiceCollection services, string assemblyName, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
+        public static IServiceCollection RegisterAssemblyServices(this IServiceCollection services, string assemblyName, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
             bool optional = false)
         {
             var assembly = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(x => x.GetName().Name == assemblyName);
@@ -34,9 +36,11 @@ namespace GFS.Common.Extensions
                 classesPostfix: _servicePostfix,
                 serviceLifetime: serviceLifetime,
                 optional: optional);
+            
+            return services;
         }
 
-        public static void RegisterAssemblyServicesByMember<T>(this IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
+        public static IServiceCollection RegisterAssemblyServicesByMember<T>(this IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
             bool optional = false)
         {
             RegisterClasses(services: services,
@@ -44,6 +48,8 @@ namespace GFS.Common.Extensions
                 classesPostfix: _servicePostfix,
                 serviceLifetime: serviceLifetime,
                 optional: optional);
+            
+            return services;
         }
 
         private static void RegisterClasses(IServiceCollection services, Assembly assembly, IReadOnlyCollection<string> classesPostfix, ServiceLifetime serviceLifetime,
