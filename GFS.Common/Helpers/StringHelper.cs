@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 
 namespace GFS.Common.Helpers
 {
@@ -68,5 +69,9 @@ namespace GFS.Common.Helpers
                 .Trim()
                 .ToLower();
         }
+        
+        public static string JoinString(string separator, IEnumerable<string?> items) => string.Join(separator, items.Where(i => i != null));
+        
+        public static string JoinString(char separator, IEnumerable<string?> items) => JoinString(separator.ToString(), items);
     }
 }

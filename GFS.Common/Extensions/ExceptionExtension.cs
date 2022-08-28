@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json.Bson;
 
 namespace GFS.Common.Extensions
 {
@@ -98,6 +101,12 @@ namespace GFS.Common.Extensions
             where TException : Exception
         {
             value.ThrowIfTrue(exceptionFactory());
+        }
+
+        public static void ThrowIfAny<TException, TItem>(this IEnumerable<TItem> collection, Predicate<TItem> predicate, TException exception)
+            where TException : Exception
+        {
+            collection.Any(new Func<TItem, bool>(predicate)).ThrowIfTrue(exception);
         }
     }
 }
