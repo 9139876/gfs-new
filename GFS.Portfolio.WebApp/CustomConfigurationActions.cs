@@ -1,10 +1,7 @@
-using System.Threading.Tasks;
 using GFS.Common.Extensions;
 using GFS.EF.Extensions;
 using GFS.Portfolio.DAL;
 using GFS.WebApplication;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace GFS.Portfolio.WebApp
 {

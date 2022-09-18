@@ -1,4 +1,3 @@
-using System;
 using GFS.BalanceCalculation.BL.Auxiliary.Astro;
 using GFS.BalanceCalculation.BL.Auxiliary.Astro.Enums;
 using Microsoft.AspNetCore.Mvc;

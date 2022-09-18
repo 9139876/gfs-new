@@ -1,5 +1,3 @@
-using System;
-
 namespace GFS.BalanceCalculation.BL.Auxiliary.Astro.Enums
 {
     [Flags]

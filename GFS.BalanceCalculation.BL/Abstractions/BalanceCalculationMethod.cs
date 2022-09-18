@@ -1,4 +1,3 @@
-using System;
 using GFS.BalanceCalculation.BL.Models;
 using GFS.Common.Helpers;
 

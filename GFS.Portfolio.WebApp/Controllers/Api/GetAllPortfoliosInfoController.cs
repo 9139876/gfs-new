@@ -1,9 +1,6 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using GFS.Portfolio.Api.Interfaces;
 using GFS.Portfolio.Api.Models;
 using GFS.Portfolio.BL.Services;
-using Microsoft.Extensions.Logging;
 
 namespace GFS.Portfolio.WebApp.Controllers.Api
 {

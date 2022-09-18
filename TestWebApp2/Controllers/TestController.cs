@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using GFS.Api.Client.Services;
 using Microsoft.AspNetCore.Mvc;
 using testApi1;

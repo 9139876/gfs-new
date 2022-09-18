@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using GFS.EF.Entities;
 using GFS.EF.Repository;
 using Microsoft.EntityFrameworkCore;

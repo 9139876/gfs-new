@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using GFS.Common.Extensions;
+﻿using GFS.Common.Extensions;
 using GFS.EF.Seed;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;

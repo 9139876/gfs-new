@@ -1,8 +1,5 @@
-using System.Threading.Tasks;
 using GFS.Common.Extensions;
 using GFS.WebApplication;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace GFS.ATS.WebApp
 {

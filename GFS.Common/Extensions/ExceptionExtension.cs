@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json.Bson;
-
-namespace GFS.Common.Extensions
+﻿namespace GFS.Common.Extensions
 {
     public static class ExceptionExtension
     {

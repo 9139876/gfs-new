@@ -1,4 +1,3 @@
-using System;
 using GFS.BalanceCalculation.BL.Auxiliary.Astro.Enums;
 using GFS.BalanceCalculation.BL.Auxiliary.Astro.Models;
 using SwissEphNet;

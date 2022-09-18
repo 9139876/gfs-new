@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using GFS.EF.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

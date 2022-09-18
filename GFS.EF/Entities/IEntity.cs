@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace GFS.EF.Entities
+﻿namespace GFS.EF.Entities
 {
     public interface IEntity
     {

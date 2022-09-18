@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using GFS.EF.Entities;
 using GFS.GrailCommon.Models;
@@ -16,8 +15,7 @@ namespace GFS.Portfolio.DAL.Entities
 
         public OperationTypeEnum OperationType { get; set; }
 
-        [Column(TypeName = "jsonb")]
-        public AssetIdentifier? AssetIdentifier { get; set; }
+        public Guid? AssetId { get; set; }
 
         /// <summary>
         /// Может быть положительным (покупка) и отрицательным (продажа) числом

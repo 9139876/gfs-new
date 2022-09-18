@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using testApi1;
 
 namespace TestWebApp1.Controllers.Api

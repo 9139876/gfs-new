@@ -1,5 +1,3 @@
-using System.Threading;
-using System.Threading.Tasks;
 using GFS.EF.Entities;
 
 namespace GFS.EF.Repository

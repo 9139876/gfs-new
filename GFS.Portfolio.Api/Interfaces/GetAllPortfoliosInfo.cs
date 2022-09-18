@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using GFS.Api.Services;
 using GFS.Portfolio.Api.Models;
 using Microsoft.AspNetCore.Mvc;

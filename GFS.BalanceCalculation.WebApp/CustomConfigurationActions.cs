@@ -1,7 +1,4 @@
-using System.Threading.Tasks;
 using GFS.WebApplication;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace GFS.BalanceCalculation.WebApp
 {

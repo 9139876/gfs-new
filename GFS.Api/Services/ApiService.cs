@@ -1,10 +1,7 @@
-using System;
-using System.Threading.Tasks;
 using GFS.Api.Models;
 using GFS.Common.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace GFS.Api.Services
 {

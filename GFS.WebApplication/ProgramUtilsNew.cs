@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using GFS.WebApplication.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;

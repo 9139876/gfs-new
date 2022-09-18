@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using GFS.BalanceCalculation.BL.Abstractions;
 using GFS.BalanceCalculation.BL.Groups;
 using GFS.BalanceCalculation.BL.Models;

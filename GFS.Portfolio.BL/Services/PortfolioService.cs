@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using GFS.EF.Extensions;
 using GFS.EF.Repository;
 using GFS.Portfolio.Api.Enums;
@@ -151,7 +147,7 @@ namespace GFS.Portfolio.BL.Services
 
         private async Task<(bool allowed, string? error)> PerformSellBuyOperation(OperationRequestDto request, PortfolioEntity portfolio)
         {
-            if (request.AssetIdentifier is null)
+            if (request.AssetId is null)
                 return (false, "Не указан идентификатор актива");
 
             if (request.AssetLotsCount is null or <= 0)
@@ -175,7 +171,7 @@ namespace GFS.Portfolio.BL.Services
             {
                 MomentUtc = request.MomentUtc,
                 OperationType = request.OperationType,
-                AssetIdentifier = request.AssetIdentifier,
+                AssetId = request.AssetId,
                 AssetDealPrice = request.AssetDealPrice,
                 AssetLotsChange = assetLotsChange,
                 CashChange = cashChange
@@ -219,7 +215,7 @@ namespace GFS.Portfolio.BL.Services
                 {
                     MomentUtc = operation.MomentUtc,
                     OperationType = operation.OperationType,
-                    AssetIdentifier = operation.AssetIdentifier,
+                    AssetId = operation.AssetId,
                     AssetsLotsChange = operation.AssetLotsChange,
                     AssetDealPrice = operation.AssetLotsChange,
                     CashChange = operation.CashChange,
@@ -231,15 +227,15 @@ namespace GFS.Portfolio.BL.Services
         }
 
         private static PortfolioStateDto GetPortfolioState(List<OperationEntity> operations)
-            => new PortfolioStateDto
+            => new()
             {
                 CashAmount = operations.GetCashAmount(),
                 Assets = operations
-                    .Where(o => o.AssetIdentifier != null)
-                    .GroupBy(o => o.AssetIdentifier)
+                    .Where(o => o.AssetId != null)
+                    .GroupBy(o => o.AssetId)
                     .Select(g => new AssetModel
                     {
-                        AssetIdentifier = g.Key!,
+                        AssetId = g.Key!.Value,
                         Count = g.Sum(o => o.AssetLotsChange!.Value)
                     })
                     .ToList()

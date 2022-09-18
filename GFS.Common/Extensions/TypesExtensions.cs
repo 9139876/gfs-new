@@ -1,5 +1,3 @@
-using System;
-
 namespace GFS.Common.Extensions
 {
     public static class TypesExtensions

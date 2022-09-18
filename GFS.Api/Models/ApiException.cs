@@ -1,4 +1,3 @@
-using System;
 using GFS.Api.Enums;
 using GFS.Common.Exceptions;
 using Newtonsoft.Json;

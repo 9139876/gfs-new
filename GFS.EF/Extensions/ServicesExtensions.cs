@@ -1,8 +1,5 @@
-using System;
-using System.Threading.Tasks;
 using GFS.Common.Extensions;
 using GFS.EF.Repository;
-using GFS.EF.Seed;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

@@ -1,4 +1,3 @@
-using System;
 using GFS.BalanceCalculation.BL.Models;
 
 namespace GFS.BalanceCalculation.BL.Abstractions

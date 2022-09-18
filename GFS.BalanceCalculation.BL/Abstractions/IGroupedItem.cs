@@ -1,6 +1,3 @@
-using System.Threading.Tasks;
-using GFS.BalanceCalculation.BL.Models;
-
 namespace GFS.BalanceCalculation.BL.Abstractions
 {
     public interface IGroupedItem

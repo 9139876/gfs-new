@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace GFS.Common.Exceptions
+﻿namespace GFS.Common.Exceptions
 {
     /// <summary>
     /// Thrown if an object could not be found.

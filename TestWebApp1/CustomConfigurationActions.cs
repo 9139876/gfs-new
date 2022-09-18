@@ -1,8 +1,4 @@
-using System.Threading.Tasks;
 using GFS.WebApplication;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace TestWebApp1
 {

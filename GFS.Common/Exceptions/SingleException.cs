@@ -1,5 +1,3 @@
-using System;
-
 namespace GFS.Common.Exceptions
 {
     /// <summary>
