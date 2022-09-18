@@ -2,54 +2,34 @@
 
 namespace GFS.GrailCommon.Enums
 {
-    /// <summary>
-    /// Таймфрейм
-    /// </summary>
+    /// <summary> Таймфрейм </summary>
     public enum TimeFrameEnum
     {
-        /// <summary>
-        /// Тиковый
-        /// </summary>
+        /// <summary> Тиковый </summary>
         [Description("Тиковый")] tick = 10,
 
-        /// <summary>
-        /// 1-минутный
-        /// </summary>
+        /// <summary> 1-минутный </summary>
         [Description("1-минутный")] min1 = 20,
 
-        /// <summary>
-        /// 4-минутный
-        /// </summary>
+        /// <summary> 4-минутный </summary>
         [Description("4-минутный")] min4 = 30,
 
-        /// <summary>
-        /// Часовой
-        /// </summary>
+        /// <summary> Часовой </summary>
         [Description("Часовой")] H1 = 40,
 
-        /// <summary>
-        /// Дневной
-        /// </summary>
+        /// <summary> Дневной </summary>
         [Description("Дневной")] D1 = 50,
 
-        /// <summary>
-        /// Недельный
-        /// </summary>
+        /// <summary> Недельный </summary>
         [Description("Недельный")] W1 = 60,
 
-        /// <summary>
-        /// Месячный
-        /// </summary>
+        /// <summary> Месячный </summary>
         [Description("Месячный")] M1 = 70,
 
-        /// <summary>
-        /// Сезонный
-        /// </summary>
+        /// <summary> Сезонный </summary>
         [Description("Сезонный")] Seasonly = 80,
 
-        /// <summary>
-        /// Годовой
-        /// </summary>
+        /// <summary> Годовой </summary>
         [Description("Годовой")] Y1 = 90
     }
 }

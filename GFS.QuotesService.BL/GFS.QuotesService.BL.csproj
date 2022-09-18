@@ -7,8 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\GFS.Api\GFS.Api.csproj" />
-      <ProjectReference Include="..\GFS.GrailCommon\GFS.GrailCommon.csproj" />
+      <ProjectReference Include="..\GFS.QuotesService.DAL\GFS.QuotesService.DAL.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Tinkoff.InvestApi" Version="0.1.8" />
     </ItemGroup>
 
 </Project>

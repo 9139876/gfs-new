@@ -1,18 +1,12 @@
 ﻿namespace GFS.GrailCommon.Enums
 {
-    /// <summary>
-    /// Тип точки тенденции
-    /// </summary>
+    /// <summary> Тип точки тенденции </summary>
     public enum TendentionPointTypeEnum
     {
-        /// <summary>
-        /// Вершина
-        /// </summary>
+        /// <summary> Вершина </summary>
         Top = 1,
 
-        /// <summary>
-        /// Основание
-        /// </summary>
+        /// <summary> Основание </summary>
         Bottom = 2
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using GFS.Common.Attributes;
 using GFS.GrailCommon.Enums;
 
 namespace GFS.GrailCommon.Models
@@ -48,7 +49,7 @@ namespace GFS.GrailCommon.Models
 
         public override string ToString()
         {
-            return $"{(TendentionPointType == TendentionPointTypeEnum.Top ? "Вершина" : "Основание")} Дата:{Date} Цена:{Price}";
+            return $"{Description.GetDescription(TendentionPointType)} Дата:{Date} Цена:{Price}";
         }
 
         /// <summary>
@@ -63,7 +64,7 @@ namespace GFS.GrailCommon.Models
 
             var price = Price.ToString($"F{fractionalPart}");
 
-            return $"{(TendentionPointType == TendentionPointTypeEnum.Top ? "Вершина" : "Основание")} {date} - {price}";
+            return $"{Description.GetDescription(TendentionPointType)} {date} - {price}";
         }
     }
 }
