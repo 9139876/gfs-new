@@ -18,4 +18,8 @@ internal static class ServiceProviderExtensions
             QuotesProviderTypeEnum.InvestingCom => serviceProvider.GetRequiredService<IInvestingComAdapter>(),
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
+
+    /// <summary> Возвращает адаптер основного поставщика котировок - остальные используются для контроля качества котировок и ориентируются на данные основного </summary>
+    public static IQuotesProviderAdapter GetMainQuotesProviderAdapter(this IServiceProvider serviceProvider)
+        => serviceProvider.GetRequiredService<ITinkoffAdapter>();
 }
