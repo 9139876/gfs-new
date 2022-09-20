@@ -1,10 +1,12 @@
 using GFS.QuotesService.Api.Enum;
+using GFS.QuotesService.BL.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GFS.QuotesService.BL.QuotesProviderAdapters;
 
 public interface IQuotesProviderAdapter
 {
+    Task<List<InitialModel>> GetInitialData();
 }
 
 internal static class ServiceProviderExtensions
