@@ -16,3 +16,9 @@ Disclaimer: Плевал я на безопасность (токены, авт�
 НАХРЕН НЕ НАДО!!!
 
 dotnet ef migrations add --startup-project GFS.Portfolio.WebApp/ --project GFS.Portfolio.DAL --context PortfolioDbContext -v Init
+
+
+dotnet publish -c Release -r alpine-arm64 --self-contained true /p:PublishTrimmed=true -o ./publish
+docker build . --tag <serviceName:timestamp>
+sudo docker save <image> | docker --context orangepi load
+# add env variable to service DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1

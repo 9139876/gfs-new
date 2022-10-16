@@ -1,26 +1,29 @@
 import os
+import subprocess
 import dotNetHelpers
 import shutil
 import time
 import calendar
 
-def publish(project):
-    baseDirectory = os.getcwd()
-    try:
-        os.chdir(project.folder)        
-        publishPath = './publish'
-        
-        if os.path.exists(publishPath) and os.path.isdir(publishPath):
-            shutil.rmtree(publishPath)
+# Global variables
+publishServerHost = '192.168.1.11'
+publishServerLogin = 'orangepi'
+remoteMountPath = '/mnt/orangepi_tmp/'
 
-        tag = calendar.timegm(time.gmtime()) # + service name !!! add field to Project
-        # dotnet publish -c Release -r alpine-x64 --self-contained true /p:PublishTrimmed=true -o ./publish # x64???
-        # sudo docker build . --tag <tag>
-        shutil.rmtree(publishPath)
-        # copy image to remote
-        # remote docker service update --image {tag} {serviceName}
-        # remove local images
-        # remove remote old images
+
+def publish(project, timestamp):
+    baseDirectory = os.getcwd()
+    remotePath = os.path.join(remoteMountPath, timestamp, project.serviceName)
+    tag = project.serviceName + ':' + timestamp
+
+    try:
+        os.chdir(project.folder)
+        subprocess.call('mkdir ' + remotePath, shell=True)
+        subprocess.call('dotnet publish -c Release -r alpine-arm64 --self-contained true /p:PublishTrimmed=true -o ' + os.path.join(remotePath, 'publish'), shell=True)
+        subprocess.call('cp ./Dockerfile ' + remotePath, shell=True)
+
+        subprocess.call('docker build ' + remotePath + ' --tag ' + tag, shell=True)
+        subprocess.call('docker service update --image ' + tag + ' ' + project.serviceName, shell=True)
     finally:
         os.chdir(baseDirectory)
 
@@ -33,8 +36,7 @@ lastPublish = dotNetHelpers.readPublishLast()
 needPublish = []
 
 for project in lastPublish:
-    dependecyFolders = dotNetHelpers.getProjectDependenciesFolders(
-        project.fullPath)
+    dependecyFolders = dotNetHelpers.getProjectDependenciesFolders(project.fullPath)
     changesFolders = dotNetHelpers.getChangesProjectsFolders(project.hash)
     if (dotNetHelpers.intersect(dependecyFolders, changesFolders)):
         needPublish.append(project)
@@ -42,14 +44,23 @@ for project in lastPublish:
 # publish
 index = 0
 
-for project in needPublish:
-    try:
-        index += 1
-        print('Publish ' + str(index) + ' of ' +
-              str(len(needPublish)) + ': '+project.fileName)
-        publish(project)
-        project.hash = currentHash
-        dotNetHelpers.writePublishLast(lastPublish)
-        print('--Success')
-    except:
-        print('--Failed :(')
+timestamp = str(calendar.timegm(time.gmtime()))
+subprocess.call('sshfs ' + publishServerLogin + '@' + publishServerHost + ':/tmp ' + remoteMountPath, shell=True)  # mount
+subprocess.call('mkdir ' + os.path.join(remoteMountPath, timestamp), shell=True)
+
+try:
+    subprocess.call('docker context use orangepi', shell=True)
+    for project in needPublish:
+        try:
+            index += 1
+            print('Publish ' + str(index) + ' of ' + str(len(needPublish)) + ': ' + project.fileName)
+            publish(project, timestamp)
+            project.hash = currentHash
+            dotNetHelpers.writePublishLast(lastPublish)
+            print('--Success')
+        except:
+            print('--Failed :(')
+finally:
+    subprocess.call('docker context use default', shell=True)
+    shutil.rmtree(os.path.join(remoteMountPath, timestamp))
+    subprocess.call('fusermount -u ' + remoteMountPath, shell=True)  # unmount

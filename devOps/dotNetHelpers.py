@@ -13,13 +13,14 @@ class PublishedProject:
 
     def __init__(self, str):
         splitted = str.split(' ')
-        self.hash = splitted[0]
-        self.fullPath = splitted[1]
+        self.serviceName = splitted[0]
+        self.hash = splitted[1]
+        self.fullPath = splitted[2]
         self.folder = os.path.dirname(self.fullPath)
         self.fileName = os.path.basename(self.fullPath)
 
     def str(self):
-        return self.hash + ' ' + self.fullPath
+        return self.serviceName + ' ' + self.hash + ' ' + self.fullPath
 
 
 def unique(array):
@@ -30,8 +31,7 @@ def getProjectDependencies(projectFile):
     dependencies = [projectFile]
     projectDocument = parse(projectFile)
     for referenceElement in projectDocument.getElementsByTagName('ProjectReference'):
-        file = referenceElement.getAttribute(
-            'Include').replace('\\', '/')
+        file = referenceElement.getAttribute('Include').replace('\\', '/')
         dependencies += getProjectDependencies(file)
 
     return unique(dependencies)
@@ -42,8 +42,7 @@ def getProjectDependenciesFolders(projectFile):
 
 
 def getChangesProjectsFolders(commit):
-    changedFiles = os.popen(
-        'git diff --name-only {} HEAD'.format(commit)).read().splitlines()
+    changedFiles = os.popen('git diff --name-only {} HEAD'.format(commit)).read().splitlines()
 
     return unique(list(map(lambda item: os.path.dirname(item), changedFiles)))
 
@@ -77,6 +76,8 @@ def readJson(path):
 def readPublishLast():
     file = open('publish.last', 'r')
     projects = []
+
+    # deleted commented lines - WTF???!!!
 
     for line in list(map(lambda str: str.strip(), file.read().splitlines())):
         if (len(line) > 0 and line[0] != '#'):
