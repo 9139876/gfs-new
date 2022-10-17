@@ -12,6 +12,9 @@ publishSettingsPath = 'publish.last'
 class PublishedProject:
 
     def __init__(self, str):
+        self.commented = str[0] == '#'
+        if (self.commented):
+            str = str[1:]
         splitted = str.split(' ')
         self.serviceName = splitted[0]
         self.hash = splitted[1]
@@ -20,7 +23,8 @@ class PublishedProject:
         self.fileName = os.path.basename(self.fullPath)
 
     def str(self):
-        return self.serviceName + ' ' + self.hash + ' ' + self.fullPath
+        comment = '#' if self.commented else ''
+        return f"{comment}{self.serviceName} {self.hash} {self.fullPath}"
 
 
 def unique(array):
@@ -77,10 +81,8 @@ def readPublishLast():
     file = open('publish.last', 'r')
     projects = []
 
-    # deleted commented lines - WTF???!!!
-
     for line in list(map(lambda str: str.strip(), file.read().splitlines())):
-        if (len(line) > 0 and line[0] != '#'):
+        if (len(line) > 0):
             projects.append(PublishedProject(line))
 
     file.close()
@@ -90,23 +92,3 @@ def readPublishLast():
 def writePublishLast(projects):
     payload = '\n'.join(list(map(lambda project: project.str(), projects)))
     safeSaveFile(publishSettingsPath, payload)
-
-
-# def createAndFillDockerFile(project):
-#     dependencies = getProjectDependencies(project.fullPath)
-#     lines = []
-
-#     for dependency in dependencies:
-#         file = os.path.basename(dependency)
-#         path = os.path.basename(os.path.dirname(dependency))
-#         pathAndFile = os.path.join(path, file)
-#         lines.append('COPY ["' + pathAndFile + '", "' + path + '/"]')
-
-#     templateFile = open(os.path.join(
-#         project.folder, 'Dockerfile.template'), 'r')
-#     template = templateFile.read()
-#     templateFile.close()
-
-#     destinationFile = open(os.path.join(project.folder, 'Dockerfile'), 'w')
-#     destinationFile.write(template.replace('{{COPY}}', '\n'.join(lines)))
-#     destinationFile.close()

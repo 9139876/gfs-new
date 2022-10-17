@@ -4,6 +4,7 @@ import dotNetHelpers
 import shutil
 import time
 import calendar
+from rich.console import Console
 
 # Global variables
 publishServerHost = '192.168.1.11'
@@ -35,7 +36,7 @@ currentHash = os.popen('git rev-parse HEAD').read().strip()
 lastPublish = dotNetHelpers.readPublishLast()
 needPublish = []
 
-for project in lastPublish:
+for project in filter(lambda item: item.commented == False, lastPublish):
     dependecyFolders = dotNetHelpers.getProjectDependenciesFolders(project.fullPath)
     changesFolders = dotNetHelpers.getChangesProjectsFolders(project.hash)
     if (dotNetHelpers.intersect(dependecyFolders, changesFolders)):
@@ -48,19 +49,21 @@ timestamp = str(calendar.timegm(time.gmtime()))
 subprocess.call('sshfs ' + publishServerLogin + '@' + publishServerHost + ':/tmp ' + remoteMountPath, shell=True)  # mount
 subprocess.call('mkdir ' + os.path.join(remoteMountPath, timestamp), shell=True)
 
-try:
-    subprocess.call('docker context use orangepi', shell=True)
-    for project in needPublish:
-        try:
-            index += 1
-            print('Publish ' + str(index) + ' of ' + str(len(needPublish)) + ': ' + project.fileName)
-            publish(project, timestamp)
-            project.hash = currentHash
-            dotNetHelpers.writePublishLast(lastPublish)
-            print('--Success')
-        except:
-            print('--Failed :(')
-finally:
-    subprocess.call('docker context use default', shell=True)
-    shutil.rmtree(os.path.join(remoteMountPath, timestamp))
-    subprocess.call('fusermount -u ' + remoteMountPath, shell=True)  # unmount
+console = Console()
+
+with console.status('', spinner='aesthetic', speed=0.5) as status:
+    try:
+        subprocess.call('docker context use orangepi', shell=True)
+        for project in needPublish:
+            try:
+                index += 1
+                status.update(f"[bold green]Publish project {project.serviceName} ({index} of {len(needPublish)})")
+                publish(project, timestamp)
+                project.hash = currentHash
+                dotNetHelpers.writePublishLast(lastPublish)
+            except:
+                print(f"Publish project {project.serviceName} failed :(")
+    finally:        
+        subprocess.call('docker context use default', shell=True)
+        shutil.rmtree(os.path.join(remoteMountPath, timestamp))
+        subprocess.call('fusermount -u ' + remoteMountPath, shell=True)  # unmount
