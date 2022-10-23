@@ -22,3 +22,5 @@ dotnet publish -c Release -r alpine-arm64 --self-contained true /p:PublishTrimme
 docker build . --tag <serviceName:timestamp>
 sudo docker save <image> | docker --context orangepi load
 # add env variable to service DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+
+front see /data/development/Sandbox/front/my-medium-app
