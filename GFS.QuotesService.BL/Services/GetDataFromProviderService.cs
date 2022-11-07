@@ -12,13 +12,13 @@ public interface IGetDataFromProviderService
     Task InitialFromMainAdapter(bool anyway = false);
 }
 
-internal class GetDataFromProviderFromProviderService : IGetDataFromProviderService
+internal class GetDataFromProviderService : IGetDataFromProviderService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly Mapper _mapper;
     private readonly IDbContext _dbContext;
 
-    public GetDataFromProviderFromProviderService(
+    public GetDataFromProviderService(
         IServiceProvider serviceProvider,
         Mapper mapper,
         IDbContext dbContext)

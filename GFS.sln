@@ -65,7 +65,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFS.QuotesService.BL", "GFS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFS.QuotesService.WebApp", "GFS.QuotesService.WebApp\GFS.QuotesService.WebApp.csproj", "{6BE319D4-18B0-4191-8298-EDC3097D16D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFS.QuotesService.Scheduler", "GFS.QuotesService.Scheduler\GFS.QuotesService.Scheduler.csproj", "{AFA67D09-BF30-424A-BEC6-D7EB73AF76D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFS.QuotesService.BackgroundWorker", "GFS.QuotesService.BackgroundWorker\GFS.QuotesService.BackgroundWorker.csproj", "{AFA67D09-BF30-424A-BEC6-D7EB73AF76D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFS.BkgWorker", "GFS.BkgWorker\GFS.BkgWorker.csproj", "{85B2541D-7973-4535-A704-B0671D426FF9}"
 EndProject
