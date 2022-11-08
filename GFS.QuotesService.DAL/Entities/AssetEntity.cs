@@ -5,9 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GFS.QuotesService.DAL.Entities;
 
-public class AssetEntity : IGuidKeyEntity
+public class AssetEntity : GuidKeyEntity
 {
-    public Guid Id { get; set; }
     public MarketTypeEnum MarketType { get; set; }
     public AssetTypeEnum AssetType { get; set; }
 

@@ -4,9 +4,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GFS.Portfolio.DAL.Entities
 {
-    public class PortfolioEntity : IGuidKeyEntity
+    public class PortfolioEntity : GuidKeyEntity
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
 
         public List<OperationEntity> Operations { get; set; } = new();

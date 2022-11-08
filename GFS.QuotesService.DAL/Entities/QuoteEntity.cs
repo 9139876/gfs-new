@@ -5,9 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GFS.QuotesService.DAL.Entities;
 
-public class QuoteEntity : IGuidKeyEntity
+public class QuoteEntity : GuidKeyEntity
 {
-    public Guid Id { get; set; }
     public Guid QuotesProviderAssetId { get; set; }
     public TimeFrameEnum TimeFrame { get; set; }
     public DateTime Date { get; set; }

@@ -1,16 +1,12 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using GFS.EF.Entities;
-using GFS.GrailCommon.Models;
 using GFS.Portfolio.Api.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GFS.Portfolio.DAL.Entities
 {
-    public class OperationEntity : IGuidKeyEntity
+    public class OperationEntity : GuidKeyEntity
     {
-        public Guid Id { get; set; }
-
         public DateTime MomentUtc { get; set; }
 
         public OperationTypeEnum OperationType { get; set; }

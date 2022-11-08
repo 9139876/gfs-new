@@ -49,7 +49,6 @@ internal class GetDataFromProviderService : IGetDataFromProviderService
         var assets = initialModels.Select(im =>
         {
             var asset = _mapper.Map<AssetEntity>(im);
-            asset.Id = Guid.NewGuid();
             asset.AssetInfo = _mapper.Map<AssetInfoEntity>(im);
             asset.AssetInfo.AssetId = asset.Id;
             return asset;

@@ -1,11 +1,24 @@
 using GFS.BkgWorker.Abstraction;
+using GFS.GrailCommon.Enums;
+using GFS.QuotesService.Api.Enum;
 
 namespace GFS.QuotesService.BackgroundWorker.TaskContexts;
 
 public class GetQuotesTaskContext : TaskContext
 {
-    protected override string SerializeImpl()
+    public GetQuotesTaskContext(Guid assetId, QuotesProviderTypeEnum quotesProviderType, TimeFrameEnum timeFrame)
     {
-        throw new NotImplementedException();
+        AssetId = assetId;
+        QuotesProviderType = quotesProviderType;
+        TimeFrame = timeFrame;
     }
+
+    public Guid AssetId { get; }
+
+    public QuotesProviderTypeEnum QuotesProviderType { get; }
+
+    public TimeFrameEnum TimeFrame { get; }
+
+    protected override string SerializeImpl()
+        => $"{AssetId}-{QuotesProviderType}-{TimeFrame}";
 }

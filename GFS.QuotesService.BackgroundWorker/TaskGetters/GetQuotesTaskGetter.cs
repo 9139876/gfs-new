@@ -1,5 +1,6 @@
 using GFS.BkgWorker.Abstraction;
 using GFS.EF.Repository;
+using GFS.GrailCommon.Enums;
 using GFS.QuotesService.BackgroundWorker.Models;
 using GFS.QuotesService.BackgroundWorker.TaskContexts;
 using GFS.QuotesService.DAL.Entities;
@@ -27,7 +28,7 @@ public class GetQuotesTaskGetter : ITaskGetter<GetQuotesTaskContext>
             throw new InvalidCastException($"{nameof(Model)} is not {nameof(GetQuotesTaskGetterModel)}");
 
         var dbTasks = await _dbContext.GetRepository<BackgroundWorkerTaskEntity>().Get(bwt => bwt.QuotesProviderType == model.QuotesProviderType).ToListAsync();
-        
-        
+
+        return from dbTask in dbTasks from timeFrame in Enum.GetValues<TimeFrameEnum>() select new GetQuotesTaskContext(dbTask.AssetId, model.QuotesProviderType, timeFrame);
     }
 }

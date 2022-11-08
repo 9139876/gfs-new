@@ -5,9 +5,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GFS.QuotesService.DAL.Entities;
 
-public class BackgroundWorkerTaskEntity : IGuidKeyEntity
+public class BackgroundWorkerTaskEntity : GuidKeyEntity
 {
-    public Guid Id { get; set; }
     public Guid AssetId { get; set; }
     public QuotesProviderTypeEnum QuotesProviderType { get; set; }
     

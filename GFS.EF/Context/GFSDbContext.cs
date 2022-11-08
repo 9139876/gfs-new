@@ -40,9 +40,6 @@ namespace GFS.EF.Context
 
             foreach (var createdEntityEntry in ChangeTracker.Entries().Where(x => x.State == EntityState.Added))
             {
-                if (createdEntityEntry.Entity is IGuidKeyEntity guidKeyEntity)
-                    guidKeyEntity.Id = guidKeyEntity.Id == default ? Guid.NewGuid() : guidKeyEntity.Id;
-
                 if (createdEntityEntry.Entity is ICreateTrackingEntity createTrackingEntity)
                     createTrackingEntity.CreatedAt = utcNow;
 
@@ -61,7 +58,7 @@ namespace GFS.EF.Context
         }
 
         public IRepository<T> GetRepository<T>()
-            where T : class, IGuidKeyEntity
+            where T : GuidKeyEntity
             => new GenericRepository<T>(this);
     }
 }

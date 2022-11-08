@@ -4,9 +4,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GFS.QuotesService.DAL.Entities;
 
-public class AssetInfoEntity : IGuidKeyEntity
+public class AssetInfoEntity : GuidKeyEntity
 {
-    public Guid Id { get; set; }
     public Guid AssetId { get; set; }
 
     /// <summary> Валюта расчётов </summary>

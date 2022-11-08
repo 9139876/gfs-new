@@ -64,7 +64,7 @@ public abstract class TaskExecutor<TContext> : ITaskExecutor
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError("{Message}, {StackTrace}", e.Message, e.StackTrace);
+                    Logger.LogError("{Task}, {Message}, {StackTrace}", task.Serialize(), e.Message, e.StackTrace);
                     _queue.ReportOfFailTaskExecution(task);
                 }
             }

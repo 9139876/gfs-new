@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GFS.EF.Repository
 {
     public interface IRepository<TEntity>
-        where TEntity : class, IGuidKeyEntity
+        where TEntity : GuidKeyEntity
     {
         IQueryable<TEntity> Get(Expression<Func<TEntity, bool>>? predicate = null);
         Task<TEntity> SingleOrFailById(Guid id);
@@ -25,7 +25,7 @@ namespace GFS.EF.Repository
     }
 
     public class GenericRepository<TEntity> : IRepository<TEntity>
-        where TEntity : class, IGuidKeyEntity
+        where TEntity : GuidKeyEntity
     {
         private readonly DbSet<TEntity> _dbSet;
 

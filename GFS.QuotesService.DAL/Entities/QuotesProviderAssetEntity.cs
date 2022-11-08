@@ -7,9 +7,8 @@ using GFS.QuotesService.DAL.Models;
 
 namespace GFS.QuotesService.DAL.Entities;
 
-public class QuotesProviderAssetEntity : IGuidKeyEntity
+public class QuotesProviderAssetEntity : GuidKeyEntity
 {
-    public Guid Id { get; set; }
     public Guid AssetId { get; set; }
     public QuotesProviderTypeEnum QuotesProviderType { get; set; }
 

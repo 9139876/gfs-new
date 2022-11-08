@@ -4,14 +4,20 @@
     {
     }
 
-    public interface IEntityWithKey<T> : IEntity
+    public interface IEntityWithKey<out T> : IEntity
         where T : IComparable
     {
-        T Id { get; set; }
+        T Id { get; }
     }
 
-    public interface IGuidKeyEntity : IEntityWithKey<Guid>
+    public abstract class GuidKeyEntity : IEntityWithKey<Guid>
     {
+        protected GuidKeyEntity()
+        {
+            Id = Guid.NewGuid();            
+        }
+        
+        public Guid Id { get; protected set; }
     }
 
     public interface IUpdateTrackingEntity : IEntity
