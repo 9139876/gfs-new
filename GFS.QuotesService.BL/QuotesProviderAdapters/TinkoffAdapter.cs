@@ -1,7 +1,10 @@
 using AutoMapper;
 using GFS.Common.Extensions;
+using GFS.GrailCommon.Enums;
+using GFS.GrailCommon.Models;
 using GFS.QuotesService.Api.Enum;
 using GFS.QuotesService.BL.Models;
+using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
 using Tinkoff.InvestApi;
 using Tinkoff.InvestApi.V1;
 
@@ -11,7 +14,7 @@ public interface ITinkoffAdapter : IQuotesProviderAdapter
 {
 }
 
-public class TinkoffAdapter : ITinkoffAdapter
+public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 {
     private readonly InvestApiClient _apiClient;
     private readonly Mapper _mapper;
@@ -24,7 +27,7 @@ public class TinkoffAdapter : ITinkoffAdapter
         _mapper = mapper;
     }
 
-    public async Task<List<InitialModel>> GetInitialData()
+    public override async Task<List<InitialModel>> GetInitialData()
     {
         var result = new List<InitialModel>();
 
@@ -60,6 +63,23 @@ public class TinkoffAdapter : ITinkoffAdapter
 
         return result;
     }
+
+    public override string GenerateCommonGetQuotesRequest()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override Task<QuoteModel> GetFirstQuote(string getQuotesRequest, TimeFrameEnum timeFrame)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(string getQuotesRequest, TimeFrameEnum timeFrame, QuoteModel? lastQuote)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override TimeFrameEnum[] NativeSupportedTimeFrames => throw new NotImplementedException();
 
     #region static
 

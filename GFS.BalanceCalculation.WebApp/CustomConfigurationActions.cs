@@ -1,4 +1,5 @@
 using GFS.WebApplication;
+using Serilog;
 
 namespace GFS.BalanceCalculation.WebApp
 {
@@ -14,9 +15,14 @@ namespace GFS.BalanceCalculation.WebApp
             
         }
 
-        public  Task ConfigureApplication(Microsoft.AspNetCore.Builder.WebApplication application)
+        public  Task ConfigureApplication(Microsoft.AspNetCore.Builder.WebApplication application, IServiceCollection services)
         {
             return Task.CompletedTask;
+        }
+        
+        public LoggerConfiguration CustomConfigureLogger(LoggerConfiguration lc)
+        {
+            return lc;
         }
     }
 }

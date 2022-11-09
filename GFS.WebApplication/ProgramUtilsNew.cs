@@ -1,4 +1,4 @@
-using GFS.WebApplication.Helpers;
+using GFS.WebApplication.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,12 +16,12 @@ namespace GFS.WebApplication
             customConfigurationActions.ConfigureMapper(builder.Services);
 
             builder
-                .ConfigureLogger()
+                .ConfigureLogger(customConfigurationActions.CustomConfigureLogger)
                 .Services.AddControllers()
                 .AddNewtonsoftJson()
                 .Services.AddEndpointsApiExplorer()
                 .AddSwaggerGen();
-
+            
             var app = builder.Build();
 
             app.UseSwagger()
@@ -29,7 +29,7 @@ namespace GFS.WebApplication
             
             app.MapControllers();
 
-            await customConfigurationActions.ConfigureApplication(app);
+            await customConfigurationActions.ConfigureApplication(app, builder.Services);
 
             await app.RunAsync();
         }

@@ -1,4 +1,5 @@
 using GFS.WebApplication;
+using Serilog;
 
 namespace TestWebApp1
 {
@@ -14,9 +15,14 @@ namespace TestWebApp1
             //throw new System.NotImplementedException();
         }
 
-        public Task ConfigureApplication(WebApplication application)
+        public Task ConfigureApplication(WebApplication application, IServiceCollection services)
         {
             return Task.CompletedTask;
+        }
+        
+        public LoggerConfiguration CustomConfigureLogger(LoggerConfiguration lc)
+        {
+            return lc;
         }
     }
 }

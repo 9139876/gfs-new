@@ -1,5 +1,6 @@
 using GFS.Common.Extensions;
 using GFS.WebApplication;
+using Serilog;
 
 namespace GFS.ATS.WebApp
 {
@@ -17,9 +18,14 @@ namespace GFS.ATS.WebApp
             
         }
 
-        public Task ConfigureApplication(Microsoft.AspNetCore.Builder.WebApplication application)
+        public Task ConfigureApplication(Microsoft.AspNetCore.Builder.WebApplication application, IServiceCollection services)
         {
             return Task.CompletedTask;
+        }
+
+        public LoggerConfiguration CustomConfigureLogger(LoggerConfiguration lc)
+        {
+            return lc;
         }
     }
 }

@@ -1,7 +1,10 @@
-using System.Transactions;
 using AutoMapper;
+using GFS.Common.Helpers;
 using GFS.EF.Repository;
-using GFS.QuotesService.BL.QuotesProviderAdapters;
+using GFS.GrailCommon.Enums;
+using GFS.GrailCommon.Models;
+using GFS.QuotesService.Api.Enum;
+using GFS.QuotesService.BL.Extensions;
 using GFS.QuotesService.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,17 +13,18 @@ namespace GFS.QuotesService.BL.Services;
 public interface IGetDataFromProviderService
 {
     Task InitialFromMainAdapter(bool anyway = false);
+    Task GetAndSaveNextQuotesBatch(QuotesProviderTypeEnum quotesProviderType, Guid assetId, TimeFrameEnum timeFrame);
 }
 
 internal class GetDataFromProviderService : IGetDataFromProviderService
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly Mapper _mapper;
+    private readonly IMapper _mapper;
     private readonly IDbContext _dbContext;
 
     public GetDataFromProviderService(
         IServiceProvider serviceProvider,
-        Mapper mapper,
+        IMapper mapper,
         IDbContext dbContext)
     {
         _serviceProvider = serviceProvider;
@@ -30,7 +34,7 @@ internal class GetDataFromProviderService : IGetDataFromProviderService
 
     public async Task InitialFromMainAdapter(bool anyway)
     {
-        using var transaction = new TransactionScope();
+        using var transaction = SystemTransaction.Default();
 
         var assetRepository = _dbContext.GetRepository<AssetEntity>();
 
@@ -58,5 +62,41 @@ internal class GetDataFromProviderService : IGetDataFromProviderService
         await _dbContext.SaveChangesAsync();
 
         transaction.Complete();
+    }
+
+    public async Task GetAndSaveNextQuotesBatch(QuotesProviderTypeEnum quotesProviderType, Guid assetId, TimeFrameEnum timeFrame)
+    {
+        var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
+
+        if (!adapter.IsNativeSupportedTimeframe(timeFrame))
+            return;
+
+        var quotesProviderAsset = await _dbContext.GetRepository<QuotesProviderAssetEntity>()
+            .Get(qpa => qpa.AssetId == assetId && qpa.QuotesProviderType == quotesProviderType)
+            .SingleOrDefaultAsync();
+
+        if (quotesProviderAsset == null)
+        {
+            quotesProviderAsset = new()
+            {
+                AssetId = assetId,
+                QuotesProviderType = quotesProviderType,
+                GetQuotesRequest = adapter.GenerateCommonGetQuotesRequest()
+            };
+
+            _dbContext.GetRepository<QuotesProviderAssetEntity>().Insert(quotesProviderAsset);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        var lastQuote = await _dbContext.GetRepository<QuoteEntity>()
+            .Get(q => q.QuotesProviderAssetId == quotesProviderAsset.Id && q.TimeFrame == timeFrame)
+            .OrderBy(q => q.Date)
+            .LastOrDefaultAsync();
+
+        var batch = await adapter.GetQuotesBatch(quotesProviderAsset.GetQuotesRequest, timeFrame, lastQuote != null ? _mapper.Map<QuoteModel>(lastQuote) : null);
+        var quoteEntities = _mapper.Map<List<QuoteEntity>>(batch);
+        
+        _dbContext.GetRepository<QuoteEntity>().InsertRange(quoteEntities);
+        await _dbContext.SaveChangesAsync();
     }
 }

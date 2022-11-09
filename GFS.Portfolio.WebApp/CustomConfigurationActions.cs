@@ -2,6 +2,7 @@ using GFS.Common.Extensions;
 using GFS.EF.Extensions;
 using GFS.Portfolio.DAL;
 using GFS.WebApplication;
+using Serilog;
 
 namespace GFS.Portfolio.WebApp
 {
@@ -18,9 +19,14 @@ namespace GFS.Portfolio.WebApp
         {
         }
 
-        public async Task ConfigureApplication(Microsoft.AspNetCore.Builder.WebApplication application)
+        public async Task ConfigureApplication(Microsoft.AspNetCore.Builder.WebApplication application, IServiceCollection services)
         {
             await application.Services.MigrateDatabaseAsync<PortfolioDbContext>();
+        }
+        
+        public LoggerConfiguration CustomConfigureLogger(LoggerConfiguration lc)
+        {
+            return lc;
         }
     }
 }

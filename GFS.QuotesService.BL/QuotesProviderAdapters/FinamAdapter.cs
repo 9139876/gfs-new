@@ -1,15 +1,29 @@
-using GFS.QuotesService.BL.Models;
+using GFS.GrailCommon.Enums;
+using GFS.GrailCommon.Models;
+using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
 
 namespace GFS.QuotesService.BL.QuotesProviderAdapters;
 
-public interface IFinamAdapter :IQuotesProviderAdapter
+public interface IFinamAdapter : IQuotesProviderAdapter
 {
 }
 
-public class FinamAdapter : IFinamAdapter
+public class FinamAdapter : QuotesProviderAbstractAdapter, IFinamAdapter
 {
-    public Task<List<InitialModel>> GetInitialData()
+    protected override Task<QuoteModel> GetFirstQuote(string getQuotesRequest, TimeFrameEnum timeFrame)
     {
-        throw new NotImplementedException("This is not the Main adapter");
+        throw new NotImplementedException();
+    }
+
+    protected override Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(string getQuotesRequest, TimeFrameEnum timeFrame, QuoteModel? lastQuote)
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override TimeFrameEnum[] NativeSupportedTimeFrames => throw new NotImplementedException();
+    
+    public override string GenerateCommonGetQuotesRequest()
+    {
+        throw new NotImplementedException();
     }
 }

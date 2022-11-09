@@ -1,5 +1,6 @@
 using GFS.Api.Client.Extensions;
 using GFS.WebApplication;
+using Serilog;
 
 namespace TestWebApp2
 {
@@ -16,9 +17,14 @@ namespace TestWebApp2
             //throw new System.NotImplementedException();
         }
 
-        public Task ConfigureApplication(WebApplication application)
+        public Task ConfigureApplication(WebApplication application, IServiceCollection services)
         {
             return Task.CompletedTask;
+        }
+        
+        public LoggerConfiguration CustomConfigureLogger(LoggerConfiguration lc)
+        {
+            return lc;
         }
     }
 }

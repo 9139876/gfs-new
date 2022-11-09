@@ -1,13 +1,9 @@
 using GFS.QuotesService.Api.Enum;
-using GFS.QuotesService.BL.Models;
+using GFS.QuotesService.BL.QuotesProviderAdapters;
+using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace GFS.QuotesService.BL.QuotesProviderAdapters;
-
-public interface IQuotesProviderAdapter
-{
-    Task<List<InitialModel>> GetInitialData();
-}
+namespace GFS.QuotesService.BL.Extensions;
 
 internal static class ServiceProviderExtensions
 {
