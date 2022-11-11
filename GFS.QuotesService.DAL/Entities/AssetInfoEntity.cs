@@ -36,8 +36,8 @@ public class AssetInfoEntityConfiguration : IEntityTypeConfiguration<AssetInfoEn
     {
         builder.ToTable("AssetInfos");
         builder.HasKey(e => e.Id);
-        builder.HasOne<AssetEntity>()
-            .WithOne()
+        builder.HasOne(entity => entity.Asset)
+            .WithOne(entity => entity.AssetInfo)
             .HasForeignKey<AssetInfoEntity>(e => e.AssetId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);

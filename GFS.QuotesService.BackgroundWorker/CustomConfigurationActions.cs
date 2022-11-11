@@ -21,11 +21,13 @@ public class CustomConfigurationActions : ICustomConfigurationActions
         services.AddAutoMapper(expr => expr.AddProfile(new MappingProfile()), typeof(CustomConfigurationActions));
     }
 
-    public Task ConfigureApplication(Microsoft.AspNetCore.Builder.WebApplication application, IServiceCollection services)
+    public async Task ConfigureApplication(Microsoft.AspNetCore.Builder.WebApplication application, IServiceCollection services)
     {
-        WorkersManager.Init(services.BuildServiceProvider());
+        var serviceProvider = services.BuildServiceProvider(); 
         
-        return Task.CompletedTask;
+        await serviceProvider.MigrateDatabaseAsync<QuotesServiceDbContext>();
+        
+        WorkersManager.Init(serviceProvider);
     }
 
     public LoggerConfiguration CustomConfigureLogger(LoggerConfiguration lc)

@@ -29,10 +29,11 @@ public class QuoteEntityConfiguration : IEntityTypeConfiguration<QuoteEntity>
     {
         builder.ToTable("Quotes");
         builder.HasKey(e => e.Id);
-        builder.HasOne<QuotesProviderAssetEntity>()
-            .WithMany()
+        builder.HasOne(e => e.QuotesProviderAsset)
+            .WithMany(e => e.Quotes)
             .HasForeignKey(e => e.QuotesProviderAssetId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
+        builder.HasIndex(e => new { e.QuotesProviderAssetId, e.TimeFrame });
     }
 }
