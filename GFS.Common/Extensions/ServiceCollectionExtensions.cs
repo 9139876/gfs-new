@@ -6,14 +6,14 @@ namespace GFS.Common.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        private static readonly List<string> _servicePostfix = new() {"Service"};
+        private static readonly List<string> ServicePostfix = new() { "Service", "Adapter" };
 
         public static IServiceCollection RegisterCurrentAssemblyServices(this IServiceCollection services, ServiceLifetime serviceLifetime = ServiceLifetime.Scoped,
             bool optional = false)
         {
             RegisterClasses(services: services,
                 assembly: Assembly.GetExecutingAssembly(),
-                classesPostfix: _servicePostfix,
+                classesPostfix: ServicePostfix,
                 serviceLifetime: serviceLifetime,
                 optional: optional);
 
@@ -30,10 +30,10 @@ namespace GFS.Common.Extensions
 
             RegisterClasses(services: services,
                 assembly: assembly,
-                classesPostfix: _servicePostfix,
+                classesPostfix: ServicePostfix,
                 serviceLifetime: serviceLifetime,
                 optional: optional);
-            
+
             return services;
         }
 
@@ -42,14 +42,18 @@ namespace GFS.Common.Extensions
         {
             RegisterClasses(services: services,
                 assembly: typeof(T).Assembly,
-                classesPostfix: _servicePostfix,
+                classesPostfix: ServicePostfix,
                 serviceLifetime: serviceLifetime,
                 optional: optional);
-            
+
             return services;
         }
 
-        private static void RegisterClasses(IServiceCollection services, Assembly assembly, IReadOnlyCollection<string> classesPostfix, ServiceLifetime serviceLifetime,
+        private static void RegisterClasses(
+            IServiceCollection services, 
+            Assembly assembly, 
+            IReadOnlyCollection<string> classesPostfix, 
+            ServiceLifetime serviceLifetime,
             bool optional)
         {
             var implementTypes = assembly

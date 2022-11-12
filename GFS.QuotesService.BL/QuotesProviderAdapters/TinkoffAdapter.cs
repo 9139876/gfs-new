@@ -17,11 +17,11 @@ public interface ITinkoffAdapter : IQuotesProviderAdapter
 public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 {
     private readonly InvestApiClient _apiClient;
-    private readonly Mapper _mapper;
+    private readonly IMapper _mapper;
 
     public TinkoffAdapter(
         InvestApiClient apiClient,
-        Mapper mapper)
+        IMapper mapper)
     {
         _apiClient = apiClient;
         _mapper = mapper;
@@ -33,7 +33,7 @@ public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 
         var sharesResponse = await _apiClient.Instruments.SharesAsync();
         sharesResponse.RequiredNotNull();
-        var shares = _mapper.Map<List<InitialModel>>(sharesResponse.Instruments.Where(s => s != null));
+        var shares = _mapper.Map<List<InitialModel>>(sharesResponse.Instruments.Where(s => s != null).ToList());
         shares.ForEach(share =>
         {
             share.AssetType = AssetTypeEnum.Shares;
@@ -43,7 +43,7 @@ public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 
         var currenciesResponse = await _apiClient.Instruments.CurrenciesAsync(new InstrumentsRequest());
         currenciesResponse.RequiredNotNull();
-        var currencies = _mapper.Map<List<InitialModel>>(currenciesResponse.Instruments.Where(s => s != null));
+        var currencies = _mapper.Map<List<InitialModel>>(currenciesResponse.Instruments.Where(s => s != null).ToList());
         currencies.ForEach(currency =>
         {
             currency.AssetType = AssetTypeEnum.Currencies;
@@ -53,7 +53,7 @@ public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 
         var etfsResponse = await _apiClient.Instruments.EtfsAsync();
         etfsResponse.RequiredNotNull();
-        var etfs = _mapper.Map<List<InitialModel>>(etfsResponse.Instruments.Where(s => s != null));
+        var etfs = _mapper.Map<List<InitialModel>>(etfsResponse.Instruments.Where(s => s != null).ToList());
         etfs.ForEach(etf =>
         {
             etf.AssetType = AssetTypeEnum.Etfs;
@@ -86,9 +86,9 @@ public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
     private static MarketTypeEnum GetMarketType(string exchange)
         => exchange switch
         {
-            _ when exchange.StartsWith("MOEX") => MarketTypeEnum.MOEX,
-            _ when exchange.StartsWith("SPB") => MarketTypeEnum.SPB,
-            _ when exchange.StartsWith("LSE") => MarketTypeEnum.LSE,
+            _ when exchange.ToUpper().StartsWith("MOEX") => MarketTypeEnum.MOEX,
+            _ when exchange.ToUpper().StartsWith("SPB") => MarketTypeEnum.SPB,
+            _ when exchange.ToUpper().StartsWith("LSE") => MarketTypeEnum.LSE,
             _ => MarketTypeEnum.Unknown
         };
 

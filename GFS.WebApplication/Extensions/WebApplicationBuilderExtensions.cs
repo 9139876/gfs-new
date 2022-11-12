@@ -21,6 +21,7 @@ public static class WebApplicationBuilderExtensions
                     .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
                     .WriteTo.Console()
                     .WriteTo.Debug()
+                    //.WriteTo.Seq("http://seq:5341")
                     .ReadFrom.Configuration(ctx.Configuration);
             });
 

@@ -1,7 +1,7 @@
+using GFS.Common.Attributes;
 using GFS.GrailCommon.Enums;
 using GFS.GrailCommon.Models;
 using GFS.QuotesService.BL.Models;
-using GFS.QuotesService.DAL.Entities;
 
 namespace GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
 
@@ -13,6 +13,7 @@ public interface IQuotesProviderAdapter
     Task<IEnumerable<QuoteModel>> GetQuotesBatch(string getQuotesRequest, TimeFrameEnum timeFrame, QuoteModel? lastQuote);
 }
 
+[IgnoreRegistration]
 public abstract class QuotesProviderAbstractAdapter : IQuotesProviderAdapter
 {
     public virtual Task<List<InitialModel>> GetInitialData()

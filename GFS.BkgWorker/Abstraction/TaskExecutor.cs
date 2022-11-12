@@ -46,6 +46,7 @@ public abstract class TaskExecutor<TContext> : ITaskExecutor
     private void DoWork()
     {
         using var loggerScope = Logger.BeginScope("{TaskExecutorType}", GetType().Name);
+        Logger.LogInformation("BackgroundTask {TaskName} started", GetType().Name);
 
         while (!_needStop)
         {
@@ -72,6 +73,7 @@ public abstract class TaskExecutor<TContext> : ITaskExecutor
             Thread.Sleep(1000);
         }
 
+        Logger.LogInformation("BackgroundTask {TaskName} stopped", GetType().Name);
         _isWorking = false;
     }
 

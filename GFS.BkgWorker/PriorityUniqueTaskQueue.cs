@@ -67,15 +67,17 @@ public class PriorityUniqueTaskQueue<TContext>
     {
         lock (_locker)
         {
-            var index = -1;
+            var index = 0;
+            var taskFound = false;
 
             foreach (var priorityQueue in _priorityQueues.Values)
             {
-                if (priorityQueue.TryDequeue(out index))
+                taskFound = priorityQueue.TryDequeue(out index);
+                if (taskFound)
                     break;
             }
 
-            taskContext = index < 0 ? default : _queue[index]!.Task;
+            taskContext = taskFound ? _queue[index]!.Task : default;
             return taskContext != null && !taskContext.Equals(default);
         }
     }

@@ -1,7 +1,6 @@
 using GFS.WebApplication.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace GFS.WebApplication
 {
@@ -32,6 +31,9 @@ namespace GFS.WebApplication
 
             await customConfigurationActions.ConfigureApplication(app, builder.Services);
 
+            // var lifetime = app.Lifetime;
+            // lifetime.ApplicationStarted.Register()
+            
             await app.RunAsync();
         }
     }
