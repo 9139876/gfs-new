@@ -11,31 +11,34 @@ using Tinkoff.InvestApi.V1;
 
 namespace GFS.QuotesService.BackgroundWorker;
 
-public class CustomConfigurationActions : ICustomConfigurationActions
+public class CustomConfigurationActions : CustomConfigurationActionsAbstract
 {
-    public void ConfigureServiceCollection(IServiceCollection services, IConfiguration configuration)
+    public override void ConfigureServiceCollection()
     {
-        services
-            .RegisterDbContext<QuotesServiceDbContext>(configuration.GetConnectionString("DefaultConnection"))
+        ServiceCollection
+            .RegisterDbContext<QuotesServiceDbContext>(Configuration.GetConnectionString("DefaultConnection"))
             .RegisterAssemblyServicesByMember<BL.PlaceboRegistration>()
-            .RegistryTinkoffRemoteApi(configuration);
+            .RegistryTinkoffRemoteApi(Configuration);
     }
 
-    public void ConfigureMapper(IServiceCollection services)
+    public override void ConfigureMapper()
     {
-        services.AddAutoMapper(expr => expr.AddProfile(new MappingProfile()), typeof(CustomConfigurationActions));
+        ServiceCollection.AddAutoMapper(expr => expr.AddProfile(new MappingProfile()), typeof(CustomConfigurationActions));
     }
 
-    public async Task ConfigureApplication(Microsoft.AspNetCore.Builder.WebApplication application, IServiceCollection services)
+    public override async Task ConfigureApplication()
     {
-        var serviceProvider = services.BuildServiceProvider();
-
+        var serviceProvider = ServiceCollection.BuildServiceProvider();
         await serviceProvider.MigrateDatabaseAsync<QuotesServiceDbContext>();
+    }
 
+    public override void OnApplicationStarted()
+    {
+        var serviceProvider = ServiceCollection.BuildServiceProvider();
         WorkersManager.Init(serviceProvider);
     }
 
-    public LoggerConfiguration CustomConfigureLogger(LoggerConfiguration lc)
+    public override LoggerConfiguration CustomConfigureLogger(LoggerConfiguration lc)
     {
         return lc
             .Enrich.WithProperty("Application", "GFS.QuotesService.BackgroundWorker");

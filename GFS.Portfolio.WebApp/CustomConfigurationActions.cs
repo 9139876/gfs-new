@@ -6,27 +6,24 @@ using Serilog;
 
 namespace GFS.Portfolio.WebApp
 {
-    public class CustomConfigurationActions : ICustomConfigurationActions
+    public class CustomConfigurationActions : CustomConfigurationActionsAbstract
     {
-        public void ConfigureServiceCollection(IServiceCollection services, IConfiguration configuration)
+        public override void ConfigureServiceCollection()
         {
-            services
-                .RegisterDbContext<PortfolioDbContext>(configuration.GetConnectionString("DefaultConnection"))
+            ServiceCollection
+                .RegisterDbContext<PortfolioDbContext>(Configuration.GetConnectionString("DefaultConnection"))
                 .RegisterAssemblyServicesByMember<BL.PlaceboRegistration>();
         }
 
-        public void ConfigureMapper(IServiceCollection services)
+        public override async Task ConfigureApplication()
         {
-        }
-
-        public async Task ConfigureApplication(Microsoft.AspNetCore.Builder.WebApplication application, IServiceCollection services)
-        {
-            await application.Services.MigrateDatabaseAsync<PortfolioDbContext>();
+            await Application.Services.MigrateDatabaseAsync<PortfolioDbContext>();
         }
         
-        public LoggerConfiguration CustomConfigureLogger(LoggerConfiguration lc)
+        public override LoggerConfiguration CustomConfigureLogger(LoggerConfiguration lc)
         {
-            return lc;
+            return lc
+                .Enrich.WithProperty("Application", "GFS.Portfolio.WebApp");
         }
     }
 }

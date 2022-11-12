@@ -7,13 +7,18 @@ namespace GFS.WebApplication
     public static class ProgramUtils
     {
         public static async Task RunWebhost<TCustomConfigurationActions>(string[] args)
-            where TCustomConfigurationActions : class, ICustomConfigurationActions, new()
+            where TCustomConfigurationActions : CustomConfigurationActionsAbstract, new()
         {
             var builder = Microsoft.AspNetCore.Builder.WebApplication.CreateBuilder(args);
 
-            var customConfigurationActions = new TCustomConfigurationActions();
-            customConfigurationActions.ConfigureServiceCollection(builder.Services, builder.Configuration);
-            customConfigurationActions.ConfigureMapper(builder.Services);
+            var customConfigurationActions = new TCustomConfigurationActions()
+            {
+                ServiceCollection = builder.Services,
+                Configuration = builder.Configuration
+            };
+
+            customConfigurationActions.ConfigureServiceCollection();
+            customConfigurationActions.ConfigureMapper();
 
             builder
                 .ConfigureLogger(customConfigurationActions.CustomConfigureLogger, builder.Services)
@@ -29,11 +34,14 @@ namespace GFS.WebApplication
 
             app.MapControllers();
 
-            await customConfigurationActions.ConfigureApplication(app, builder.Services);
+            customConfigurationActions.Application = app;
+            await customConfigurationActions.ConfigureApplication();
 
-            // var lifetime = app.Lifetime;
-            // lifetime.ApplicationStarted.Register()
-            
+            var lifetime = app.Lifetime;
+            lifetime.ApplicationStarted.Register(customConfigurationActions.OnApplicationStarted);
+            lifetime.ApplicationStopping.Register(customConfigurationActions.OnApplicationStopping);
+            lifetime.ApplicationStopped.Register(customConfigurationActions.OnApplicationStopped);
+
             await app.RunAsync();
         }
     }
