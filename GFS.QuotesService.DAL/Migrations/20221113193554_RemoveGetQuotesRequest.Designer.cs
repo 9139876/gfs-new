@@ -3,6 +3,7 @@ using System;
 using GFS.QuotesService.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GFS.QuotesService.DAL.Migrations
 {
     [DbContext(typeof(QuotesServiceDbContext))]
-    partial class QuotesServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221113193554_RemoveGetQuotesRequest")]
+    partial class RemoveGetQuotesRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -123,7 +125,7 @@ namespace GFS.QuotesService.DAL.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("High")
+                    b.Property<decimal>("Hi")
                         .HasColumnType("numeric");
 
                     b.Property<decimal>("Low")

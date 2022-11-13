@@ -16,6 +16,7 @@ Disclaimer: Плевал я на безопасность (токены, авт�
 НАХРЕН НЕ НАДО!!!
 
 dotnet ef migrations add --startup-project GFS.Portfolio.WebApp/ --project GFS.Portfolio.DAL --context PortfolioDbContext -v Init
+
 dotnet ef migrations add --startup-project GFS.QuotesService.BackgroundWorker/ --project GFS.QuotesService.DAL --context QuotesServiceDbContext -v Init
 
 dotnet publish -c Release -r alpine-arm64 --self-contained true /p:PublishTrimmed=true -o ./publish

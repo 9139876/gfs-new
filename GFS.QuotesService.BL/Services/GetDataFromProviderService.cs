@@ -73,6 +73,7 @@ internal class GetDataFromProviderService : IGetDataFromProviderService
 
         var quotesProviderAsset = await _dbContext.GetRepository<QuotesProviderAssetEntity>()
             .Get(qpa => qpa.AssetId == assetId && qpa.QuotesProviderType == quotesProviderType)
+            .Include(qpa => qpa.Asset)
             .SingleOrDefaultAsync();
 
         if (quotesProviderAsset == null)
@@ -80,12 +81,13 @@ internal class GetDataFromProviderService : IGetDataFromProviderService
             quotesProviderAsset = new()
             {
                 AssetId = assetId,
-                QuotesProviderType = quotesProviderType,
-                GetQuotesRequest = adapter.GenerateCommonGetQuotesRequest()
+                QuotesProviderType = quotesProviderType
             };
 
             _dbContext.GetRepository<QuotesProviderAssetEntity>().Insert(quotesProviderAsset);
             await _dbContext.SaveChangesAsync();
+
+            quotesProviderAsset.Asset = await _dbContext.GetRepository<AssetEntity>().SingleOrFailById(assetId);
         }
 
         var lastQuote = await _dbContext.GetRepository<QuoteEntity>()
@@ -93,9 +95,19 @@ internal class GetDataFromProviderService : IGetDataFromProviderService
             .OrderBy(q => q.Date)
             .LastOrDefaultAsync();
 
-        var batch = await adapter.GetQuotesBatch(quotesProviderAsset.GetQuotesRequest, timeFrame, lastQuote != null ? _mapper.Map<QuoteModel>(lastQuote) : null);
-        var quoteEntities = _mapper.Map<List<QuoteEntity>>(batch);
+        //ToDo Сделать нормально!!!
+        //Пока не нужны суперсвежие котировки нечего бесконечно долбить провайдера
+        if((DateTime.Now - lastQuote.Date).Days <= 1)
+            return;
         
+        var batch = await adapter.GetQuotesBatch(quotesProviderAsset.Asset!, timeFrame, lastQuote != null ? _mapper.Map<QuoteModel>(lastQuote) : null);
+        var quoteEntities = _mapper.Map<List<QuoteEntity>>(batch);
+        quoteEntities.ForEach(quote =>
+        {
+            quote.TimeFrame = timeFrame;
+            quote.QuotesProviderAssetId = quotesProviderAsset.Id;
+        });
+
         _dbContext.GetRepository<QuoteEntity>().InsertRange(quoteEntities);
         await _dbContext.SaveChangesAsync();
     }

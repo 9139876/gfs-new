@@ -33,13 +33,13 @@ public static class WorkersManager
         }
 
         var initialAssetsWorker = new InitialAssetsWorker(serviceProvider.GetRequiredService<ILogger<InitialAssetsWorker>>(), serviceProvider.GetRequiredService<IGetDataFromProviderService>());
-        // var tinkoffGetQuotesWorker = CreateGetQuotesWorker(QuotesProviderTypeEnum.Tinkoff);
+        var tinkoffGetQuotesWorker = CreateGetQuotesWorker(QuotesProviderTypeEnum.Tinkoff);
         // var bcsExpressGetQuotesWorker = CreateGetQuotesWorker(QuotesProviderTypeEnum.BcsExpress);
         // var finamGetQuotesWorker =  CreateGetQuotesWorker(QuotesProviderTypeEnum.Finam);
         // var investingComGetQuotesWorker=  CreateGetQuotesWorker(QuotesProviderTypeEnum.InvestingCom);
         
         Executors.Add(InitialAssetsWorker, initialAssetsWorker);
-        // Executors.Add(TinkoffGetQuotesWorker, tinkoffGetQuotesWorker);
+        Executors.Add(TinkoffGetQuotesWorker, tinkoffGetQuotesWorker);
         // Executors.Add(BcsExpressGetQuotesWorker, bcsExpressGetQuotesWorker);
         // Executors.Add(FinamGetQuotesWorker, finamGetQuotesWorker);
         // Executors.Add(InvestingComGetQuotesWorker, investingComGetQuotesWorker);

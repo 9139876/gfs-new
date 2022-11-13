@@ -11,7 +11,7 @@ public class QuoteEntity : GuidKeyEntity
     public TimeFrameEnum TimeFrame { get; set; }
     public DateTime Date { get; set; }
     public decimal Open { get; set; }
-    public decimal Hi { get; set; }
+    public decimal High { get; set; }
     public decimal Low { get; set; }
     public decimal Close { get; set; }
     public decimal? Volume { get; set; }
@@ -35,5 +35,6 @@ public class QuoteEntityConfiguration : IEntityTypeConfiguration<QuoteEntity>
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
         builder.HasIndex(e => new { e.QuotesProviderAssetId, e.TimeFrame });
+        builder.HasIndex(e => new { e.QuotesProviderAssetId, e.TimeFrame, e.Date }).IsUnique();
     }
 }

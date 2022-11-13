@@ -1,10 +1,13 @@
 using AutoMapper;
 using GFS.Common.Extensions;
 using GFS.GrailCommon.Enums;
+using GFS.GrailCommon.Extensions;
 using GFS.GrailCommon.Models;
 using GFS.QuotesService.Api.Enum;
 using GFS.QuotesService.BL.Models;
 using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
+using GFS.QuotesService.DAL.Entities;
+using Google.Protobuf.WellKnownTypes;
 using Tinkoff.InvestApi;
 using Tinkoff.InvestApi.V1;
 
@@ -64,22 +67,24 @@ public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         return result;
     }
 
-    public override string GenerateCommonGetQuotesRequest()
+    protected override async Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(AssetEntity asset, TimeFrameEnum timeFrame, DateTime lastQuoteDate)
     {
-        throw new NotImplementedException();
+        //Работает в UTC
+        var request = new GetCandlesRequest()
+        {
+            Figi = asset.FIGI,
+            Interval = TimeframeToCandleInterval(timeFrame),
+            From = lastQuoteDate.AddDate(timeFrame,1).ToUniversalTime().ToTimestamp(),
+            To = GetEndPeriodDate(lastQuoteDate, timeFrame).ToUniversalTime().ToTimestamp()
+        };
+
+        var apiResponse = await _apiClient.MarketData.GetCandlesAsync(request);
+        apiResponse.RequiredNotNull();
+
+        return _mapper.Map<List<QuoteModel>>(apiResponse.Candles.ToList());
     }
 
-    protected override Task<QuoteModel> GetFirstQuote(string getQuotesRequest, TimeFrameEnum timeFrame)
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(string getQuotesRequest, TimeFrameEnum timeFrame, QuoteModel? lastQuote)
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override TimeFrameEnum[] NativeSupportedTimeFrames => throw new NotImplementedException();
+    protected override TimeFrameEnum[] NativeSupportedTimeFrames => new[] { TimeFrameEnum.min1, TimeFrameEnum.H1, TimeFrameEnum.D1 };
 
     #region static
 
@@ -90,6 +95,24 @@ public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
             _ when exchange.ToUpper().StartsWith("SPB") => MarketTypeEnum.SPB,
             _ when exchange.ToUpper().StartsWith("LSE") => MarketTypeEnum.LSE,
             _ => MarketTypeEnum.Unknown
+        };
+
+    private static CandleInterval TimeframeToCandleInterval(TimeFrameEnum timeFrame)
+        => timeFrame switch
+        {
+            TimeFrameEnum.min1 => CandleInterval._1Min,
+            TimeFrameEnum.H1 => CandleInterval.Hour,
+            TimeFrameEnum.D1 => CandleInterval.Day,
+            _ => throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame.ToString())
+        };
+
+    private static DateTime GetEndPeriodDate(DateTime start, TimeFrameEnum timeFrame)
+        => timeFrame switch
+        {
+            TimeFrameEnum.min1 => start.AddDays(1),
+            TimeFrameEnum.H1 => start.AddDays(7),
+            TimeFrameEnum.D1 => start.AddDays(365),
+            _ => throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame.ToString())
         };
 
     #endregion

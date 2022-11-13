@@ -17,8 +17,9 @@ public static class WebApplicationBuilderExtensions
             (ctx, lc) =>
             {
                 customConfigureLogger(lc)
-                    .MinimumLevel.Debug()
+                    .MinimumLevel.Information()
                     .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+                    .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", Serilog.Events.LogEventLevel.Warning)
                     .WriteTo.Console()
                     .WriteTo.Debug()
                     //.WriteTo.Seq("http://seq:5341")

@@ -1,6 +1,7 @@
 using AutoMapper;
 using GFS.Common.Extensions;
 using GFS.EF.Extensions;
+using GFS.GrailCommon.Models;
 using GFS.QuotesService.BL.Extensions;
 using GFS.QuotesService.BL.Models;
 using GFS.QuotesService.DAL;
@@ -54,6 +55,10 @@ public class CustomConfigurationActions : CustomConfigurationActionsAbstract
             CreateMap<Etf, InitialModel>();
             CreateMap<InitialModel, AssetEntity>();
             CreateMap<InitialModel, AssetInfoEntity>();
+            CreateMap<HistoricCandle, QuoteModel>()
+                .ForMember(destination => destination.Date, option => option.MapFrom(candle => candle.Time.ToDateTime()));
+            CreateMap<QuoteModel, QuoteEntity>()
+                .ReverseMap();
         }
     }
 }

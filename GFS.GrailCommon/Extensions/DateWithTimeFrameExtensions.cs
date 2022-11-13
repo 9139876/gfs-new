@@ -61,7 +61,7 @@ namespace GFS.GrailCommon.Extensions
         /// <param name="date"></param>
         /// <param name="timeFrame"></param>
         /// <returns></returns>
-        public static DateTime CorrectDateByTF(DateTime date, TimeFrameEnum timeFrame)
+        public static DateTime CorrectDateByTf(DateTime date, TimeFrameEnum timeFrame)
         {
             int year = date.Year, month = date.Month, day = date.Day, hour = date.Hour, min = date.Minute, sec = date.Second;
 
@@ -168,12 +168,9 @@ namespace GFS.GrailCommon.Extensions
             {
                 TimeFrameEnum.tick => now,
                 TimeFrameEnum.min1 => new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 59).AddMinutes(-1),
-                TimeFrameEnum.min4 => throw new NotImplementedException(), //  return now;
                 TimeFrameEnum.H1 => new DateTime(now.Year, now.Month, now.Day, now.Hour, 59, 59).AddHours(-1),
                 TimeFrameEnum.D1 => new DateTime(now.Year, now.Month, now.Day, 23, 59, 59).AddDays(-1),
-                TimeFrameEnum.W1 => throw new NotImplementedException(), //  return new DateTime(now.Year, now.Month, now.Day, now.Hour, 59, 59).AddHours(-1);
                 TimeFrameEnum.M1 => new DateTime(now.Year, now.Month, 28, 23, 59, 59).AddMonths(-1),
-                TimeFrameEnum.Seasonly => throw new NotImplementedException(),
                 TimeFrameEnum.Y1 => new DateTime(now.Year, 12, 31, 23, 59, 59).AddYears(-1),
                 _ => throw new NotSupportedException($"Not supported timeframe '{timeFrame}'"),
             };

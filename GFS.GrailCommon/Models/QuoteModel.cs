@@ -10,7 +10,7 @@ namespace GFS.GrailCommon.Models
 
         public decimal Open { get; set; }
 
-        public decimal Hi { get; set; }
+        public decimal High { get; set; }
 
         public decimal Low { get; set; }
 

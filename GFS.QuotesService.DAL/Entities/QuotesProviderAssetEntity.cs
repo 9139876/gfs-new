@@ -9,13 +9,12 @@ public class QuotesProviderAssetEntity : GuidKeyEntity
 {
     public Guid AssetId { get; set; }
     public QuotesProviderTypeEnum QuotesProviderType { get; set; }
-    public string GetQuotesRequest { get; set; }
 
     #region Navigation
 
     public AssetEntity? Asset { get; set; }
     public List<QuoteEntity> Quotes { get; set; } = new();
-    
+
     public List<BackgroundWorkerTaskEntity> BackgroundWorkerTasks { get; set; } = new();
 
     #endregion

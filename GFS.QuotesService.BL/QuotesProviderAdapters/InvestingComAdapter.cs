@@ -1,6 +1,7 @@
 using GFS.GrailCommon.Enums;
 using GFS.GrailCommon.Models;
 using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
+using GFS.QuotesService.DAL.Entities;
 
 namespace GFS.QuotesService.BL.QuotesProviderAdapters;
 
@@ -10,20 +11,16 @@ public interface IInvestingComAdapter : IQuotesProviderAdapter
 
 public class InvestingComAdapter : QuotesProviderAbstractAdapter, IInvestingComAdapter
 {
-    protected override Task<QuoteModel> GetFirstQuote(string getQuotesRequest, TimeFrameEnum timeFrame)
+    protected override Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(AssetEntity asset, TimeFrameEnum timeFrame,  DateTime lastQuoteDate)
     {
         throw new NotImplementedException();
     }
 
-    protected override Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(string getQuotesRequest, TimeFrameEnum timeFrame, QuoteModel? lastQuote)
+    protected override TimeFrameEnum[] NativeSupportedTimeFrames => new[]
     {
-        throw new NotImplementedException();
-    }
-
-    protected override TimeFrameEnum[] NativeSupportedTimeFrames => throw new NotImplementedException();
-    
-    public override string GenerateCommonGetQuotesRequest()
-    {
-        throw new NotImplementedException();
-    }
+        TimeFrameEnum.H1,
+        TimeFrameEnum.D1,
+        TimeFrameEnum.W1,
+        TimeFrameEnum.M1
+    };
 }
