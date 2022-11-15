@@ -30,8 +30,7 @@ public class AssetEntity : GuidKeyEntity
 
     #region Navigation
 
-    public AssetInfoEntity? AssetInfo { get; set; }
-    public List<QuotesProviderAssetEntity> QuotesProviderAssets { get; set; } = new();
+    public AssetInfoEntity? AssetInfo { get; set; }  
 
     #endregion
 }

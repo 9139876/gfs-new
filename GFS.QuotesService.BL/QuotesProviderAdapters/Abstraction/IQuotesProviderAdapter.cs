@@ -19,7 +19,7 @@ public abstract class QuotesProviderAbstractAdapter : IQuotesProviderAdapter
 {
     public virtual Task<List<InitialModel>> GetInitialData()
     {
-        throw new InvalidOperationException("This is not the Main adapter");
+        throw new NotImplementedException("У данного адаптера метод не реализован");
     }
 
     public bool IsNativeSupportedTimeframe(TimeFrameEnum timeFrame)

@@ -1,5 +1,6 @@
 using GFS.EF.Entities;
 using GFS.GrailCommon.Enums;
+using GFS.QuotesService.Api.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -7,7 +8,8 @@ namespace GFS.QuotesService.DAL.Entities;
 
 public class QuoteEntity : GuidKeyEntity
 {
-    public Guid QuotesProviderAssetId { get; set; }
+    public Guid AssetId { get; set; }
+    public QuotesProviderTypeEnum QuotesProviderType { get; set; }
     public TimeFrameEnum TimeFrame { get; set; }
     public DateTime Date { get; set; }
     public decimal Open { get; set; }
@@ -18,7 +20,7 @@ public class QuoteEntity : GuidKeyEntity
 
     #region Navigation
 
-    public QuotesProviderAssetEntity? QuotesProviderAsset { get; set; }
+    public AssetEntity? Asset { get; set; }
 
     #endregion
 }
@@ -29,12 +31,12 @@ public class QuoteEntityConfiguration : IEntityTypeConfiguration<QuoteEntity>
     {
         builder.ToTable("Quotes");
         builder.HasKey(e => e.Id);
-        builder.HasOne(e => e.QuotesProviderAsset)
-            .WithMany(e => e.Quotes)
-            .HasForeignKey(e => e.QuotesProviderAssetId)
+        builder.HasOne(e => e.Asset)
+            .WithMany()
+            .HasForeignKey(e => e.AssetId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
-        builder.HasIndex(e => new { e.QuotesProviderAssetId, e.TimeFrame });
-        builder.HasIndex(e => new { e.QuotesProviderAssetId, e.TimeFrame, e.Date }).IsUnique();
+        builder.HasIndex(e => new { e.AssetId, e.QuotesProviderType, e.TimeFrame });
+        builder.HasIndex(e => new { e.AssetId, e.QuotesProviderType, e.TimeFrame, e.Date }).IsUnique();
     }
 }

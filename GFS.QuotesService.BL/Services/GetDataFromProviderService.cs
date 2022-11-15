@@ -1,5 +1,6 @@
 using AutoMapper;
 using GFS.Common.Helpers;
+using GFS.EF.Extensions;
 using GFS.EF.Repository;
 using GFS.GrailCommon.Enums;
 using GFS.GrailCommon.Models;
@@ -59,8 +60,18 @@ internal class GetDataFromProviderService : IGetDataFromProviderService
         }).ToList();
 
         assetRepository.InsertRange(assets);
-        await _dbContext.SaveChangesAsync();
 
+        var assetProviderCompatibilities = assets.Select(asset => new AssetProviderCompatibilityEntity
+        {
+            AssetId = asset.Id,
+            //ToDo Убрать статику!!!
+            QuotesProviderType = QuotesProviderTypeEnum.Tinkoff,
+            IsCompatibility = true
+        });
+
+        _dbContext.GetRepository<AssetProviderCompatibilityEntity>().InsertRange(assetProviderCompatibilities);
+
+        await _dbContext.SaveChangesAsync();
         transaction.Complete();
     }
 
@@ -71,6 +82,12 @@ internal class GetDataFromProviderService : IGetDataFromProviderService
         if (!adapter.IsNativeSupportedTimeframe(timeFrame))
             return;
 
+        var asset = await _dbContext.GetRepository<AssetEntity>()
+            .Get(asset => asset.Id == assetId)
+            .SingleOrFailAsync();
+
+
+        /*
         var quotesProviderAsset = await _dbContext.GetRepository<QuotesProviderAssetEntity>()
             .Get(qpa => qpa.AssetId == assetId && qpa.QuotesProviderType == quotesProviderType)
             .Include(qpa => qpa.Asset)
@@ -88,24 +105,25 @@ internal class GetDataFromProviderService : IGetDataFromProviderService
             await _dbContext.SaveChangesAsync();
 
             quotesProviderAsset.Asset = await _dbContext.GetRepository<AssetEntity>().SingleOrFailById(assetId);
-        }
+        }*/
 
         var lastQuote = await _dbContext.GetRepository<QuoteEntity>()
-            .Get(q => q.QuotesProviderAssetId == quotesProviderAsset.Id && q.TimeFrame == timeFrame)
+            .Get(q => q.AssetId == assetId && q.QuotesProviderType == quotesProviderType && q.TimeFrame == timeFrame)
             .OrderBy(q => q.Date)
             .LastOrDefaultAsync();
 
         //ToDo Сделать нормально!!!
         //Пока не нужны суперсвежие котировки нечего бесконечно долбить провайдера
-        if((DateTime.Now - lastQuote.Date).Days <= 1)
+        if (lastQuote != null && (DateTime.Now - lastQuote.Date).Days <= 1)
             return;
-        
-        var batch = await adapter.GetQuotesBatch(quotesProviderAsset.Asset!, timeFrame, lastQuote != null ? _mapper.Map<QuoteModel>(lastQuote) : null);
+
+        var batch = await adapter.GetQuotesBatch(asset, timeFrame, lastQuote != null ? _mapper.Map<QuoteModel>(lastQuote) : null);
         var quoteEntities = _mapper.Map<List<QuoteEntity>>(batch);
         quoteEntities.ForEach(quote =>
         {
             quote.TimeFrame = timeFrame;
-            quote.QuotesProviderAssetId = quotesProviderAsset.Id;
+            quote.AssetId = assetId;
+            quote.QuotesProviderType = quotesProviderType;
         });
 
         _dbContext.GetRepository<QuoteEntity>().InsertRange(quoteEntities);

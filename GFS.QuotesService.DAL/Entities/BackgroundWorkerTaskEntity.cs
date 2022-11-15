@@ -1,4 +1,6 @@
 using GFS.EF.Entities;
+using GFS.QuotesService.Api.Common.Enum;
+using GFS.QuotesService.Api.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -6,12 +8,16 @@ namespace GFS.QuotesService.DAL.Entities;
 
 public class BackgroundWorkerTaskEntity : GuidKeyEntity
 {
-    public Guid QuotesProviderAssetId { get; set; }
+    public Guid? AssetId { get; set; }
+    
+    public QuotesProviderTypeEnum QuotesProviderType { get; set; }
 
+    public GetQuotesTaskTypeEnum TaskTaskType { get; set; }
+    
     #region Navigation
 
-    public QuotesProviderAssetEntity? QuotesProviderAsset { get; set; }
-
+    public AssetEntity? Asset { get; set; }
+    
     #endregion
 }
 
@@ -21,10 +27,10 @@ public class BackgroundWorkerTaskEntityConfiguration : IEntityTypeConfiguration<
     {
         builder.ToTable("BackgroundWorkerTasks");
         builder.HasKey(e => e.Id);
-        builder.HasOne(e => e.QuotesProviderAsset)
-            .WithMany(e => e.BackgroundWorkerTasks)
-            .HasForeignKey(e => e.QuotesProviderAssetId)
-            .IsRequired()
+        builder.HasOne(e => e.Asset)
+            .WithMany()
+            .HasForeignKey(e => e.AssetId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder.HasIndex(e => new { e.AssetId, e.QuotesProviderType, TaskType = e.TaskTaskType }).IsUnique();
     }
 }

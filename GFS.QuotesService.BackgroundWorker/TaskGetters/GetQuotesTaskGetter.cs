@@ -28,10 +28,10 @@ public class GetQuotesTaskGetter : ITaskGetter<GetQuotesTaskContext>
             throw new InvalidCastException($"{nameof(Model)} is not {nameof(GetQuotesTaskGetterModel)}");
 
         var dbTasks = await _dbContext.GetRepository<BackgroundWorkerTaskEntity>()
-            .Get(bwt => bwt.QuotesProviderAsset != null && bwt.QuotesProviderAsset.QuotesProviderType == model.QuotesProviderType)
-            .Include(bwt => bwt.QuotesProviderAsset)
+            .Get(bwt => bwt.QuotesProviderType == model.QuotesProviderType)
+            .Include(bwt => bwt.Asset)
             .ToListAsync();
 
-        return from dbTask in dbTasks from timeFrame in Enum.GetValues<TimeFrameEnum>() select new GetQuotesTaskContext(dbTask.QuotesProviderAsset.AssetId, model.QuotesProviderType, timeFrame);
+        return from dbTask in dbTasks from timeFrame in Enum.GetValues<TimeFrameEnum>() select new GetQuotesTaskContext(dbTask.AssetId ?? Guid.Empty, model.QuotesProviderType, timeFrame);
     }
 }
