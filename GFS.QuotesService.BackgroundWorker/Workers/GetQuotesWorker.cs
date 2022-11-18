@@ -6,20 +6,20 @@ namespace GFS.QuotesService.BackgroundWorker.Workers;
 
 public class GetQuotesWorker : TaskExecutor<GetQuotesTaskContext>
 {
-    private readonly IGetDataFromProviderService _getDataFromProviderService;
+    private readonly IQuotesProviderService _quotesProviderService;
 
     public GetQuotesWorker(
         byte threadsCount,
         byte queueMaxSize,
         ILogger logger,
-        IGetDataFromProviderService getDataFromProviderService,
+        IQuotesProviderService quotesProviderService,
         ITaskGetter<GetQuotesTaskContext>? taskGetter = null) : base(threadsCount, queueMaxSize, logger, taskGetter)
     {
-        _getDataFromProviderService = getDataFromProviderService;
+        _quotesProviderService = quotesProviderService;
     }
 
     protected override async Task DoWorkImpl(GetQuotesTaskContext task)
     {
-        await _getDataFromProviderService.GetAndSaveNextQuotesBatch(task.QuotesProviderType, task.AssetId, task.TimeFrame);
+        await _quotesProviderService.GetAndSaveNextQuotesBatch(task.QuotesProviderType, task.AssetId, task.TimeFrame);
     }
 }

@@ -6,19 +6,19 @@ namespace GFS.QuotesService.BackgroundWorker.Workers;
 
 public class InitialAssetsWorker : TaskExecutor<EmptyTaskContext>
 {
-    private readonly IGetDataFromProviderService _getDataFromProviderService;
+    private readonly IQuotesProviderService _quotesProviderService;
     
     public InitialAssetsWorker(
         ILogger logger,
-        IGetDataFromProviderService getDataFromProviderService) : base(1, 1, logger, null)
+        IQuotesProviderService quotesProviderService) : base(1, 1, logger, null)
     {
-        _getDataFromProviderService = getDataFromProviderService;
+        _quotesProviderService = quotesProviderService;
         TryEnqueue(new EmptyTaskContext());
     }
 
     protected override async Task DoWorkImpl(EmptyTaskContext task)
     {
-        await _getDataFromProviderService.InitialFromMainAdapter(false);
+        await _quotesProviderService.InitialAssets(false);
         NeedStop();
     }
 }

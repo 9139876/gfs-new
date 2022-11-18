@@ -1,5 +1,7 @@
 using GFS.BkgWorker.Abstraction;
+using GFS.BkgWorker.Task;
 using GFS.GrailCommon.Enums;
+using GFS.QuotesService.Api.Common.Enum;
 using GFS.QuotesService.Api.Enum;
 
 namespace GFS.QuotesService.BackgroundWorker.TaskContexts;

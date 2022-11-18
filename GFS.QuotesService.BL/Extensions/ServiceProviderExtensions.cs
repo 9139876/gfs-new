@@ -1,3 +1,4 @@
+using GFS.QuotesService.Api.Common.Enum;
 using GFS.QuotesService.Api.Enum;
 using GFS.QuotesService.BL.QuotesProviderAdapters;
 using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;

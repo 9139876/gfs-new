@@ -4,26 +4,26 @@ using GFS.EF.Extensions;
 using GFS.EF.Repository;
 using GFS.GrailCommon.Enums;
 using GFS.GrailCommon.Models;
-using GFS.QuotesService.Api.Enum;
+using GFS.QuotesService.Api.Common.Enum;
 using GFS.QuotesService.BL.Extensions;
 using GFS.QuotesService.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace GFS.QuotesService.BL.Services;
 
-public interface IGetDataFromProviderService
+public interface IQuotesProviderService
 {
-    Task InitialFromMainAdapter(bool anyway = false);
+    Task InitialAssets(QuotesProviderTypeEnum quotesProviderType);
     Task GetAndSaveNextQuotesBatch(QuotesProviderTypeEnum quotesProviderType, Guid assetId, TimeFrameEnum timeFrame);
 }
 
-internal class GetDataFromProviderService : IGetDataFromProviderService
+internal class QuotesProviderService : IQuotesProviderService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IMapper _mapper;
     private readonly IDbContext _dbContext;
 
-    public GetDataFromProviderService(
+    public QuotesProviderService(
         IServiceProvider serviceProvider,
         IMapper mapper,
         IDbContext dbContext)
@@ -33,7 +33,7 @@ internal class GetDataFromProviderService : IGetDataFromProviderService
         _dbContext = dbContext;
     }
 
-    public async Task InitialFromMainAdapter(bool anyway)
+    public async Task InitialAssets(QuotesProviderTypeEnum quotesProviderType)
     {
         using var transaction = SystemTransaction.Default();
 
@@ -85,27 +85,6 @@ internal class GetDataFromProviderService : IGetDataFromProviderService
         var asset = await _dbContext.GetRepository<AssetEntity>()
             .Get(asset => asset.Id == assetId)
             .SingleOrFailAsync();
-
-
-        /*
-        var quotesProviderAsset = await _dbContext.GetRepository<QuotesProviderAssetEntity>()
-            .Get(qpa => qpa.AssetId == assetId && qpa.QuotesProviderType == quotesProviderType)
-            .Include(qpa => qpa.Asset)
-            .SingleOrDefaultAsync();
-
-        if (quotesProviderAsset == null)
-        {
-            quotesProviderAsset = new()
-            {
-                AssetId = assetId,
-                QuotesProviderType = quotesProviderType
-            };
-
-            _dbContext.GetRepository<QuotesProviderAssetEntity>().Insert(quotesProviderAsset);
-            await _dbContext.SaveChangesAsync();
-
-            quotesProviderAsset.Asset = await _dbContext.GetRepository<AssetEntity>().SingleOrFailById(assetId);
-        }*/
 
         var lastQuote = await _dbContext.GetRepository<QuoteEntity>()
             .Get(q => q.AssetId == assetId && q.QuotesProviderType == quotesProviderType && q.TimeFrame == timeFrame)

@@ -1,4 +1,4 @@
-namespace GFS.BkgWorker.Abstraction;
+namespace GFS.BkgWorker.Task;
 
 public abstract class TaskContext : IEquatable<TaskContext>
 {
@@ -14,5 +14,12 @@ public abstract class TaskContext : IEquatable<TaskContext>
     public override int GetHashCode()
         => Serialize().GetHashCode();
 
+    /// <summary>
+    /// Выполняемая работа
+    /// </summary>
+    /// <param name="serviceProvider">Service Provider</param>
+    /// <returns>Признак, что задача не выполнена до конца и нужна еще итерация</returns>
+    public abstract Task<bool> DoWork(IServiceProvider serviceProvider);
+    
     protected abstract string SerializeImpl();
 }
