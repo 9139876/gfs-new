@@ -20,7 +20,7 @@ namespace GFS.Api.Models
         public T? Payload { get; private set; }
 
         public static ApiResponse<T> CreateSuccessResponse(Guid traceId, T payload) =>
-            new ApiResponse<T>()
+            new()
             {
                 TraceId = traceId,
                 IsSuccess = true,
@@ -28,7 +28,7 @@ namespace GFS.Api.Models
             };
 
         public new static ApiResponse<T> CreateFailResponse(Guid traceId, Exception exception) =>
-            new ApiResponse<T>()
+            new()
             {
                 TraceId = traceId,
                 IsSuccess = false,
@@ -36,7 +36,7 @@ namespace GFS.Api.Models
             };
 
         public new static ApiResponse<T> CreateRemoteInternalServerErrorResponse(Guid traceId, string? message) =>
-            new ApiResponse<T>()
+            new()
             {
                 TraceId = traceId,
                 IsSuccess = false,

@@ -14,7 +14,7 @@ namespace GFS.QuotesService.BL.Services;
 public interface IQuotesProviderService
 {
     Task InitialAssets(QuotesProviderTypeEnum quotesProviderType);
-    Task GetAndSaveNextQuotesBatch(QuotesProviderTypeEnum quotesProviderType, Guid assetId, TimeFrameEnum timeFrame);
+    Task<DateTime> GetAndSaveNextQuotesBatch(QuotesProviderTypeEnum quotesProviderType, Guid assetId, TimeFrameEnum timeFrame);
 }
 
 internal class QuotesProviderService : IQuotesProviderService
@@ -75,7 +75,7 @@ internal class QuotesProviderService : IQuotesProviderService
         transaction.Complete();
     }
 
-    public async Task GetAndSaveNextQuotesBatch(QuotesProviderTypeEnum quotesProviderType, Guid assetId, TimeFrameEnum timeFrame)
+    public async Task<DateTime> GetAndSaveNextQuotesBatch(QuotesProviderTypeEnum quotesProviderType, Guid assetId, TimeFrameEnum timeFrame)
     {
         var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
 

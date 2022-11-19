@@ -71,10 +71,10 @@ public class TasksQueue
         }
     }
 
-    public void ReportOfFailIteration(BackgroundTask task)
+    public void ReportOfFailIteration(BackgroundTask task, string error)
     {
         task.IterationNumber++;
-        task.ReportOfFailIteration();
+        task.ReportOfFailIteration(error);
     }
 
     public void ReportOfSuccessIteration(BackgroundTask task)

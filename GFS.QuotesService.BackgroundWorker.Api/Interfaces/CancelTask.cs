@@ -6,10 +6,10 @@ using Microsoft.Extensions.Logging;
 
 namespace GFS.QuotesService.BackgroundWorker.Api.Interfaces;
 
-[Route(nameof(RemoveTask))]
-public abstract class RemoveTask : ApiServiceWithRequestResponse<AddTaskRequest, StandardResponse>
+[Route(nameof(CancelTask))]
+public abstract class CancelTask : ApiServiceWithRequestResponse<CancelTaskRequest, StandardResponse>
 {
-    protected RemoveTask(ILogger logger) : base(logger)
+    protected CancelTask(ILogger logger) : base(logger)
     {
     }
 }

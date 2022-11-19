@@ -92,7 +92,7 @@ public class Worker : IWorker
                 catch (Exception e)
                 {
                     _logger.LogError("{Task}, {Message}, {StackTrace}", task.Serialize(), e.Message, e.StackTrace);
-                    _queue.ReportOfFailIteration(task);
+                    _queue.ReportOfFailIteration(task, e.Message);
                 }
             }
 

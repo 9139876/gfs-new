@@ -1,42 +1,27 @@
-using GFS.BkgWorker.Abstraction;
-using GFS.EF.Repository;
+using GFS.BkgWorker.Worker;
 using GFS.QuotesService.Api.Common.Enum;
-using GFS.QuotesService.BackgroundWorker.Models;
-using GFS.QuotesService.BackgroundWorker.TaskContexts;
-using GFS.QuotesService.BackgroundWorker.TaskGetters;
-using GFS.QuotesService.BackgroundWorker.Workers;
-using GFS.QuotesService.BL.Services;
 
 namespace GFS.QuotesService.BackgroundWorker;
 
 public static class WorkersManager
 {   
-    private static readonly Dictionary<QuotesProviderTypeEnum, ITaskExecutor> Executors = new();
+    private static readonly Dictionary<QuotesProviderTypeEnum, IWorker> Workers = new();
 
     public static void Init(IServiceProvider serviceProvider)
     {
-        TaskExecutor<GetQuotesTaskContext> CreateGetQuotesWorker(QuotesProviderTypeEnum quotesProviderType)
+        IWorker CreateGetQuotesWorker()
         {
-            var dbContext = serviceProvider.GetRequiredService<IDbContext>();
-            var taskGetter = new GetQuotesTaskGetter(new GetQuotesTaskGetterModel { QuotesProviderType = quotesProviderType }, dbContext);
-            var logger = serviceProvider.GetRequiredService<ILogger<GetQuotesWorker>>();
-            var getDataFromProviderService = serviceProvider.GetRequiredService<IQuotesProviderService>();
-            
-            return new GetQuotesWorker(1, 50, logger, getDataFromProviderService, taskGetter);
+            var worker = serviceProvider.GetRequiredService<IWorker>();
+            worker.Start(1);
+            return worker;
         }
-
-        var initialAssetsWorker = new InitialAssetsWorker(serviceProvider.GetRequiredService<ILogger<InitialAssetsWorker>>(), serviceProvider.GetRequiredService<IQuotesProviderService>());
-        var tinkoffGetQuotesWorker = CreateGetQuotesWorker(QuotesProviderTypeEnum.Tinkoff);
-        // var bcsExpressGetQuotesWorker = CreateGetQuotesWorker(QuotesProviderTypeEnum.BcsExpress);
-        // var finamGetQuotesWorker =  CreateGetQuotesWorker(QuotesProviderTypeEnum.Finam);
-        // var investingComGetQuotesWorker=  CreateGetQuotesWorker(QuotesProviderTypeEnum.InvestingCom);
         
-        Executors.Add(QuotesProviderTypeEnum.Tinkoff, tinkoffGetQuotesWorker);
-        // Executors.Add(QuotesProviderTypeEnum.BcsExpress, bcsExpressGetQuotesWorker);
-        // Executors.Add(QuotesProviderTypeEnum.Finam, finamGetQuotesWorker);
-        // Executors.Add(QuotesProviderTypeEnum.InvestingCom, investingComGetQuotesWorker);
+        Workers.Add(QuotesProviderTypeEnum.Tinkoff, CreateGetQuotesWorker());
+        Workers.Add(QuotesProviderTypeEnum.BcsExpress, CreateGetQuotesWorker());
+        Workers.Add(QuotesProviderTypeEnum.Finam, CreateGetQuotesWorker());
+        Workers.Add(QuotesProviderTypeEnum.InvestingCom, CreateGetQuotesWorker());
     } 
 
-    public static bool TryGetTaskExecutor(QuotesProviderTypeEnum quotesProviderType, out ITaskExecutor? executor)
-        => Executors.TryGetValue(quotesProviderType, out executor);
+    public static bool TryGetWorker(QuotesProviderTypeEnum quotesProviderType, out IWorker? worker)
+        => Workers.TryGetValue(quotesProviderType, out worker);
 }

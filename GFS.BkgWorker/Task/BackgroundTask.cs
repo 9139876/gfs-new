@@ -22,16 +22,20 @@ public class BackgroundTask
     public TaskContext Context { get; }
 
     public TaskStateEnum State { get; private set; }
+    
+    public string? LastError { get; private set; }
 
     public void ReportOfSuccessIteration()
     {
         _attemptLeft = AttemptsDefault;
+        LastError = null;
         State = TaskStateEnum.InQueue;
     }
 
-    public void ReportOfFailIteration()
+    public void ReportOfFailIteration(string error)
     {
         _attemptLeft--;
+        LastError = error;
         State = _attemptLeft > 0 ? TaskStateEnum.ReQueuedAfterError : TaskStateEnum.Failed;
     }
 
@@ -43,21 +47,25 @@ public class BackgroundTask
 
     public void SetInQueueState()
     {
+        LastError = null;
         State = TaskStateEnum.InQueue;
     }
 
     public void ReportOfComplete()
     {
+        LastError = null;
         State = TaskStateEnum.Completed;
     }
 
     public void SetExecutingState()
     {
+        LastError = null;
         State = TaskStateEnum.Executing;
     }
 
     public void SetCancelState()
     {
+        LastError = null;
         State = TaskStateEnum.Canceled;
     }
 
