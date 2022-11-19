@@ -84,7 +84,7 @@ public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         return _mapper.Map<List<QuoteModel>>(apiResponse.Candles.ToList());
     }
 
-    protected override TimeFrameEnum[] NativeSupportedTimeFrames => new[] { TimeFrameEnum.min1, TimeFrameEnum.H1, TimeFrameEnum.D1 };
+    public override TimeFrameEnum[] NativeSupportedTimeFrames => new[] { TimeFrameEnum.min1, TimeFrameEnum.H1, TimeFrameEnum.D1 };
 
     #region static
 

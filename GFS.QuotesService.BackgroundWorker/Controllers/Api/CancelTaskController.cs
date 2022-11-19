@@ -15,8 +15,8 @@ public class CancelTaskController : CancelTask
 
     protected override Task<StandardResponse> ExecuteInternal(CancelTaskRequest request)
     {
-        if (WorkersManager.TryGetWorker(request.QuotesProviderType, out var worker))
-            throw new NotFoundException($"Not found worker for {request.QuotesProviderType}");
+        if (!WorkersManager.TryGetWorker(request.QuotesProviderType, out var worker))
+            throw new NotFoundException($"Worker for {request.QuotesProviderType}");
 
         var backgroundTask = new BackgroundTask(TaskContextFactory.CreateTaskContext(request.TaskType,request.QuotesProviderType, request.AssetId, request.TimeFrame));
         

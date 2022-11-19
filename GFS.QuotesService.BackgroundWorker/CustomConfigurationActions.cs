@@ -1,4 +1,5 @@
 using AutoMapper;
+using GFS.BkgWorker.Extensions;
 using GFS.Common.Extensions;
 using GFS.EF.Extensions;
 using GFS.GrailCommon.Models;
@@ -19,6 +20,7 @@ public class CustomConfigurationActions : CustomConfigurationActionsAbstract
         ServiceCollection
             .RegisterDbContext<QuotesServiceDbContext>(Configuration.GetConnectionString("DefaultConnection"))
             .RegisterAssemblyServicesByMember<BL.PlaceboRegistration>()
+            .RegisterBkgWorker()
             .RegistryTinkoffRemoteApi(Configuration);
     }
 

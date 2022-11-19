@@ -17,8 +17,8 @@ public class AddTaskController : AddTask
 
     protected override Task<StandardResponse> ExecuteInternal(AddTaskRequest request)
     {
-        if (WorkersManager.TryGetWorker(request.QuotesProviderType, out var worker))
-            throw new NotFoundException($"Not found worker for {request.QuotesProviderType}");
+        if (!WorkersManager.TryGetWorker(request.QuotesProviderType, out var worker))
+            throw new NotFoundException($"Worker for {request.QuotesProviderType}");
 
         var backgroundTask = new BackgroundTask(
             TaskContextFactory.CreateTaskContext(

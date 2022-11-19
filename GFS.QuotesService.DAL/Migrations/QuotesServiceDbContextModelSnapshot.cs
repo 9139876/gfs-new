@@ -60,6 +60,9 @@ namespace GFS.QuotesService.DAL.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Ticker")
+                        .IsUnique();
+
                     b.ToTable("Assets", (string)null);
                 });
 
@@ -95,18 +98,48 @@ namespace GFS.QuotesService.DAL.Migrations
                     b.ToTable("AssetInfos", (string)null);
                 });
 
+            modelBuilder.Entity("GFS.QuotesService.DAL.Entities.AssetProviderCompatibilityEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AssetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsCompatibility")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("QuotesProviderType")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssetId", "QuotesProviderType")
+                        .IsUnique();
+
+                    b.ToTable("AssetProviderCompatibilities", (string)null);
+                });
+
             modelBuilder.Entity("GFS.QuotesService.DAL.Entities.BackgroundWorkerTaskEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("QuotesProviderAssetId")
+                    b.Property<Guid?>("AssetId")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("QuotesProviderType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TaskTaskType")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuotesProviderAssetId");
+                    b.HasIndex("AssetId", "QuotesProviderType", "TaskTaskType")
+                        .IsUnique();
 
                     b.ToTable("BackgroundWorkerTasks", (string)null);
                 });
@@ -115,6 +148,9 @@ namespace GFS.QuotesService.DAL.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AssetId")
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("Close")
@@ -132,8 +168,8 @@ namespace GFS.QuotesService.DAL.Migrations
                     b.Property<decimal>("Open")
                         .HasColumnType("numeric");
 
-                    b.Property<Guid>("QuotesProviderAssetId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("QuotesProviderType")
+                        .HasColumnType("integer");
 
                     b.Property<int>("TimeFrame")
                         .HasColumnType("integer");
@@ -143,31 +179,12 @@ namespace GFS.QuotesService.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuotesProviderAssetId", "TimeFrame");
+                    b.HasIndex("AssetId", "QuotesProviderType", "TimeFrame");
 
-                    b.HasIndex("QuotesProviderAssetId", "TimeFrame", "Date")
+                    b.HasIndex("AssetId", "QuotesProviderType", "TimeFrame", "Date")
                         .IsUnique();
 
                     b.ToTable("Quotes", (string)null);
-                });
-
-            modelBuilder.Entity("GFS.QuotesService.DAL.Entities.QuotesProviderAssetEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("AssetId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("QuotesProviderType")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssetId");
-
-                    b.ToTable("QuotesProviderAssets", (string)null);
                 });
 
             modelBuilder.Entity("GFS.QuotesService.DAL.Entities.AssetInfoEntity", b =>
@@ -181,32 +198,31 @@ namespace GFS.QuotesService.DAL.Migrations
                     b.Navigation("Asset");
                 });
 
-            modelBuilder.Entity("GFS.QuotesService.DAL.Entities.BackgroundWorkerTaskEntity", b =>
+            modelBuilder.Entity("GFS.QuotesService.DAL.Entities.AssetProviderCompatibilityEntity", b =>
                 {
-                    b.HasOne("GFS.QuotesService.DAL.Entities.QuotesProviderAssetEntity", "QuotesProviderAsset")
-                        .WithMany("BackgroundWorkerTasks")
-                        .HasForeignKey("QuotesProviderAssetId")
+                    b.HasOne("GFS.QuotesService.DAL.Entities.AssetEntity", "Asset")
+                        .WithMany()
+                        .HasForeignKey("AssetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("QuotesProviderAsset");
+                    b.Navigation("Asset");
+                });
+
+            modelBuilder.Entity("GFS.QuotesService.DAL.Entities.BackgroundWorkerTaskEntity", b =>
+                {
+                    b.HasOne("GFS.QuotesService.DAL.Entities.AssetEntity", "Asset")
+                        .WithMany()
+                        .HasForeignKey("AssetId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Asset");
                 });
 
             modelBuilder.Entity("GFS.QuotesService.DAL.Entities.QuoteEntity", b =>
                 {
-                    b.HasOne("GFS.QuotesService.DAL.Entities.QuotesProviderAssetEntity", "QuotesProviderAsset")
-                        .WithMany("Quotes")
-                        .HasForeignKey("QuotesProviderAssetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("QuotesProviderAsset");
-                });
-
-            modelBuilder.Entity("GFS.QuotesService.DAL.Entities.QuotesProviderAssetEntity", b =>
-                {
                     b.HasOne("GFS.QuotesService.DAL.Entities.AssetEntity", "Asset")
-                        .WithMany("QuotesProviderAssets")
+                        .WithMany()
                         .HasForeignKey("AssetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -217,15 +233,6 @@ namespace GFS.QuotesService.DAL.Migrations
             modelBuilder.Entity("GFS.QuotesService.DAL.Entities.AssetEntity", b =>
                 {
                     b.Navigation("AssetInfo");
-
-                    b.Navigation("QuotesProviderAssets");
-                });
-
-            modelBuilder.Entity("GFS.QuotesService.DAL.Entities.QuotesProviderAssetEntity", b =>
-                {
-                    b.Navigation("BackgroundWorkerTasks");
-
-                    b.Navigation("Quotes");
                 });
 #pragma warning restore 612, 618
         }

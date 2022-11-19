@@ -38,18 +38,9 @@ internal class QuotesProviderService : IQuotesProviderService
         using var transaction = SystemTransaction.Default();
 
         var assetRepository = _dbContext.GetRepository<AssetEntity>();
-
-        if (await assetRepository.Exist())
-        {
-            if (!anyway)
-                return;
-
-            assetRepository.DeleteRange(await assetRepository.Get().ToListAsync());
-            await _dbContext.SaveChangesAsync();
-        }
-
-        var mainAdapter = _serviceProvider.GetMainQuotesProviderAdapter();
-        var initialModels = await mainAdapter.GetInitialData();
+        var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
+        
+        var initialModels = await adapter.GetInitialData();
 
         var assets = initialModels.Select(im =>
         {
@@ -59,13 +50,16 @@ internal class QuotesProviderService : IQuotesProviderService
             return asset;
         }).ToList();
 
-        assetRepository.InsertRange(assets);
+        var existing = await assetRepository.Get().ToListAsync();
 
-        var assetProviderCompatibilities = assets.Select(asset => new AssetProviderCompatibilityEntity
+        var newAssets = assets.Except(existing).ToList();
+        
+        assetRepository.InsertRange(newAssets);
+
+        var assetProviderCompatibilities = newAssets.Select(asset => new AssetProviderCompatibilityEntity
         {
             AssetId = asset.Id,
-            //ToDo Убрать статику!!!
-            QuotesProviderType = QuotesProviderTypeEnum.Tinkoff,
+            QuotesProviderType = quotesProviderType,
             IsCompatibility = true
         });
 
@@ -80,7 +74,7 @@ internal class QuotesProviderService : IQuotesProviderService
         var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
 
         if (!adapter.IsNativeSupportedTimeframe(timeFrame))
-            return;
+            throw new InvalidOperationException($"Timeframe {timeFrame} is not supported on {quotesProviderType}");
 
         var asset = await _dbContext.GetRepository<AssetEntity>()
             .Get(asset => asset.Id == assetId)
@@ -90,11 +84,6 @@ internal class QuotesProviderService : IQuotesProviderService
             .Get(q => q.AssetId == assetId && q.QuotesProviderType == quotesProviderType && q.TimeFrame == timeFrame)
             .OrderBy(q => q.Date)
             .LastOrDefaultAsync();
-
-        //ToDo Сделать нормально!!!
-        //Пока не нужны суперсвежие котировки нечего бесконечно долбить провайдера
-        if (lastQuote != null && (DateTime.Now - lastQuote.Date).Days <= 1)
-            return;
 
         var batch = await adapter.GetQuotesBatch(asset, timeFrame, lastQuote != null ? _mapper.Map<QuoteModel>(lastQuote) : null);
         var quoteEntities = _mapper.Map<List<QuoteEntity>>(batch);
@@ -107,5 +96,7 @@ internal class QuotesProviderService : IQuotesProviderService
 
         _dbContext.GetRepository<QuoteEntity>().InsertRange(quoteEntities);
         await _dbContext.SaveChangesAsync();
+
+        return quoteEntities.Last().Date;
     }
 }

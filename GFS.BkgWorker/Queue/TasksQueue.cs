@@ -23,6 +23,9 @@ public class TasksQueue
             }
             else
             {
+                task.SetInQueueState();
+                task.IterationNumber = _currentIteration;
+                task.Priority = taskPriority;
                 _tasks.Add(task);
             }
         }

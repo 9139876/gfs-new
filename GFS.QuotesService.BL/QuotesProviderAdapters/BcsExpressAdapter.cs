@@ -17,5 +17,5 @@ public class BcsExpressAdapter : QuotesProviderAbstractAdapter, IBcsExpressAdapt
         throw new NotImplementedException();
     }
 
-    protected override TimeFrameEnum[] NativeSupportedTimeFrames => new[] { TimeFrameEnum.min1, TimeFrameEnum.H1, TimeFrameEnum.D1 };
+    public override TimeFrameEnum[] NativeSupportedTimeFrames => new[] { TimeFrameEnum.min1, TimeFrameEnum.H1, TimeFrameEnum.D1 };
 }

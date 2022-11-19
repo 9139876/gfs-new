@@ -52,19 +52,19 @@ namespace GFS.QuotesService.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "QuotesProviderAssets",
+                name: "AssetProviderCompatibilities",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     AssetId = table.Column<Guid>(type: "uuid", nullable: false),
                     QuotesProviderType = table.Column<int>(type: "integer", nullable: false),
-                    GetQuotesRequest = table.Column<string>(type: "text", nullable: false)
+                    IsCompatibility = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QuotesProviderAssets", x => x.Id);
+                    table.PrimaryKey("PK_AssetProviderCompatibilities", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_QuotesProviderAssets_Assets_AssetId",
+                        name: "FK_AssetProviderCompatibilities_Assets_AssetId",
                         column: x => x.AssetId,
                         principalTable: "Assets",
                         principalColumn: "Id",
@@ -76,15 +76,17 @@ namespace GFS.QuotesService.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    QuotesProviderAssetId = table.Column<Guid>(type: "uuid", nullable: false)
+                    AssetId = table.Column<Guid>(type: "uuid", nullable: true),
+                    QuotesProviderType = table.Column<int>(type: "integer", nullable: false),
+                    TaskTaskType = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BackgroundWorkerTasks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BackgroundWorkerTasks_QuotesProviderAssets_QuotesProviderAs~",
-                        column: x => x.QuotesProviderAssetId,
-                        principalTable: "QuotesProviderAssets",
+                        name: "FK_BackgroundWorkerTasks_Assets_AssetId",
+                        column: x => x.AssetId,
+                        principalTable: "Assets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -94,11 +96,12 @@ namespace GFS.QuotesService.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    QuotesProviderAssetId = table.Column<Guid>(type: "uuid", nullable: false),
+                    AssetId = table.Column<Guid>(type: "uuid", nullable: false),
+                    QuotesProviderType = table.Column<int>(type: "integer", nullable: false),
                     TimeFrame = table.Column<int>(type: "integer", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Open = table.Column<decimal>(type: "numeric", nullable: false),
-                    Hi = table.Column<decimal>(type: "numeric", nullable: false),
+                    High = table.Column<decimal>(type: "numeric", nullable: false),
                     Low = table.Column<decimal>(type: "numeric", nullable: false),
                     Close = table.Column<decimal>(type: "numeric", nullable: false),
                     Volume = table.Column<decimal>(type: "numeric", nullable: true)
@@ -107,9 +110,9 @@ namespace GFS.QuotesService.DAL.Migrations
                 {
                     table.PrimaryKey("PK_Quotes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Quotes_QuotesProviderAssets_QuotesProviderAssetId",
-                        column: x => x.QuotesProviderAssetId,
-                        principalTable: "QuotesProviderAssets",
+                        name: "FK_Quotes_Assets_AssetId",
+                        column: x => x.AssetId,
+                        principalTable: "Assets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -121,19 +124,33 @@ namespace GFS.QuotesService.DAL.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_BackgroundWorkerTasks_QuotesProviderAssetId",
+                name: "IX_AssetProviderCompatibilities_AssetId_QuotesProviderType",
+                table: "AssetProviderCompatibilities",
+                columns: new[] { "AssetId", "QuotesProviderType" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Assets_Ticker",
+                table: "Assets",
+                column: "Ticker",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BackgroundWorkerTasks_AssetId_QuotesProviderType_TaskTaskTy~",
                 table: "BackgroundWorkerTasks",
-                column: "QuotesProviderAssetId");
+                columns: new[] { "AssetId", "QuotesProviderType", "TaskTaskType" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Quotes_QuotesProviderAssetId_TimeFrame",
+                name: "IX_Quotes_AssetId_QuotesProviderType_TimeFrame",
                 table: "Quotes",
-                columns: new[] { "QuotesProviderAssetId", "TimeFrame" });
+                columns: new[] { "AssetId", "QuotesProviderType", "TimeFrame" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuotesProviderAssets_AssetId",
-                table: "QuotesProviderAssets",
-                column: "AssetId");
+                name: "IX_Quotes_AssetId_QuotesProviderType_TimeFrame_Date",
+                table: "Quotes",
+                columns: new[] { "AssetId", "QuotesProviderType", "TimeFrame", "Date" },
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -142,13 +159,13 @@ namespace GFS.QuotesService.DAL.Migrations
                 name: "AssetInfos");
 
             migrationBuilder.DropTable(
+                name: "AssetProviderCompatibilities");
+
+            migrationBuilder.DropTable(
                 name: "BackgroundWorkerTasks");
 
             migrationBuilder.DropTable(
                 name: "Quotes");
-
-            migrationBuilder.DropTable(
-                name: "QuotesProviderAssets");
 
             migrationBuilder.DropTable(
                 name: "Assets");

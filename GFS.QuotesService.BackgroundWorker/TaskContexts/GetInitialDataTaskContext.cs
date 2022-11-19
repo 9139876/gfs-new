@@ -1,5 +1,6 @@
 using GFS.BkgWorker.Task;
 using GFS.QuotesService.Api.Common.Enum;
+using GFS.QuotesService.BL.Services;
 
 namespace GFS.QuotesService.BackgroundWorker.TaskContexts;
 
@@ -12,13 +13,13 @@ public class GetInitialDataTaskContext : TaskContext
     
     public QuotesProviderTypeEnum QuotesProviderType { get; }
     
-    public override Task<bool> DoWork(IServiceProvider serviceProvider)
+    public async override Task<bool> DoWork(IServiceProvider serviceProvider)
     {
-        throw new NotImplementedException();
+        var quotesProviderService = serviceProvider.GetRequiredService<IQuotesProviderService>();
+        await quotesProviderService.InitialAssets(QuotesProviderType);
+        return false;
     }
 
     protected override string SerializeImpl()
-    {
-        throw new NotImplementedException();
-    }
+        => QuotesProviderType.ToString();
 }

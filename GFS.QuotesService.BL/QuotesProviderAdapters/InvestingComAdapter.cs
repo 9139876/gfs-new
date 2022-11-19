@@ -16,7 +16,7 @@ public class InvestingComAdapter : QuotesProviderAbstractAdapter, IInvestingComA
         throw new NotImplementedException();
     }
 
-    protected override TimeFrameEnum[] NativeSupportedTimeFrames => new[]
+    public override TimeFrameEnum[] NativeSupportedTimeFrames => new[]
     {
         TimeFrameEnum.H1,
         TimeFrameEnum.D1,

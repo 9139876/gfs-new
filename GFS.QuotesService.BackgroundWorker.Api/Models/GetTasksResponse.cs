@@ -19,4 +19,6 @@ public class TaskResponse
     public TaskPriorityEnum TaskPriority { get; set; }
 
     public TaskStateEnum TaskState { get; set; }
+    
+    public string? LastError { get; set; }
 }

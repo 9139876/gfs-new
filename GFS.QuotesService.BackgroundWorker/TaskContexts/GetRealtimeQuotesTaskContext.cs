@@ -22,10 +22,9 @@ public class GetRealtimeQuotesTaskContext : TaskContext
     public override Task<bool> DoWork(IServiceProvider serviceProvider)
     {
         throw new NotImplementedException();
+        // return true;
     }
 
     protected override string SerializeImpl()
-    {
-        throw new NotImplementedException();
-    }
+        => $"{AssetId}-{QuotesProviderType}-{TimeFrame}";
 }

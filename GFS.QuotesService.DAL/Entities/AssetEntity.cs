@@ -28,9 +28,19 @@ public class AssetEntity : GuidKeyEntity
     /// <summary> International Securities Identification Number - Международный идентификационный код ценной бумаги </summary>
     public string ISIN { get; set; }
 
+    #region Equals
+
+    public override bool Equals(object? obj)
+        => obj is AssetEntity other && other.Ticker == Ticker;
+
+    public override int GetHashCode()
+        => Ticker.GetHashCode();
+
+    #endregion
+
     #region Navigation
 
-    public AssetInfoEntity? AssetInfo { get; set; }  
+    public AssetInfoEntity? AssetInfo { get; set; }
 
     #endregion
 }
@@ -41,5 +51,6 @@ public class AssetEntityConfiguration : IEntityTypeConfiguration<AssetEntity>
     {
         builder.ToTable("Assets");
         builder.HasKey(e => e.Id);
+        builder.HasIndex(e => e.Ticker).IsUnique();
     }
 }

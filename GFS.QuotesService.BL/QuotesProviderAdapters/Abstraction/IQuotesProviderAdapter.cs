@@ -11,6 +11,7 @@ public interface IQuotesProviderAdapter
 {
     Task<List<InitialModel>> GetInitialData();
     bool IsNativeSupportedTimeframe(TimeFrameEnum timeFrame);
+    TimeFrameEnum[] NativeSupportedTimeFrames { get; }
     Task<IEnumerable<QuoteModel>> GetQuotesBatch(AssetEntity asset, TimeFrameEnum timeFrame, QuoteModel? lastQuote);
 }
 
@@ -62,5 +63,5 @@ public abstract class QuotesProviderAbstractAdapter : IQuotesProviderAdapter
 
     protected abstract Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(AssetEntity asset, TimeFrameEnum timeFrame, DateTime lastQuoteDate);
 
-    protected abstract TimeFrameEnum[] NativeSupportedTimeFrames { get; }
+    public abstract TimeFrameEnum[] NativeSupportedTimeFrames { get; }
 }

@@ -16,5 +16,5 @@ public class FinamAdapter : QuotesProviderAbstractAdapter, IFinamAdapter
         throw new NotImplementedException();
     }
 
-    protected override TimeFrameEnum[] NativeSupportedTimeFrames => throw new NotImplementedException();
+    public override TimeFrameEnum[] NativeSupportedTimeFrames => throw new NotImplementedException();
 }
