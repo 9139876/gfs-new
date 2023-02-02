@@ -1,4 +1,5 @@
 ﻿using GFS.Common.Attributes;
+// ReSharper disable InconsistentNaming
 
 namespace GFS.GrailCommon.Enums
 {
