@@ -3,9 +3,9 @@ namespace GFS.BkgWorker.Enum;
 public enum TaskStateEnum
 {
     /// <summary>
-    /// В очереди
+    /// Ожидает выполнения
     /// </summary>
-    InQueue = 1,
+    PendingExecution = 1,
     
     /// <summary>
     /// Выполняется
@@ -23,12 +23,7 @@ public enum TaskStateEnum
     Canceled = 4,
     
     /// <summary>
-    /// Повторно поставлена в очередь после ошибки
+    /// Прервана из-за ошибки
     /// </summary>
-    ReQueuedAfterError = 5,
-    
-    /// <summary>
-    /// Число попыток исчерпано 
-    /// </summary>
-    Failed = 6
+    Failed = 5
 }

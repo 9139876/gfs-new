@@ -1,14 +1,15 @@
 using GFS.Api.Services;
+using GFS.Common.Models;
 using GFS.QuotesService.BackgroundWorker.Api.Models.RequestResponse;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace GFS.QuotesService.BackgroundWorker.Api.Interfaces;
 
-[Route(nameof(GetTasks))]
-public abstract class GetTasks : ApiServiceWithRequestResponse<GetTasksRequest, GetTasksResponse>
+[Route(nameof(AddTasks))]
+public abstract class AddTasks : ApiServiceWithRequestResponse<AddTasksRequest, StandardResponse>
 {
-    protected GetTasks(ILogger logger) : base(logger)
+    protected AddTasks(ILogger logger) : base(logger)
     {
     }
 }

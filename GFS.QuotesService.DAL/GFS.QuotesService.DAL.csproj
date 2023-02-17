@@ -12,8 +12,4 @@
       <ProjectReference Include="..\GFS.QuotesService.Api\GFS.QuotesService.Api.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Migrations" />
-    </ItemGroup>
-
 </Project>

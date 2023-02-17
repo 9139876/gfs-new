@@ -1,5 +1,3 @@
-using GFS.GrailCommon.Models;
-
 namespace GFS.Portfolio.Api.Models
 {
     public class AssetModel

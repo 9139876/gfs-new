@@ -10,14 +10,13 @@ namespace GFS.Api.Models
     public class ApiResponse<T> : ApiEmptyResponse
     {
         /// <summary>
-        /// Сокрытие конструктора. Для созадния экземпляра нужно пользоваться статическими методами.
+        /// Сокрытие конструктора. Для создания экземпляра нужно пользоваться статическими методами.
         /// </summary>
-        protected ApiResponse() : base()
+        protected ApiResponse()
         {
         }
 
-        [JsonProperty]
-        public T? Payload { get; private set; }
+        [JsonProperty] public T? Payload { get; private set; }
 
         public static ApiResponse<T> CreateSuccessResponse(Guid traceId, T payload) =>
             new()

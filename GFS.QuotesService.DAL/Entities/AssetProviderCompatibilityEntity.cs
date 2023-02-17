@@ -1,6 +1,5 @@
 using GFS.EF.Entities;
 using GFS.QuotesService.Api.Common.Enum;
-using GFS.QuotesService.Api.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

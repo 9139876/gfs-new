@@ -54,7 +54,7 @@ namespace GFS.Api.Client.Services
             where TApiService : ApiService
         {
             var requestJson = JsonConvert.SerializeObject(ApiEmptyRequest.CreateRequest(), _jsonSerializerSettings);
-            var httpResponse = await GetRemoteResponse<ApiEmptyRequest>(GetUri(typeof(TApiService)), requestJson);
+            var httpResponse = await GetRemoteResponse(GetUri(typeof(TApiService)), requestJson);
             await ProcessResponseMessageWithoutResponseAsync(httpResponse);
         }
 
@@ -62,7 +62,7 @@ namespace GFS.Api.Client.Services
             where TApiService : ApiServiceWithRequest<TRequestPayload>
         {
             var requestJson = JsonConvert.SerializeObject(ApiRequest<TRequestPayload>.CreateRequest(requestPayload), _jsonSerializerSettings);
-            var httpResponse = await GetRemoteResponse<TRequestPayload>(GetUri(typeof(TApiService)), requestJson);
+            var httpResponse = await GetRemoteResponse(GetUri(typeof(TApiService)), requestJson);
             await ProcessResponseMessageWithoutResponseAsync(httpResponse);
         }
 
@@ -70,16 +70,16 @@ namespace GFS.Api.Client.Services
             where TApiService : ApiServiceWithResponse<TResponsePayload>
         {
             var requestJson = JsonConvert.SerializeObject(ApiEmptyRequest.CreateRequest(), _jsonSerializerSettings);
-            var httpResponse = await GetRemoteResponse<ApiEmptyRequest>(GetUri(typeof(TApiService)), requestJson);
-            return await ProcessResponseMessageWithResponseAsync<ApiResponse<TResponsePayload>, TResponsePayload>(httpResponse);
+            var httpResponse = await GetRemoteResponse(GetUri(typeof(TApiService)), requestJson);
+            return await ProcessResponseMessageWithResponseAsync<TResponsePayload>(httpResponse);
         }
 
         public async Task<TResponsePayload> Call<TApiService, TRequestPayload, TResponsePayload>(TRequestPayload requestPayload)
             where TApiService : ApiServiceWithRequestResponse<TRequestPayload, TResponsePayload>
         {
             var requestJson = JsonConvert.SerializeObject(ApiRequest<TRequestPayload>.CreateRequest(requestPayload), _jsonSerializerSettings);
-            var httpResponse = await GetRemoteResponse<TRequestPayload>(GetUri(typeof(TApiService)), requestJson);
-            return await ProcessResponseMessageWithResponseAsync<ApiResponse<TResponsePayload>, TResponsePayload>(httpResponse);
+            var httpResponse = await GetRemoteResponse(GetUri(typeof(TApiService)), requestJson);
+            return await ProcessResponseMessageWithResponseAsync<TResponsePayload>(httpResponse);
         }
 
         private Uri GetUri(Type apiServiceType)
@@ -92,7 +92,7 @@ namespace GFS.Api.Client.Services
             return new Uri(new Uri(schemeAndHost), path);
         }
 
-        private async Task<HttpResponseMessage> GetRemoteResponse<TRequestPayload>(Uri requestUri, string requestJson)
+        private async Task<HttpResponseMessage> GetRemoteResponse(Uri requestUri, string requestJson)
         {
             using var httpClient = _httpClientFactory.CreateClient();
             
@@ -105,8 +105,7 @@ namespace GFS.Api.Client.Services
             return await httpClient.SendAsync(httpRequest);
         }
 
-        private async Task<TResponsePayload> ProcessResponseMessageWithResponseAsync<TResult, TResponsePayload>(HttpResponseMessage responseMessage)
-            where TResult : ApiResponse<TResponsePayload>
+        private async Task<TResponsePayload> ProcessResponseMessageWithResponseAsync<TResponsePayload>(HttpResponseMessage responseMessage)
         {
             var responsePayload = await GetResponsePayload<ApiResponse<TResponsePayload>>(responseMessage);
 
@@ -128,7 +127,7 @@ namespace GFS.Api.Client.Services
 
         private async Task<TResponsePayload> GetResponsePayload<TResponsePayload>(HttpResponseMessage responseMessage)
         {
-            if (responseMessage.StatusCode == HttpStatusCode.NoContent || responseMessage?.Content == null)
+            if (responseMessage.StatusCode == HttpStatusCode.NoContent || responseMessage.Content == null)
                 throw new InvalidOperationException("Wrong response type - NoContent");
 
             var responseString = await responseMessage.Content.ReadAsStringAsync();

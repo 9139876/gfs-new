@@ -9,16 +9,16 @@ namespace GFS.Api.Models
     public class ApiRequest<T> : ApiEmptyRequest
     {
         /// <summary>
-        /// Сокрытие конструктора. Для созадния экземпляра нужно пользоваться статическими методами.
+        /// Сокрытие конструктора. Для создания экземпляра нужно пользоваться статическими методами.
         /// </summary>
-        protected ApiRequest() : base()
+        protected ApiRequest()
         {
         }
-        
-        [JsonProperty]
-        public T Payload { get; private set; }
+
+        [JsonProperty] 
+        public T Payload { get; private set; } = default!;
 
         public static ApiRequest<T> CreateRequest(T payload)
-            => new ApiRequest<T>() {Payload = payload};
+            => new() { Payload = payload };
     }
 }

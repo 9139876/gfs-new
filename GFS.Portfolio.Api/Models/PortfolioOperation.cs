@@ -1,4 +1,3 @@
-using GFS.GrailCommon.Models;
 using GFS.Portfolio.Api.Enums;
 
 namespace GFS.Portfolio.Api.Models

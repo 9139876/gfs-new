@@ -29,14 +29,14 @@ public class BackgroundTask
     {
         _attemptLeft = AttemptsDefault;
         LastError = null;
-        State = TaskStateEnum.InQueue;
+        State = TaskStateEnum.PendingExecution;
     }
 
     public void ReportOfFailIteration(string error)
     {
         _attemptLeft--;
         LastError = error;
-        State = _attemptLeft > 0 ? TaskStateEnum.ReQueuedAfterError : TaskStateEnum.Failed;
+        // State = _attemptLeft > 0 ? TaskStateEnum.ReQueuedAfterError : TaskStateEnum.Failed;
     }
 
     public void SetAttempts(byte attempts)
@@ -48,7 +48,7 @@ public class BackgroundTask
     public void SetInQueueState()
     {
         LastError = null;
-        State = TaskStateEnum.InQueue;
+        State = TaskStateEnum.PendingExecution;
     }
 
     public void ReportOfComplete()

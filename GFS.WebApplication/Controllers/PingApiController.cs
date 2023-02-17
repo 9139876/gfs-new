@@ -43,7 +43,7 @@ public class PingApiController : ControllerBase
             EnvironmentName = _webHostEnvironment.EnvironmentName,
             UserName = Environment.UserName,
             MachineName = Environment.MachineName,
-            OSVersion = Environment.OSVersion.ToString()
+            OsVersion = Environment.OSVersion.ToString()
         };
     }
     

@@ -21,7 +21,7 @@ namespace GFS.Api.Services
             try
             {
                 request.RequiredNotNull(nameof(request));
-                request!.Payload.RequiredNotNull(nameof(request.Payload));
+                request.Payload!.RequiredNotNull(nameof(request.Payload));
 
                 await ExecuteInternal(request.Payload);
                 var response = ApiEmptyResponse.CreateSuccessResponse(request.TraceId);

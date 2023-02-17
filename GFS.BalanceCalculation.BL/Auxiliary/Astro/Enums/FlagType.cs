@@ -1,6 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace GFS.BalanceCalculation.BL.Auxiliary.Astro.Enums
 {
     [Flags]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum FlagType
     {
         ///Use JPL ephemeris

@@ -40,7 +40,7 @@ public abstract class QuotesProviderAbstractAdapter : IQuotesProviderAdapter
     {
         var left = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var right = DateTime.UtcNow;
-        QuoteModel result = null;
+        QuoteModel? result = null;
 
         while ((right - left).Days > 1)
         {

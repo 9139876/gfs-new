@@ -1,4 +1,4 @@
-namespace GFS.QuotesService.Api.Common.Enum;
+namespace GFS.QuotesService.BackgroundWorker.Api.Enum;
 
 /// <summary>
 /// Типы заданий на получение котировок у провайдера
@@ -11,12 +11,14 @@ public enum GetQuotesTaskTypeEnum
     GetInitialData = 1,
 
     /// <summary>
-    /// Загрузить историю котировок по инструменту
-    /// </summary>
-    GetHistory = 2,
-    
-    /// <summary>
     /// Получать котировки в реальном времени
     /// </summary>
-    GetRealtimeQuotes = 3
+    GetRealtimeQuotes = 2,
+    
+    /// <summary>
+    /// Загрузить историю котировок по инструменту
+    /// </summary>
+    GetHistory = 3
+    
+    
 }

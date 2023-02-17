@@ -1,15 +1,13 @@
-using GFS.GrailCommon.Enums;
 using GFS.QuotesService.Api.Common.Enum;
+using GFS.QuotesService.BackgroundWorker.Api.Enum;
 
-namespace GFS.QuotesService.BackgroundWorker.Api.Models;
+namespace GFS.QuotesService.BackgroundWorker.Api.Models.RequestResponse;
 
-public class CancelTaskRequest
+public class CreateTaskRequest
 {
     public QuotesProviderTypeEnum QuotesProviderType { get; set; }
 
     public GetQuotesTaskTypeEnum TaskType { get; set; }
 
     public Guid? AssetId { get; set; }
-
-    public TimeFrameEnum? TimeFrame { get; set; }
 }

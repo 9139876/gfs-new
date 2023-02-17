@@ -3,6 +3,7 @@ using GFS.BkgWorker.Extensions;
 using GFS.Common.Extensions;
 using GFS.EF.Extensions;
 using GFS.GrailCommon.Models;
+using GFS.QuotesService.BackgroundWorker.Execution;
 using GFS.QuotesService.BL.Extensions;
 using GFS.QuotesService.BL.Models;
 using GFS.QuotesService.DAL;
@@ -52,13 +53,13 @@ public class CustomConfigurationActions : CustomConfigurationActionsAbstract
         public MappingProfile()
         {
             CreateMap<Share, InitialModel>()
-                .ForMember(destination => destination.IpoDate, option => option.MapFrom(share => share.IpoDate.ToDateTime()));
+                .ForMember(dest => dest.IpoDate, opt => opt.MapFrom(src => src.IpoDate.ToDateTime()));
             CreateMap<Currency, InitialModel>();
             CreateMap<Etf, InitialModel>();
             CreateMap<InitialModel, AssetEntity>();
             CreateMap<InitialModel, AssetInfoEntity>();
             CreateMap<HistoricCandle, QuoteModel>()
-                .ForMember(destination => destination.Date, option => option.MapFrom(candle => candle.Time.ToDateTime()));
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Time.ToDateTime()));
             CreateMap<QuoteModel, QuoteEntity>()
                 .ReverseMap();
         }

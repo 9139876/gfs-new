@@ -85,7 +85,7 @@ public class TasksQueue
         task.IterationNumber++;
         task.ReportOfSuccessIteration();
     }
-    
+
     private static bool MayBeExecution(BackgroundTask taskContainer)
-        => taskContainer.State is TaskStateEnum.InQueue or TaskStateEnum.ReQueuedAfterError;
+        => taskContainer.State is TaskStateEnum.PendingExecution; // or TaskStateEnum.ReQueuedAfterError;
 }

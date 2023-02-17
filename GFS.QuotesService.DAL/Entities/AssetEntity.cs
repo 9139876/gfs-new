@@ -2,31 +2,32 @@ using GFS.EF.Entities;
 using GFS.QuotesService.Api.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+#pragma warning disable CS8618
 
 namespace GFS.QuotesService.DAL.Entities;
 
 public class AssetEntity : GuidKeyEntity
 {
-    public MarketTypeEnum MarketType { get; set; }
-    public AssetTypeEnum AssetType { get; set; }
+    public MarketTypeEnum MarketType { get; init; }
+    public AssetTypeEnum AssetType { get; init; }
 
     /// <summary> Торговая площадка </summary>
-    public string Exchange { get; set; }
+    public string Exchange { get; init; }
 
     /// <summary> Человекочитаемое имя </summary>
-    public string Name { get; set; }
+    public string Name { get; init; }
 
     /// <summary> Financial Instrument Global Identifier </summary>
-    public string FIGI { get; set; }
+    public string FIGI { get; init; }
 
     /// <summary> Короткий код инструмента </summary>
-    public string Ticker { get; set; }
+    public string Ticker { get; init; }
 
     /// <summary> Класс-код инструмента </summary>
-    public string ClassCode { get; set; }
+    public string ClassCode { get; init; }
 
     /// <summary> International Securities Identification Number - Международный идентификационный код ценной бумаги </summary>
-    public string ISIN { get; set; }
+    public string ISIN { get; init; }
 
     #region Equals
 
@@ -40,7 +41,7 @@ public class AssetEntity : GuidKeyEntity
 
     #region Navigation
 
-    public AssetInfoEntity? AssetInfo { get; set; }
+    public AssetInfoEntity? AssetInfo { get; init; }
 
     #endregion
 }

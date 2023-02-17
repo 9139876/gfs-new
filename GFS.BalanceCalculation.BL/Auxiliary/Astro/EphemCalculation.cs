@@ -27,7 +27,7 @@ namespace GFS.BalanceCalculation.BL.Auxiliary.Astro
                 : (int) FlagType.SEFLG_MOSEPH;
 
             double[] res = new double[6];
-            string sErr = null;
+            string? sErr = null;
 
             using var ephem = new SwissEph();
 
