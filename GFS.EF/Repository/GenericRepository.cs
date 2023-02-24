@@ -10,6 +10,7 @@ namespace GFS.EF.Repository
         where TEntity : GuidKeyEntity
     {
         IQueryable<TEntity> Get(Expression<Func<TEntity, bool>>? predicate = null);
+        IQueryable<TEntity> GetBySelectors(IEnumerable<Func<IQueryable<TEntity>, IQueryable<TEntity>>> selectors);
         Task<TEntity> SingleOrFailById(Guid id);
         Task<TEntity?> TryGetById(Guid id);
         Task<bool> Exist(Expression<Func<TEntity, bool>>? predicate = null);
@@ -38,6 +39,9 @@ namespace GFS.EF.Repository
             => predicate != null
                 ? _dbSet.Where(predicate)
                 : _dbSet;
+
+        public IQueryable<TEntity> GetBySelectors(IEnumerable<Func<IQueryable<TEntity>, IQueryable<TEntity>>> selectors)
+            => selectors.Aggregate(_dbSet.AsQueryable(), (total, next) => next(total));
 
         public Task<TEntity> SingleOrFailById(Guid id)
             => _dbSet.Where(e => e.Id == id).SingleOrFailAsync();

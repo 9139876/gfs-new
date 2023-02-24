@@ -1,6 +1,7 @@
 using GFS.WebApplication.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Converters;
 
 namespace GFS.WebApplication
 {
@@ -23,9 +24,11 @@ namespace GFS.WebApplication
             builder
                 .ConfigureLogger(customConfigurationActions.CustomConfigureLogger, builder.Services)
                 .Services.AddControllers()
-                .AddNewtonsoftJson()
+                .AddNewtonsoftJson(options => 
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter()))
                 .Services.AddEndpointsApiExplorer()
-                .AddSwaggerGen();
+                .AddSwaggerGen()
+                .AddSwaggerGenNewtonsoftSupport();
 
             var app = builder.Build();
 

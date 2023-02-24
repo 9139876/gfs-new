@@ -1,12 +1,9 @@
-using GFS.EF.Entities;
 using GFS.QuotesService.Api.Enum;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 #pragma warning disable CS8618
 
-namespace GFS.QuotesService.DAL.Entities;
+namespace GFS.QuotesService.Api.Models;
 
-public class AssetEntity : GuidKeyEntity
+public class AssetsInfoDto
 {
     public MarketTypeEnum MarketType { get; init; }
     public AssetTypeEnum AssetType { get; init; }
@@ -28,32 +25,19 @@ public class AssetEntity : GuidKeyEntity
 
     /// <summary> International Securities Identification Number - Международный идентификационный код ценной бумаги </summary>
     public string ISIN { get; init; }
+    
+    /// <summary> Валюта расчётов </summary>
+    public string? Currency { get; set; }
 
-    #region Equals
+    /// <summary> Шаг цены </summary>
+    public decimal? MinPriceIncrement { get; set; }
 
-    public override bool Equals(object? obj)
-        => obj is AssetEntity other && other.Ticker == Ticker;
+    /// <summary> Лотность инструмента. Возможно совершение операций только на количества ценной бумаги, кратные параметру lot </summary>
+    public int? Lot { get; set; }
 
-    public override int GetHashCode()
-        => Ticker.GetHashCode();
+    /// <summary> Дата IPO акции в часовом поясе UTC </summary>
+    public DateTime? IpoDate { get; set; }
 
-    #endregion
-
-    #region Navigation
-
-    public AssetInfoEntity? AssetInfo { get; set; }
-
-    public List<QuoteEntity> Quotes { get; set; } = new();
-
-    #endregion
-}
-
-public class AssetEntityConfiguration : IEntityTypeConfiguration<AssetEntity>
-{
-    public void Configure(EntityTypeBuilder<AssetEntity> builder)
-    {
-        builder.ToTable("Assets");
-        builder.HasKey(e => e.Id);
-        builder.HasIndex(e => e.Ticker).IsUnique();
-    }
+    /// <summary> Сектор экономики </summary>
+    public string? Sector { get; set; }
 }

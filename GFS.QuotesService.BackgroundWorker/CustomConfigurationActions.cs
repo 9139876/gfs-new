@@ -3,6 +3,7 @@ using GFS.BkgWorker.Extensions;
 using GFS.Common.Extensions;
 using GFS.EF.Extensions;
 using GFS.GrailCommon.Models;
+using GFS.QuotesService.BackgroundWorker.Api.Models;
 using GFS.QuotesService.BackgroundWorker.Execution;
 using GFS.QuotesService.BL.Extensions;
 using GFS.QuotesService.BL.Models;
@@ -61,6 +62,9 @@ public class CustomConfigurationActions : CustomConfigurationActionsAbstract
             CreateMap<HistoricCandle, QuoteModel>()
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Time.ToDateTime()));
             CreateMap<QuoteModel, QuoteEntity>()
+                .ReverseMap();
+
+            CreateMap<BkgWorkerTaskCreateRequest, BkgWorkerTask>()
                 .ReverseMap();
         }
     }
