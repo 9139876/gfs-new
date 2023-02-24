@@ -5,6 +5,8 @@ namespace GFS.QuotesService.Api.Models;
 
 public class AssetsInfoDto
 {
+    public Guid AssetId { get; init; }
+    
     public MarketTypeEnum MarketType { get; init; }
     public AssetTypeEnum AssetType { get; init; }
 

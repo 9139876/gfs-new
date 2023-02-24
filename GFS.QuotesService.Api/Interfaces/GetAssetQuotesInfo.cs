@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace GFS.QuotesService.Api.Interfaces;
 
 [Route(nameof(GetAssetQuotesInfo))]
-public abstract class GetAssetQuotesInfo : ApiServiceWithRequestResponse<Guid, QuotesInfoDto>
+public abstract class GetAssetQuotesInfo : ApiServiceWithRequestResponse<Guid, AssetQuotesInfoDto>
 {
     protected GetAssetQuotesInfo(ILogger logger) : base(logger)
     {

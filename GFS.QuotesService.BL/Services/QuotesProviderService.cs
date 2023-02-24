@@ -14,7 +14,7 @@ namespace GFS.QuotesService.BL.Services;
 public interface IQuotesProviderService
 {
     Task InitialAssets(QuotesProviderTypeEnum quotesProviderType);
-    Task<DateTime> GetAndSaveNextQuotesBatch(QuotesProviderTypeEnum quotesProviderType, Guid assetId, TimeFrameEnum timeFrame);
+    Task GetOrUpdateHistory(QuotesProviderTypeEnum quotesProviderType, Guid assetId);
 }
 
 internal class QuotesProviderService : IQuotesProviderService
@@ -69,7 +69,22 @@ internal class QuotesProviderService : IQuotesProviderService
         transaction.Complete();
     }
 
-    public async Task<DateTime> GetAndSaveNextQuotesBatch(QuotesProviderTypeEnum quotesProviderType, Guid assetId, TimeFrameEnum timeFrame)
+    public async Task GetOrUpdateHistory(QuotesProviderTypeEnum quotesProviderType, Guid assetId)
+    {
+        var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
+
+        foreach (var VARIABLE in adapter.NativeSupportedTimeFrames)
+        {
+            
+        }
+
+        
+        
+    }
+
+    #region private
+
+    private async Task<DateTime> GetAndSaveNextQuotesBatch(QuotesProviderTypeEnum quotesProviderType, Guid assetId, TimeFrameEnum timeFrame)
     {
         var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
 
@@ -99,4 +114,6 @@ internal class QuotesProviderService : IQuotesProviderService
 
         return quoteEntities.Last().Date;
     }
+
+    #endregion
 }

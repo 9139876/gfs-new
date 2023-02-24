@@ -16,7 +16,7 @@ public class GetAssetQuotesInfoController : GetAssetQuotesInfo
         _getDataService = getDataService;
     }
 
-    protected override async Task<QuotesInfoDto> ExecuteInternal(Guid request)
+    protected override async Task<AssetQuotesInfoDto> ExecuteInternal(Guid request)
     {
         return await _getDataService.GetAssetQuotesInfo(request);
     }

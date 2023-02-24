@@ -27,6 +27,7 @@ public class CustomConfigurationActions : CustomConfigurationActionsAbstract
         public MappingProfile()
         {
             CreateMap<AssetEntity, AssetsInfoDto>()
+                .ForMember(dest => dest.AssetId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Currency, opt => opt.MapFrom(src => src.AssetInfo != null ? src.AssetInfo.Currency : null))
                 .ForMember(dest => dest.MinPriceIncrement, opt => opt.MapFrom(src => src.AssetInfo != null ? src.AssetInfo.MinPriceIncrement : null))
                 .ForMember(dest => dest.Lot, opt => opt.MapFrom(src => src.AssetInfo != null ? src.AssetInfo.Lot : null))
