@@ -1,6 +1,6 @@
 {
   "quotesManagerApiUrl": "http://locahost:5000",
-  "quotesManagerWorkerUrl": "http://locahost:6000",
+  "quotesManagerWorkerUrl": "http://locahost:5100",
   "quotesInfoFilesPath": "/",
   "saveQuotesInfoToFile": true
 }

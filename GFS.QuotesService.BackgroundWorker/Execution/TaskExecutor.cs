@@ -48,7 +48,7 @@ public class TaskExecutor
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e.Message);
+                    _logger.LogError(e, $"Task {task!.TaskType} for {task!.QuotesProviderType} failed");
                     TasksStorage.ReportOfFail(task!.TaskId, e.Message);
                 }
             }
@@ -64,6 +64,6 @@ public class TaskExecutor
 
     private void ExecuteGetHistoryQuotes(BkgWorkerTask task)
     {
-        throw new NotImplementedException("Not implemented yet");
+        _quotesProviderService.GetOrUpdateHistory(task.QuotesProviderType, task.AssetId ?? throw new ArgumentNullException(nameof(task.AssetId))).Wait();
     }
 }

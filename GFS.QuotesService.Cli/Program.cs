@@ -29,7 +29,7 @@ public static class Program
         {
             while (ex.InnerException != null)
                 ex = ex.InnerException;
-            
+
             Console.WriteLine(ex.Message);
             return ex.HResult;
         }
@@ -37,18 +37,27 @@ public static class Program
 
     private static void ConfigureCommands(IConfigurator configurator)
     {
+        configurator.AddCommand<AddTasksCommand>("addTasks")
+            .WithDescription("Добавление задач в очередь");
+
+        configurator.AddCommand<CancelTasksCommand>("cancelTasks")
+            .WithDescription("Отмена всех ожидающих в очереди задач");
+
         configurator.AddCommand<GetTasksCommand>("getTasks")
             .WithDescription("Получение состояния выполняемых задач");
 
-        configurator.AddCommand<GetQuotesInfoCommand>("getQuotesInfo")
-            .WithDescription("Получение информации о загруженных котировках");
+        configurator.AddCommand<GetAssetQuotesInfoCommand>("getAssetQuotesInfo")
+            .WithDescription("Получение информации о загруженных котировках по инструменту");
+
+        configurator.AddCommand<GetAssetsInfoCommand>("getAssetsInfo")
+            .WithDescription("Получение информации по инструментам");
     }
 
     private static void Configure()
     {
         var builder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("config.json", optional: false);
+            .AddJsonFile(path: "config.json", optional: false);
 
         IConfiguration config = builder.Build();
 
@@ -89,7 +98,7 @@ public class Configuration
         {
             if (!Uri.TryCreate(value, UriKind.Absolute, out _))
                 throw new InvalidOperationException($"Configuration load failed - {nameof(QuotesManagerWorkerUrl)} is not valid url");
-            
+
             _quotesManagerWorkerUrl = value;
         }
     }
@@ -99,9 +108,9 @@ public class Configuration
         get => _quotesInfoFilesPath;
         init
         {
-            if(!Directory.Exists(value))
+            if (!Directory.Exists(value))
                 throw new InvalidOperationException($"Configuration load failed - directory {nameof(QuotesInfoFilesPath)} not exist");
-            
+
             _quotesInfoFilesPath = value;
         }
     }

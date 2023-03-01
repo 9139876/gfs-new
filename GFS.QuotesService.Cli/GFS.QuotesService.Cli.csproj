@@ -30,4 +30,10 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\GFS.Api.Client\GFS.Api.Client.csproj" />
+      <ProjectReference Include="..\GFS.QuotesService.Api\GFS.QuotesService.Api.csproj" />
+      <ProjectReference Include="..\GFS.QuotesService.BackgroundWorker.Api\GFS.QuotesService.BackgroundWorker.Api.csproj" />
+    </ItemGroup>
+
 </Project>

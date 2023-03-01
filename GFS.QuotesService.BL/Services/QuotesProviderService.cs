@@ -3,7 +3,6 @@ using GFS.Common.Helpers;
 using GFS.EF.Extensions;
 using GFS.EF.Repository;
 using GFS.GrailCommon.Enums;
-using GFS.GrailCommon.Models;
 using GFS.QuotesService.Api.Common.Enum;
 using GFS.QuotesService.BL.Extensions;
 using GFS.QuotesService.DAL.Entities;
@@ -39,7 +38,7 @@ internal class QuotesProviderService : IQuotesProviderService
 
         var assetRepository = _dbContext.GetRepository<AssetEntity>();
         var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
-        
+
         var initialModels = await adapter.GetInitialData();
 
         var assets = initialModels.Select(im =>
@@ -53,7 +52,7 @@ internal class QuotesProviderService : IQuotesProviderService
         var existing = await assetRepository.Get().ToListAsync();
 
         var newAssets = assets.Except(existing).ToList();
-        
+
         assetRepository.InsertRange(newAssets);
 
         var assetProviderCompatibilities = newAssets.Select(asset => new AssetProviderCompatibilityEntity
@@ -73,18 +72,30 @@ internal class QuotesProviderService : IQuotesProviderService
     {
         var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
 
-        foreach (var VARIABLE in adapter.NativeSupportedTimeFrames)
+        foreach (var timeFrame in adapter.NativeSupportedTimeFrames)
         {
-            
-        }
+            var lastQuote = await _dbContext.GetRepository<QuoteEntity>()
+                .Get(q => q.AssetId == assetId && q.QuotesProviderType == quotesProviderType && q.TimeFrame == timeFrame)
+                .OrderBy(q => q.Date)
+                .LastOrDefaultAsync();
 
-        
-        
+            var lastDate = lastQuote?.Date;
+
+            while (true)
+            {
+                var lastBatchDate = await GetAndSaveNextQuotesBatch(quotesProviderType, assetId, timeFrame, lastDate);
+
+                if (lastBatchDate.HasValue && (!lastDate.HasValue || lastDate < lastBatchDate))
+                    lastDate = lastBatchDate;
+                else
+                    break;
+            }
+        }
     }
 
     #region private
 
-    private async Task<DateTime> GetAndSaveNextQuotesBatch(QuotesProviderTypeEnum quotesProviderType, Guid assetId, TimeFrameEnum timeFrame)
+    private async Task<DateTime?> GetAndSaveNextQuotesBatch(QuotesProviderTypeEnum quotesProviderType, Guid assetId, TimeFrameEnum timeFrame, DateTime? lastQuoteDate)
     {
         var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
 
@@ -95,12 +106,7 @@ internal class QuotesProviderService : IQuotesProviderService
             .Get(asset => asset.Id == assetId)
             .SingleOrFailAsync();
 
-        var lastQuote = await _dbContext.GetRepository<QuoteEntity>()
-            .Get(q => q.AssetId == assetId && q.QuotesProviderType == quotesProviderType && q.TimeFrame == timeFrame)
-            .OrderBy(q => q.Date)
-            .LastOrDefaultAsync();
-
-        var batch = await adapter.GetQuotesBatch(asset, timeFrame, lastQuote != null ? _mapper.Map<QuoteModel>(lastQuote) : null);
+        var batch = await adapter.GetQuotesBatch(asset, timeFrame, lastQuoteDate);
         var quoteEntities = _mapper.Map<List<QuoteEntity>>(batch);
         quoteEntities.ForEach(quote =>
         {
@@ -109,10 +115,18 @@ internal class QuotesProviderService : IQuotesProviderService
             quote.QuotesProviderType = quotesProviderType;
         });
 
-        _dbContext.GetRepository<QuoteEntity>().InsertRange(quoteEntities);
+        var existingQuotesDates = await _dbContext.GetRepository<QuoteEntity>()
+            .Get(q => q.AssetId == assetId
+                      && q.QuotesProviderType == quotesProviderType
+                      && q.TimeFrame == timeFrame
+                      && quoteEntities.Select(qe => qe.Date).Contains(q.Date))
+            .Select(q => q.Date)
+            .ToListAsync();
+
+        _dbContext.GetRepository<QuoteEntity>().InsertRange(quoteEntities.Where(qe => !existingQuotesDates.Contains(qe.Date)));
         await _dbContext.SaveChangesAsync();
 
-        return quoteEntities.Last().Date;
+        return quoteEntities.LastOrDefault()?.Date;
     }
 
     #endregion

@@ -12,7 +12,7 @@ public interface IQuotesProviderAdapter
     Task<List<InitialModel>> GetInitialData();
     bool IsNativeSupportedTimeframe(TimeFrameEnum timeFrame);
     TimeFrameEnum[] NativeSupportedTimeFrames { get; }
-    Task<IEnumerable<QuoteModel>> GetQuotesBatch(AssetEntity asset, TimeFrameEnum timeFrame, QuoteModel? lastQuote);
+    Task<IEnumerable<QuoteModel>> GetQuotesBatch(AssetEntity asset, TimeFrameEnum timeFrame, DateTime? lastQuoteDate);
 }
 
 [IgnoreRegistration]
@@ -26,14 +26,14 @@ public abstract class QuotesProviderAbstractAdapter : IQuotesProviderAdapter
     public bool IsNativeSupportedTimeframe(TimeFrameEnum timeFrame)
         => NativeSupportedTimeFrames.Contains(timeFrame);
 
-    public async Task<IEnumerable<QuoteModel>> GetQuotesBatch(AssetEntity asset, TimeFrameEnum timeFrame, QuoteModel? lastQuote)
+    public async Task<IEnumerable<QuoteModel>> GetQuotesBatch(AssetEntity asset, TimeFrameEnum timeFrame, DateTime? lastQuoteDate)
     {
         if (!IsNativeSupportedTimeframe(timeFrame))
             throw new InvalidOperationException($"Timeframe {timeFrame} is not supported {GetType().Name}");
 
-        return lastQuote == null
-            ? new[] { await GetFirstQuote(asset, timeFrame) }
-            : await GetQuotesBatchInternal(asset, timeFrame, lastQuote.Date);
+        return lastQuoteDate.HasValue
+            ? await GetQuotesBatchInternal(asset, timeFrame, lastQuoteDate.Value)
+            : new[] { await GetFirstQuote(asset, timeFrame) };
     }
 
     protected async Task<QuoteModel> GetFirstQuote(AssetEntity asset, TimeFrameEnum timeFrame)

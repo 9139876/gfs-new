@@ -4,9 +4,9 @@ using GFS.QuotesService.BackgroundWorker.Execution;
 
 namespace GFS.QuotesService.BackgroundWorker.Controllers.Api;
 
-public class CancelTaskController : CancelTask
+public class CancelTasksController : CancelTasks
 {
-    public CancelTaskController(ILogger logger) : base(logger)
+    public CancelTasksController(ILogger logger) : base(logger)
     {
     }
 
