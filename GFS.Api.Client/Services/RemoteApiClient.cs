@@ -44,7 +44,7 @@ namespace GFS.Api.Client.Services
 
         private readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
         {
-            Converters = new List<JsonConverter> {new StringEnumConverter()},
+            Converters = new List<JsonConverter> { new StringEnumConverter() },
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             NullValueHandling = NullValueHandling.Ignore,
             ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -84,7 +84,8 @@ namespace GFS.Api.Client.Services
 
         private Uri GetUri(Type apiServiceType)
         {
-            var schemeAndHost = _configuration.GetSection($"RemoteApis:{apiServiceType.Namespace}").Value ?? throw new InvalidOperationException();
+            var schemeAndHost = _configuration.GetSection($"RemoteApis:{apiServiceType.Namespace}").Value ??
+                                throw new InvalidOperationException($"For remote api {apiServiceType.Namespace} host not specified");
 
             var path = (apiServiceType.GetCustomAttribute(typeof(RouteAttribute)) as RouteAttribute)?.Template ?? throw new InvalidOperationException();
             path += $"/{ApiServiceParameters.PATH}";
@@ -95,7 +96,7 @@ namespace GFS.Api.Client.Services
         private async Task<HttpResponseMessage> GetRemoteResponse(Uri requestUri, string requestJson)
         {
             using var httpClient = _httpClientFactory.CreateClient();
-            
+
             var httpRequest = new HttpRequestMessage();
             httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             httpRequest.Method = HttpMethod.Post;

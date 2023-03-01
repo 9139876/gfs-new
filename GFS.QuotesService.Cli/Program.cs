@@ -1,5 +1,8 @@
-﻿using GFS.QuotesService.Cli.Commands;
+﻿using GFS.Api.Client.Extensions;
+using GFS.Api.Client.Services;
+using GFS.QuotesService.Cli.Commands;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
 namespace GFS.QuotesService.Cli;
@@ -7,6 +10,8 @@ namespace GFS.QuotesService.Cli;
 public static class Program
 {
     public static Configuration Configuration { get; private set; } = new();
+    
+    public static IServiceProvider ServiceProvider { get; private set; } 
 
     public static int Main(string[] args)
     {
@@ -62,11 +67,17 @@ public static class Program
         IConfiguration config = builder.Build();
 
         Configuration = config.Get<Configuration>();
-
+        
         Console.WriteLine($"{nameof(Configuration.QuotesManagerApiUrl)}: {Configuration.QuotesManagerApiUrl}");
         Console.WriteLine($"{nameof(Configuration.QuotesManagerWorkerUrl)}: {Configuration.QuotesManagerWorkerUrl}");
         Console.WriteLine($"{nameof(Configuration.QuotesInfoFilesPath)}: {Configuration.QuotesInfoFilesPath}");
         Console.WriteLine($"{nameof(Configuration.SaveQuotesInfoToFile)}: {Configuration.SaveQuotesInfoToFile}");
+        
+        ServiceProvider = new ServiceCollection()
+            .RegisterRemoteApi()
+            .AddSingleton(config)
+            .BuildServiceProvider();
+
     }
 
     private static void ForAutoComplete()

@@ -22,7 +22,6 @@ public class CustomConfigurationActions : CustomConfigurationActionsAbstract
         ServiceCollection
             .RegisterDbContext<QuotesServiceDbContext>(Configuration.GetConnectionString("DefaultConnection"))
             .RegisterAssemblyServicesByMember<BL.PlaceboRegistration>()
-            .RegisterBkgWorker()
             .RegistryTinkoffRemoteApi(Configuration);
     }
 
