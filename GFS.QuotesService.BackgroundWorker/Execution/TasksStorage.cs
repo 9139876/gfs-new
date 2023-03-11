@@ -39,7 +39,11 @@ public static class TasksStorage
         lock (Tasks)
         {
             var addedTasks = tasks.ToList();
-            addedTasks.ForEach(t => t.State = TaskStateEnum.PendingExecution);
+            addedTasks.ForEach(t =>
+            {
+                t.State = TaskStateEnum.PendingExecution;
+                t.Created = DateTime.Now;
+            });
             Tasks[TaskStateEnum.PendingExecution].AddRange(addedTasks);
         }
     }
@@ -48,7 +52,11 @@ public static class TasksStorage
     {
         lock (Tasks)
         {
-            Tasks[TaskStateEnum.PendingExecution].ForEach(task => task.State = TaskStateEnum.Canceled);
+            Tasks[TaskStateEnum.PendingExecution].ForEach(task =>
+            {
+                task.State = TaskStateEnum.Canceled;
+                task.StateDate = DateTime.Now;
+            });
             Tasks[TaskStateEnum.Canceled].AddRange(Tasks[TaskStateEnum.PendingExecution]);
             Tasks[TaskStateEnum.PendingExecution].Clear();
         }
@@ -61,6 +69,7 @@ public static class TasksStorage
             var task = Tasks[TaskStateEnum.Executing].Single(t => t.TaskId == taskId);
 
             task.State = TaskStateEnum.Completed;
+            task.StateDate = DateTime.Now;
 
             Tasks[TaskStateEnum.Executing].Remove(task);
             Tasks[TaskStateEnum.Completed].Add(task);
@@ -75,6 +84,7 @@ public static class TasksStorage
 
             task.State = TaskStateEnum.Failed;
             task.Error = errorMessage;
+            task.StateDate = DateTime.Now;
 
             Tasks[TaskStateEnum.Executing].Remove(task);
             Tasks[TaskStateEnum.Failed].Add(task);

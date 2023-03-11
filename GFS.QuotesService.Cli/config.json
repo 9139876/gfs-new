@@ -1,10 +1,6 @@
 {
-  "quotesManagerApiUrl": "http://locahost:5000",
-  "quotesManagerWorkerUrl": "http://locahost:5100",
-  "quotesInfoFilesPath": "/",
-  "saveQuotesInfoToFile": true,
   "RemoteApis": {
     "GFS.QuotesService.BackgroundWorker.Api.Interfaces": "http://localhost:5100/",
-    "GFS.QuotesService.Api" : "http://localhost:5000/"
+    "GFS.QuotesService.Api.Interfaces": "http://localhost:5000/"
   }
 }

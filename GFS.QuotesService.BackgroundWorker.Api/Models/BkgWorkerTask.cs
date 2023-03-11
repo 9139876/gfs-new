@@ -1,4 +1,5 @@
 using GFS.BkgWorker.Enum;
+using GFS.QuotesService.BackgroundWorker.Api.Models.RequestResponse;
 
 namespace GFS.QuotesService.BackgroundWorker.Api.Models;
 
@@ -8,8 +9,11 @@ namespace GFS.QuotesService.BackgroundWorker.Api.Models;
 public class BkgWorkerTask : BkgWorkerTaskCreateRequest
 {
     public Guid TaskId { get; } = Guid.NewGuid();
+    public DateTime Created { get; set; }
     public TaskStateEnum State { get; set; }
+    public DateTime? StateDate { get; set; }
     public string? Error { get; set; }
+
 
     public int GetPriority() => (int)TaskType;
 

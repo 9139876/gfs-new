@@ -4,6 +4,7 @@ using GFS.Common.Extensions;
 using GFS.EF.Extensions;
 using GFS.GrailCommon.Models;
 using GFS.QuotesService.BackgroundWorker.Api.Models;
+using GFS.QuotesService.BackgroundWorker.Api.Models.RequestResponse;
 using GFS.QuotesService.BackgroundWorker.Execution;
 using GFS.QuotesService.BL.Extensions;
 using GFS.QuotesService.BL.Models;

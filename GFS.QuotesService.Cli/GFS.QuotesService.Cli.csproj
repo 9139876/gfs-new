@@ -15,16 +15,9 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
-      <PackageReference Include="Spectre.Console.Cli" Version="0.46.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="qmcli_completion">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="readme.txt">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
       <None Update="config.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
@@ -32,6 +25,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\GFS.Api.Client\GFS.Api.Client.csproj" />
+      <ProjectReference Include="..\GFS.ConsoleLibrary\GFS.ConsoleLibrary.csproj" />
       <ProjectReference Include="..\GFS.QuotesService.Api\GFS.QuotesService.Api.csproj" />
       <ProjectReference Include="..\GFS.QuotesService.BackgroundWorker.Api\GFS.QuotesService.BackgroundWorker.Api.csproj" />
     </ItemGroup>

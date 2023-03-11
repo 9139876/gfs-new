@@ -1,5 +1,6 @@
 using GFS.Api.Services;
 using GFS.Common.Models;
+using GFS.QuotesService.BackgroundWorker.Api.Models;
 using GFS.QuotesService.BackgroundWorker.Api.Models.RequestResponse;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

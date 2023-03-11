@@ -10,7 +10,7 @@ namespace GFS.Common.Extensions
             if (value == null)
                 throw new InvalidOperationException(Compose(paramName, @object));
         }
-        
+
         public static void RequiredNotNull(this object value)
         {
             RequiredNotNull(value, nameof(value), null);
@@ -22,13 +22,15 @@ namespace GFS.Common.Extensions
                 throw new InvalidOperationException(Compose(paramName, @object));
         }
 
-        public static string Serialize(this object value)
+        public static string Serialize(this object value, Action<JsonSerializerSettings>? configureSettings = null)
         {
             var jsonSerializerSettings = _jsonSerializerDefaultSettings;
             if (IfContainAbstractMembers(value.GetType()))
             {
                 jsonSerializerSettings.TypeNameHandling = TypeNameHandling.All;
             }
+
+            configureSettings?.Invoke(jsonSerializerSettings);
 
             return JsonConvert.SerializeObject(value, jsonSerializerSettings);
         }
@@ -88,7 +90,7 @@ namespace GFS.Common.Extensions
                 }
 
                 if (propertyType.Name != "DateTime" && IfContainAbstractMembers(propertyType)
-                ) // DateTime содержит в себе свойство DateTime => бесконечная рекурсия
+                   ) // DateTime содержит в себе свойство DateTime => бесконечная рекурсия
                 {
                     return true;
                 }
@@ -99,7 +101,7 @@ namespace GFS.Common.Extensions
 
         private static readonly JsonSerializerSettings _jsonSerializerDefaultSettings = new JsonSerializerSettings()
         {
-            Converters = new List<JsonConverter> {new StringEnumConverter()},
+            Converters = new List<JsonConverter> { new StringEnumConverter() },
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             NullValueHandling = NullValueHandling.Ignore,
             Formatting = Formatting.Indented

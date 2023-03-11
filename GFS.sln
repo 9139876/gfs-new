@@ -75,6 +75,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFS.QuotesService.Api.Commo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFS.QuotesService.Cli", "GFS.QuotesService.Cli\GFS.QuotesService.Cli.csproj", "{9CEB91F1-B130-4A3E-B90F-904C0A118488}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFS.ConsoleLibrary", "GFS.ConsoleLibrary\GFS.ConsoleLibrary.csproj", "{35B4B56E-1857-418E-9DE4-F5E981AD755C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -193,6 +195,10 @@ Global
 		{9CEB91F1-B130-4A3E-B90F-904C0A118488}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CEB91F1-B130-4A3E-B90F-904C0A118488}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CEB91F1-B130-4A3E-B90F-904C0A118488}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35B4B56E-1857-418E-9DE4-F5E981AD755C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35B4B56E-1857-418E-9DE4-F5E981AD755C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35B4B56E-1857-418E-9DE4-F5E981AD755C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35B4B56E-1857-418E-9DE4-F5E981AD755C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -228,6 +234,7 @@ Global
 		{4082DAF2-AC46-46F6-9F52-3EA3AC77695C} = {A6D006F4-2E0D-4CFA-B0D8-A46169100865}
 		{C9556A6D-B36E-4D21-9218-38390F073E34} = {A6D006F4-2E0D-4CFA-B0D8-A46169100865}
 		{9CEB91F1-B130-4A3E-B90F-904C0A118488} = {A6D006F4-2E0D-4CFA-B0D8-A46169100865}
+		{35B4B56E-1857-418E-9DE4-F5E981AD755C} = {0C1CC24B-910E-488E-8B09-A77056D84ACC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7A7DC65A-A5FF-44D3-A316-2470826084D9}

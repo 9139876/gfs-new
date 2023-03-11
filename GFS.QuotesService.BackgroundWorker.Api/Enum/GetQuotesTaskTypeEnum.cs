@@ -14,11 +14,9 @@ public enum GetQuotesTaskTypeEnum
     /// Получать котировки в реальном времени
     /// </summary>
     GetRealtimeQuotes = 2,
-    
+
     /// <summary>
     /// Загрузить историю котировок по инструменту
     /// </summary>
     GetHistory = 3
-    
-    
 }
