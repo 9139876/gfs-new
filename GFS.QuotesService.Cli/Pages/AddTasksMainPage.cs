@@ -7,19 +7,18 @@ namespace GFS.QuotesService.Cli.Pages;
 public class AddTasksMainPage : ConsolePage
 {
     private readonly Dictionary<string, Action> _items;
-    private readonly AddTasksRequestBillet _requestBillet;
 
     public AddTasksMainPage(ConsolePage? parent) : base(parent)
     {
-        _requestBillet = new AddTasksRequestBillet();
-        
+        var requestBillet = new AddTasksRequestBillet();
+
         _items = new Dictionary<string, Action>
         {
-            { "Выбор типа задачи", new AddTasksSelectTaskTypePage(this, _requestBillet).Show },
-            { "Выбор поставщика котировок", new AddTasksSelectQuotesProviderPage(this, _requestBillet).Show },
-            { "Выбор инструментов", new AddTasksSelectAssetsPage(this, _requestBillet).Show },
-            { "Показать запрос", new AddTasksShowRequestPage(this, _requestBillet).Show },
-            { "Выполнить", new AddTasksExecutePage(this, _requestBillet).Show },
+            { "Выбор типа задачи", new AddTasksSelectTaskTypePage(this, requestBillet).Show },
+            { "Выбор поставщика котировок", new AddTasksSelectQuotesProviderPage(this, requestBillet).Show },
+            { "Выбор инструментов", new AddTasksSelectAssetsPage(this, requestBillet).Show },
+            { "Показать запрос", new AddTasksShowRequestPage(this, requestBillet).Show },
+            { "Выполнить", new AddTasksExecutePage(this, requestBillet).Show },
             { "Назад", Parent!.Show }
         };
     }

@@ -18,12 +18,12 @@ namespace GFS.WebApplication
 
             assemblyInfo.Title = GetAssemblyAttribute<AssemblyTitleAttribute>(assembly)?.Title ?? assemblyInfo.Title;
             assemblyInfo.Description = GetAssemblyAttribute<AssemblyDescriptionAttribute>(assembly)?.Description ?? assemblyInfo.Description;
-            assemblyInfo.Version = assembly?.GetName()?.Version?.ToString() ?? assemblyInfo.Version;
+            assemblyInfo.Version = assembly?.GetName().Version?.ToString() ?? assemblyInfo.Version;
 
             return assemblyInfo;
         }
 
         private static T? GetAssemblyAttribute<T>(ICustomAttributeProvider? assembly) where T : Attribute
-            => assembly?.GetCustomAttributes(typeof(T), true)?.FirstOrDefault() as T;
+            => assembly?.GetCustomAttributes(typeof(T), true).FirstOrDefault() as T;
     }
 }

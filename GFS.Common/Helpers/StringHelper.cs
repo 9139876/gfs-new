@@ -41,7 +41,7 @@ namespace GFS.Common.Helpers
             {
                 try
                 {
-                    var obj = JToken.Parse(value);
+                    JToken.Parse(value);
                     return true;
                 }
                 catch (JsonReaderException)

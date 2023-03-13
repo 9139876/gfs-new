@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+#pragma warning disable CS8618
 
 namespace GFS.WebApplication
 {

@@ -38,7 +38,7 @@
             value.ThrowIfNull(new TException());
         }
 
-        public static void ThrowIfNull<TException>(this object value, TException e)
+        public static void ThrowIfNull<TException>(this object? value, TException e)
             where TException : Exception
         {
             value.ThrowIf(v => v == null, e);

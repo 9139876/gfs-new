@@ -5,18 +5,15 @@ namespace GFS.Common.Extensions
 {
     public static class CommonExtensions
     {
-        public static void RequiredNotNull(this object value, string paramName, object? @object = null)
+        public static void RequiredNotNull(this object value, string? paramName = null, object? @object = null)
         {
+            paramName ??= nameof(value);
+            
             if (value == null)
                 throw new InvalidOperationException(Compose(paramName, @object));
         }
 
-        public static void RequiredNotNull(this object value)
-        {
-            RequiredNotNull(value, nameof(value), null);
-        }
-
-        public static void RequiredNotNull(this string value, string paramName, object? @object = null)
+        public static void RequiredNotNull(this string? value, string paramName, object? @object = null)
         {
             if (string.IsNullOrEmpty(value?.Trim()))
                 throw new InvalidOperationException(Compose(paramName, @object));
@@ -24,7 +21,7 @@ namespace GFS.Common.Extensions
 
         public static string Serialize(this object value, Action<JsonSerializerSettings>? configureSettings = null)
         {
-            var jsonSerializerSettings = _jsonSerializerDefaultSettings;
+            var jsonSerializerSettings = JsonSerializerDefaultSettings;
             if (IfContainAbstractMembers(value.GetType()))
             {
                 jsonSerializerSettings.TypeNameHandling = TypeNameHandling.All;
@@ -38,7 +35,7 @@ namespace GFS.Common.Extensions
         public static T? Deserialize<T>(this string value)
             where T : class
         {
-            var jsonSerializerSettings = _jsonSerializerDefaultSettings;
+            var jsonSerializerSettings = JsonSerializerDefaultSettings;
 
             if (IfContainAbstractMembers(value.GetType()))
                 jsonSerializerSettings.TypeNameHandling = TypeNameHandling.All;
@@ -99,7 +96,7 @@ namespace GFS.Common.Extensions
             return false;
         }
 
-        private static readonly JsonSerializerSettings _jsonSerializerDefaultSettings = new JsonSerializerSettings()
+        private static readonly JsonSerializerSettings JsonSerializerDefaultSettings = new()
         {
             Converters = new List<JsonConverter> { new StringEnumConverter() },
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,

@@ -7,12 +7,12 @@ namespace GFS.WebApplication
 {
     public static class ProgramUtils
     {
-        public static async Task RunWebhost<TCustomConfigurationActions>(string[] args)
+        public static async Task RunWebHost<TCustomConfigurationActions>(string[] args)
             where TCustomConfigurationActions : CustomConfigurationActionsAbstract, new()
         {
             var builder = Microsoft.AspNetCore.Builder.WebApplication.CreateBuilder(args);
 
-            var customConfigurationActions = new TCustomConfigurationActions()
+            var customConfigurationActions = new TCustomConfigurationActions
             {
                 ServiceCollection = builder.Services,
                 Configuration = builder.Configuration

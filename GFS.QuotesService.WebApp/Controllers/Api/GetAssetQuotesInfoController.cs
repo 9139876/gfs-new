@@ -1,4 +1,3 @@
-using AutoMapper;
 using GFS.QuotesService.Api.Interfaces;
 using GFS.QuotesService.Api.Models;
 using GFS.QuotesService.BL.Services;

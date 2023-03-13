@@ -1,4 +1,4 @@
-using GFS.BkgWorker.Enum;
+using GFS.QuotesService.BackgroundWorker.Api.Enum;
 
 namespace GFS.QuotesService.BackgroundWorker.Api.Models.RequestResponse;
 

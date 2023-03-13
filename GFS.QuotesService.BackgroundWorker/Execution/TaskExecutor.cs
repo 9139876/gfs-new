@@ -48,8 +48,8 @@ public class TaskExecutor
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, $"Task {task!.TaskType} for {task!.QuotesProviderType} failed");
-                    TasksStorage.ReportOfFail(task!.TaskId, e.Message);
+                    _logger.LogError(e, $"Task {task!.TaskType} for {task.QuotesProviderType} failed");
+                    TasksStorage.ReportOfFail(task.TaskId, e.Message);
                 }
             }
 

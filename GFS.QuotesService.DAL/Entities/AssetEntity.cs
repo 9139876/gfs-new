@@ -27,7 +27,7 @@ public class AssetEntity : GuidKeyEntity
     public string ClassCode { get; init; }
 
     /// <summary> International Securities Identification Number - Международный идентификационный код ценной бумаги </summary>
-    public string ISIN { get; init; }
+    public string? ISIN { get; init; }
 
     #region Equals
 

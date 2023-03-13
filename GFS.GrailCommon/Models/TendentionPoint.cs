@@ -1,5 +1,7 @@
 ﻿using GFS.Common.Attributes;
 using GFS.GrailCommon.Enums;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+#pragma warning disable CS8618
 
 namespace GFS.GrailCommon.Models
 {
@@ -7,10 +9,10 @@ namespace GFS.GrailCommon.Models
     public class TendentionPoint
     {
         /// <summary> Позиция в координатах цена время </summary>
-        public PriceTimePoint Point { get; set; }
+        public PriceTimePoint Point { get; init; }
 
         /// <summary> Тип точки тенденции </summary>
-        public TendentionPointTypeEnum TendentionPointType { get; set; }
+        public TendentionPointTypeEnum TendentionPointType { get; init; }
 
         public override bool Equals(object? obj)
         {
@@ -19,9 +21,9 @@ namespace GFS.GrailCommon.Models
                    && tp.TendentionPointType == TendentionPointType;
         }
 
-        public static bool operator ==(TendentionPoint left, TendentionPoint right)
+        public static bool operator ==(TendentionPoint? left, TendentionPoint? right)
         {
-            return (left is null && right is null) || (left is object && left.Equals(right));
+            return (left is null && right is null) || left!.Equals(right);
         }
 
         public static bool operator !=(TendentionPoint left, TendentionPoint right)

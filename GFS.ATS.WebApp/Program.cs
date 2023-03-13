@@ -6,7 +6,7 @@ namespace GFS.ATS.WebApp
     {
         public static async Task Main(string[] args)
         {
-            await ProgramUtils.RunWebhost<CustomConfigurationActions>(args);
+            await ProgramUtils.RunWebHost<CustomConfigurationActions>(args);
         }
     }    
 }

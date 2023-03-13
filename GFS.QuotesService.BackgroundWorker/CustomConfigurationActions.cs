@@ -1,19 +1,13 @@
 using AutoMapper;
-using GFS.BkgWorker.Extensions;
 using GFS.Common.Extensions;
 using GFS.EF.Extensions;
-using GFS.GrailCommon.Models;
 using GFS.QuotesService.BackgroundWorker.Api.Models;
-using GFS.QuotesService.BackgroundWorker.Api.Models.RequestResponse;
 using GFS.QuotesService.BackgroundWorker.Execution;
 using GFS.QuotesService.BL.Extensions;
 using GFS.QuotesService.BL.Mapping;
-using GFS.QuotesService.BL.Models;
 using GFS.QuotesService.DAL;
-using GFS.QuotesService.DAL.Entities;
 using GFS.WebApplication;
 using Serilog;
-using Tinkoff.InvestApi.V1;
 
 namespace GFS.QuotesService.BackgroundWorker;
 

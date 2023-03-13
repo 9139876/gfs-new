@@ -27,7 +27,7 @@ namespace GFS.EF.Extensions
             var context = services.GetService<TDbContext>();
             context.ThrowIfNull(new InvalidOperationException("DbContext is not specified"));
 
-            var canConnect = await context.Database.CanConnectAsync();
+            var canConnect = await context!.Database.CanConnectAsync();
             canConnect.ThrowIfFalse(new ArgumentOutOfRangeException(nameof(context.Database), "Database connection"));
 
             var logger = serviceProvider.GetRequiredService<ILogger>();

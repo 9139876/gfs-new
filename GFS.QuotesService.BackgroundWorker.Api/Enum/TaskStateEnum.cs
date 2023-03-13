@@ -1,4 +1,4 @@
-namespace GFS.BkgWorker.Enum;
+namespace GFS.QuotesService.BackgroundWorker.Api.Enum;
 
 public enum TaskStateEnum
 {

@@ -23,7 +23,7 @@ public class InitialModel
     public string ClassCode { get; set; }
 
     /// <summary> International Securities Identification Number - Международный идентификационный код ценной бумаги </summary>
-    public string Isin { get; set; }
+    public string? ISIN { get; set; }
     
     /// <summary> Валюта расчётов </summary>
     public string? Currency { get; set; }

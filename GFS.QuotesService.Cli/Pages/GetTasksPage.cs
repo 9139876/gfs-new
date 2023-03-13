@@ -1,7 +1,7 @@
 using GFS.Api.Client.Services;
-using GFS.BkgWorker.Enum;
 using GFS.Common.Extensions;
 using GFS.ConsoleLibrary.Menu;
+using GFS.QuotesService.BackgroundWorker.Api.Enum;
 using GFS.QuotesService.BackgroundWorker.Api.Interfaces;
 using GFS.QuotesService.BackgroundWorker.Api.Models.RequestResponse;
 using Microsoft.Extensions.DependencyInjection;

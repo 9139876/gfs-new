@@ -1,5 +1,4 @@
 using GFS.Api.Client.Services;
-using GFS.Common.Extensions;
 using GFS.FakeDealer.Api.Enums;
 using GFS.FakeDealer.Api.Models;
 using GFS.QuotesService.Api.Interfaces;

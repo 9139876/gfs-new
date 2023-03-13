@@ -156,24 +156,5 @@ namespace GFS.GrailCommon.Extensions
 
             return new DateTime(min.Ticks + (max.Ticks - min.Ticks) / 2);
         }
-
-        /// <summary>
-        /// Последняя возможно существующая дата котировки на текущий момент
-        /// </summary>
-        /// <param name="timeFrame"></param>
-        /// <returns></returns>
-        public static DateTime GetPossibleEndDate(TimeFrameEnum timeFrame, DateTime now)
-        {
-            return timeFrame switch
-            {
-                TimeFrameEnum.tick => now,
-                TimeFrameEnum.min1 => new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 59).AddMinutes(-1),
-                TimeFrameEnum.H1 => new DateTime(now.Year, now.Month, now.Day, now.Hour, 59, 59).AddHours(-1),
-                TimeFrameEnum.D1 => new DateTime(now.Year, now.Month, now.Day, 23, 59, 59).AddDays(-1),
-                TimeFrameEnum.M1 => new DateTime(now.Year, now.Month, 28, 23, 59, 59).AddMonths(-1),
-                TimeFrameEnum.Y1 => new DateTime(now.Year, 12, 31, 23, 59, 59).AddYears(-1),
-                _ => throw new NotSupportedException($"Not supported timeframe '{timeFrame}'"),
-            };
-        }
     }
 }
