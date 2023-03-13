@@ -7,6 +7,7 @@ using GFS.QuotesService.BackgroundWorker.Api.Models;
 using GFS.QuotesService.BackgroundWorker.Api.Models.RequestResponse;
 using GFS.QuotesService.BackgroundWorker.Execution;
 using GFS.QuotesService.BL.Extensions;
+using GFS.QuotesService.BL.Mapping;
 using GFS.QuotesService.BL.Models;
 using GFS.QuotesService.DAL;
 using GFS.QuotesService.DAL.Entities;
@@ -28,7 +29,7 @@ public class CustomConfigurationActions : CustomConfigurationActionsAbstract
 
     public override void ConfigureMapper()
     {
-        ServiceCollection.AddAutoMapper(expr => expr.AddProfile(new MappingProfile()), typeof(CustomConfigurationActions));
+        ServiceCollection.AddAutoMapper(expr => expr.AddProfile(new MappingProfile(AddCustomMapping)), typeof(CustomConfigurationActions));
     }
 
     public override async Task ConfigureApplication()
@@ -49,23 +50,9 @@ public class CustomConfigurationActions : CustomConfigurationActionsAbstract
             .Enrich.WithProperty("Application", "GFS.QuotesService.BackgroundWorker");
     }
 
-    private class MappingProfile : Profile
+    private static void AddCustomMapping(IProfileExpression profile)
     {
-        public MappingProfile()
-        {
-            CreateMap<Share, InitialModel>()
-                .ForMember(dest => dest.IpoDate, opt => opt.MapFrom(src => src.IpoDate.ToDateTime()));
-            CreateMap<Currency, InitialModel>();
-            CreateMap<Etf, InitialModel>();
-            CreateMap<InitialModel, AssetEntity>();
-            CreateMap<InitialModel, AssetInfoEntity>();
-            CreateMap<HistoricCandle, QuoteModel>()
-                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Time.ToDateTime()));
-            CreateMap<QuoteModel, QuoteEntity>()
-                .ReverseMap();
-
-            CreateMap<BkgWorkerTaskCreateRequest, BkgWorkerTask>()
-                .ReverseMap();
-        }
+        profile.CreateMap<BkgWorkerTaskCreateRequest, BkgWorkerTask>()
+            .ReverseMap();
     }
 }

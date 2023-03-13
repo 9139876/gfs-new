@@ -1,6 +1,6 @@
 namespace GFS.Portfolio.Api.Enums
 {
-    public enum OperationTypeEnum
+    public enum PortfolioOperationTypeEnum
     {
         /// <summary>
         /// Забрать деньги
@@ -13,12 +13,12 @@ namespace GFS.Portfolio.Api.Enums
         Deposit = 2,
 
         /// <summary>
-        /// Купить актив или закрыть по нему короткую позицию
+        /// Купить инструмент или закрыть по нему короткую позицию
         /// </summary>
         Buy = 3,
 
         /// <summary>
-        /// Продать актив или закрыть по нему длинную позицию
+        /// Продать инструмент или закрыть по нему длинную позицию
         /// </summary>
         Sell = 4
     }

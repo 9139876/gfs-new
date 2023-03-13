@@ -1,5 +1,7 @@
+using AutoMapper;
 using GFS.EF.Repository;
 using GFS.GrailCommon.Enums;
+using GFS.GrailCommon.Models;
 using GFS.QuotesService.Api.Models;
 using GFS.QuotesService.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -11,15 +13,21 @@ public interface IGetDataService
     Task<List<AssetEntity>> GetAssetsInfo(AssetsFilter request);
 
     Task<AssetQuotesInfoDto> GetAssetQuotesInfo(Guid assetId);
+
+    Task<GetQuotesResponse> GetQuotes(GetQuotesRequest request);
 }
 
 public class GetDataService : IGetDataService
 {
     private readonly IDbContext _dbContext;
+    private readonly IMapper _mapper;
 
-    public GetDataService(IDbContext dbContext)
+    public GetDataService(
+        IDbContext dbContext,
+        IMapper mapper)
     {
         _dbContext = dbContext;
+        _mapper = mapper;
     }
 
     public async Task<List<AssetEntity>> GetAssetsInfo(AssetsFilter request)
@@ -37,6 +45,9 @@ public class GetDataService : IGetDataService
         if (request.AssetId.HasValue)
             selectors.Add(query => query.Where(asset => asset.Id == request.AssetId));
 
+        if(!string.IsNullOrWhiteSpace(request.FIGI))
+            selectors.Add(query => query.Where(asset => asset.FIGI == request.FIGI));
+        
         if (!string.IsNullOrWhiteSpace(request.NameFilter))
             selectors.Add(query => query.Where(asset => asset.Name.ToUpper().Contains(request.NameFilter.ToUpper())));
 
@@ -57,6 +68,23 @@ public class GetDataService : IGetDataService
             MinPrice = await baseQuery.Select(quote => quote.Low).MinAsync(),
             MaxPrice = await baseQuery.Select(quote => quote.High).MaxAsync(),
             AssetTimeFrameQuotesInfos = await GetAssetTimeFrameQuotesInfos(baseQuery, existingTimeFrames)
+        };
+    }
+
+    public async Task<GetQuotesResponse> GetQuotes(GetQuotesRequest request)
+    {
+        var quotes = await _dbContext.GetRepository<QuoteEntity>()
+            .Get(quote => quote.AssetId == request.AssetId
+                          && quote.TimeFrame == request.TimeFrame
+                          && quote.QuotesProviderType == request.QuotesProviderType
+                          && quote.Date >= request.StartDate
+                          && quote.Date <= request.EndDate)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return new GetQuotesResponse
+        {
+            Quotes = _mapper.Map<List<QuoteModel>>(quotes)
         };
     }
 

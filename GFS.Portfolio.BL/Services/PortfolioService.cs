@@ -41,7 +41,7 @@ namespace GFS.Portfolio.BL.Services
                 portfolio.Operations.Add(new OperationEntity
                 {
                     MomentUtc = request.MomentUtc,
-                    OperationType = OperationTypeEnum.Deposit,
+                    PortfolioOperationType = PortfolioOperationTypeEnum.Deposit,
                     CashChange = request.CashAmount
                 });
 
@@ -99,24 +99,24 @@ namespace GFS.Portfolio.BL.Services
                 .Where(p => p.Id == request.PortfolioId)
                 .SingleOrFailAsync();
 
-            var (allowed, error) = request.OperationType switch
+            var (allowed, error) = request.PortfolioOperationType switch
             {
-                OperationTypeEnum.Deposit or OperationTypeEnum.Take => await PerformCashOperation(request, portfolio),
-                OperationTypeEnum.Sell or OperationTypeEnum.Buy => await PerformSellBuyOperation(request, portfolio),
+                PortfolioOperationTypeEnum.Deposit or PortfolioOperationTypeEnum.Take => await PerformCashOperation(request, portfolio),
+                PortfolioOperationTypeEnum.Sell or PortfolioOperationTypeEnum.Buy => await PerformSellBuyOperation(request, portfolio),
 
-                _ => throw new ArgumentOutOfRangeException(nameof(request.OperationType))
+                _ => throw new ArgumentOutOfRangeException(nameof(request.PortfolioOperationType))
             };
 
             if (!allowed)
                 return new OperationResponseDto
                 {
-                    OperationResult = OperationResultTypeEnum.Fail,
+                    PortfolioOperationResult = PortfolioOperationResultTypeEnum.Fail,
                     ErrorMessage = error
                 };
 
             return new OperationResponseDto
             {
-                OperationResult = OperationResultTypeEnum.Success,
+                PortfolioOperationResult = PortfolioOperationResultTypeEnum.Success,
                 PortfolioInfo = portfolio.ToPortfolioInfo()
             };
         }
@@ -126,17 +126,17 @@ namespace GFS.Portfolio.BL.Services
             if (request.CashAmount is null or < 0)
                 return (false, "Сумма средств не может быть меньше 0");
 
-            if (request.OperationType == OperationTypeEnum.Take && portfolio.Operations.GetCashAmount() < request.CashAmount)
+            if (request.PortfolioOperationType == PortfolioOperationTypeEnum.Take && portfolio.Operations.GetCashAmount() < request.CashAmount)
                 return (false, "Недостаточно наличных средств в портфеле");
 
-            var cashChange = request.OperationType == OperationTypeEnum.Deposit
+            var cashChange = request.PortfolioOperationType == PortfolioOperationTypeEnum.Deposit
                 ? request.CashAmount!.Value
                 : -request.CashAmount!.Value;
 
             portfolio.Operations.Add(new OperationEntity
             {
                 MomentUtc = request.MomentUtc,
-                OperationType = OperationTypeEnum.Deposit,
+                PortfolioOperationType = PortfolioOperationTypeEnum.Deposit,
                 CashChange = cashChange
             });
 
@@ -148,19 +148,19 @@ namespace GFS.Portfolio.BL.Services
         private async Task<(bool allowed, string? error)> PerformSellBuyOperation(OperationRequestDto request, PortfolioEntity portfolio)
         {
             if (request.AssetId is null)
-                return (false, "Не указан идентификатор актива");
+                return (false, "Не указан идентификатор инструмента");
 
             if (request.AssetLotsCount is null or <= 0)
-                return (false, "Количество лотов актива должно быть положительным числом");
+                return (false, "Количество лотов инструмента должно быть положительным числом");
 
             if (request.AssetDealPrice is null or <= 0)
-                return (false, "Стоимость актива должна быть положительным числом");
+                return (false, "Стоимость инструмента должна быть положительным числом");
 
-            var cashChange = request.OperationType == OperationTypeEnum.Buy
+            var cashChange = request.PortfolioOperationType == PortfolioOperationTypeEnum.Buy
                 ? -request.AssetDealPrice!.Value * request.AssetLotsCount!.Value
                 : request.AssetDealPrice!.Value * request.AssetLotsCount!.Value;
 
-            var assetLotsChange = request.OperationType == OperationTypeEnum.Buy
+            var assetLotsChange = request.PortfolioOperationType == PortfolioOperationTypeEnum.Buy
                 ? request.AssetLotsCount
                 : -request.AssetLotsCount;
 
@@ -170,7 +170,7 @@ namespace GFS.Portfolio.BL.Services
             portfolio.Operations.Add(new OperationEntity
             {
                 MomentUtc = request.MomentUtc,
-                OperationType = request.OperationType,
+                PortfolioOperationType = request.PortfolioOperationType,
                 AssetId = request.AssetId,
                 AssetDealPrice = request.AssetDealPrice,
                 AssetLotsChange = assetLotsChange,
@@ -214,7 +214,7 @@ namespace GFS.Portfolio.BL.Services
                 result.Add(new PortfolioOperation
                 {
                     MomentUtc = operation.MomentUtc,
-                    OperationType = operation.OperationType,
+                    PortfolioOperationType = operation.PortfolioOperationType,
                     AssetId = operation.AssetId,
                     AssetsLotsChange = operation.AssetLotsChange,
                     AssetDealPrice = operation.AssetLotsChange,

@@ -5,7 +5,7 @@ namespace GFS.Portfolio.Api.Models
     public class OperationRequestDto
     {
         public Guid PortfolioId { get; set; }
-        public OperationTypeEnum OperationType { get; set; }
+        public PortfolioOperationTypeEnum PortfolioOperationType { get; set; }
         public Guid? AssetId { get; set; }
         public int? AssetLotsCount { get; set; }
         public decimal? AssetDealPrice { get; set; }

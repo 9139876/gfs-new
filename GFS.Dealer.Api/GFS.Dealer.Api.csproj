@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>GFS.FakeDealer.Api</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\GFS.Api\GFS.Api.csproj" />
+      <ProjectReference Include="..\GFS.GrailCommon\GFS.GrailCommon.csproj" />
+      <ProjectReference Include="..\GFS.QuotesService.Api.Common\GFS.QuotesService.Api.Common.csproj" />
+    </ItemGroup>
+
+</Project>

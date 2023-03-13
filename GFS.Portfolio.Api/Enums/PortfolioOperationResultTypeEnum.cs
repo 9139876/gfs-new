@@ -1,6 +1,6 @@
 namespace GFS.Portfolio.Api.Enums
 {
-    public enum OperationResultTypeEnum : byte
+    public enum PortfolioOperationResultTypeEnum : byte
     {
         Success = 1,
         Fail = 2

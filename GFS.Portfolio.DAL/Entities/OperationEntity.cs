@@ -9,7 +9,7 @@ namespace GFS.Portfolio.DAL.Entities
     {
         public DateTime MomentUtc { get; set; }
 
-        public OperationTypeEnum OperationType { get; set; }
+        public PortfolioOperationTypeEnum PortfolioOperationType { get; set; }
 
         public Guid? AssetId { get; set; }
 
