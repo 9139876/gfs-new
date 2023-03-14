@@ -1,5 +1,9 @@
+using GFS.Api.Client.Services;
 using GFS.EF.Extensions;
 using GFS.EF.Repository;
+using GFS.FakeDealer.Api.Enums;
+using GFS.FakeDealer.Api.Interfaces;
+using GFS.FakeDealer.Api.Models;
 using GFS.Portfolio.Api.Enums;
 using GFS.Portfolio.Api.Models;
 using GFS.Portfolio.DAL.Entities;
@@ -14,17 +18,20 @@ namespace GFS.Portfolio.BL.Services
         Task<PortfolioInfoDto> GetPortfolioInfo(GetPortfolioInfoRequestDto request);
         Task<List<PortfolioInfoDto>> GetAllPortfoliosInfo();
         Task<PortfolioInfoWithHistoryDto> GetPortfolioInfoWithHistory(GetPortfolioInfoRequestDto request);
-        Task<OperationResponseDto> PerformOperation(OperationRequestDto request);
+        Task<OperationResponseDto> PerformOperation(PortfolioOperationRequestDto request);
     }
 
     public class PortfolioService : IPortfolioService
     {
         private readonly IDbContext _dbContext;
+        private readonly IRemoteApiClient _remoteApiClient;
 
         public PortfolioService(
-            IDbContext dbContext)
+            IDbContext dbContext,
+            IRemoteApiClient remoteApiClient)
         {
             _dbContext = dbContext;
+            _remoteApiClient = remoteApiClient;
         }
 
         public async Task<PortfolioInfoDto> CreatePortfolio(CreatePortfolioRequestDto request)
@@ -93,7 +100,7 @@ namespace GFS.Portfolio.BL.Services
             };
         }
 
-        public async Task<OperationResponseDto> PerformOperation(OperationRequestDto request)
+        public async Task<OperationResponseDto> PerformOperation(PortfolioOperationRequestDto request)
         {
             var portfolio = await PortfolioWithOperations()
                 .Where(p => p.Id == request.PortfolioId)
@@ -121,7 +128,7 @@ namespace GFS.Portfolio.BL.Services
             };
         }
 
-        private async Task<(bool allowed, string? error)> PerformCashOperation(OperationRequestDto request, PortfolioEntity portfolio)
+        private async Task<(bool allowed, string? error)> PerformCashOperation(PortfolioOperationRequestDto request, PortfolioEntity portfolio)
         {
             if (request.CashAmount is null or < 0)
                 return (false, "Сумма средств не может быть меньше 0");
@@ -145,26 +152,25 @@ namespace GFS.Portfolio.BL.Services
             return (true, null);
         }
 
-        private async Task<(bool allowed, string? error)> PerformSellBuyOperation(OperationRequestDto request, PortfolioEntity portfolio)
+        private async Task<(bool allowed, string? error)> PerformSellBuyOperation(PortfolioOperationRequestDto request, PortfolioEntity portfolio)
         {
-            if (request.AssetId is null)
+            if (string.IsNullOrWhiteSpace(request.FIGI) || !request.AssetId.HasValue)
                 return (false, "Не указан идентификатор инструмента");
 
-            if (request.AssetLotsCount is null or <= 0)
-                return (false, "Количество лотов инструмента должно быть положительным числом");
+            if (request.AssetUnitsCount is null or <= 0)
+                return (false, "Количество единиц инструмента должно быть положительным числом");
 
-            if (request.AssetDealPrice is null or <= 0)
-                return (false, "Стоимость инструмента должна быть положительным числом");
+            var dealRequest = new MakeDealRequest
+            {
+                FIGI = request.FIGI,
+                AssetUnitsCount = request.AssetUnitsCount!.Value,
+                DealDateUtc = request.MomentUtc,
+                OperationType = request.PortfolioOperationType == PortfolioOperationTypeEnum.Buy ? DealerOperationTypeEnum.Buy: DealerOperationTypeEnum.Sell
+            };
 
-            var cashChange = request.PortfolioOperationType == PortfolioOperationTypeEnum.Buy
-                ? -request.AssetDealPrice!.Value * request.AssetLotsCount!.Value
-                : request.AssetDealPrice!.Value * request.AssetLotsCount!.Value;
+            var dealDetails = await _remoteApiClient.Call<MakeDeal, MakeDealRequest, MakeDealResponse>(dealRequest);
 
-            var assetLotsChange = request.PortfolioOperationType == PortfolioOperationTypeEnum.Buy
-                ? request.AssetLotsCount
-                : -request.AssetLotsCount;
-
-            if (portfolio.Operations.GetCashAmount() + cashChange < 0)
+            if (portfolio.Operations.GetCashAmount() + dealDetails.DeltaCash < 0)
                 return (false, "Недостаточно наличных средств в портфеле");
 
             portfolio.Operations.Add(new OperationEntity
@@ -172,9 +178,9 @@ namespace GFS.Portfolio.BL.Services
                 MomentUtc = request.MomentUtc,
                 PortfolioOperationType = request.PortfolioOperationType,
                 AssetId = request.AssetId,
-                AssetDealPrice = request.AssetDealPrice,
-                AssetLotsChange = assetLotsChange,
-                CashChange = cashChange
+                AssetDealPrice = dealDetails.DealPrice,
+                AssetUnitsCountChange = dealDetails.DeltaAsset,
+                CashChange = dealDetails.DeltaCash
             });
 
             await _dbContext.SaveChangesAsync();
@@ -216,8 +222,8 @@ namespace GFS.Portfolio.BL.Services
                     MomentUtc = operation.MomentUtc,
                     PortfolioOperationType = operation.PortfolioOperationType,
                     AssetId = operation.AssetId,
-                    AssetsLotsChange = operation.AssetLotsChange,
-                    AssetDealPrice = operation.AssetLotsChange,
+                    AssetsLotsChange = operation.AssetUnitsCountChange,
+                    AssetDealPrice = operation.AssetUnitsCountChange,
                     CashChange = operation.CashChange,
                     PortfolioStateAfterOperation = GetPortfolioState(appliedOperations)
                 });
@@ -236,7 +242,7 @@ namespace GFS.Portfolio.BL.Services
                     .Select(g => new AssetModel
                     {
                         AssetId = g.Key!.Value,
-                        Count = g.Sum(o => o.AssetLotsChange!.Value)
+                        Count = g.Sum(o => o.AssetUnitsCountChange!.Value)
                     })
                     .ToList()
             };

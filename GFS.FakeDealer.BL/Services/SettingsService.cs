@@ -1,5 +1,6 @@
 using GFS.FakeDealer.Api.Enums;
 using GFS.FakeDealer.Api.Models;
+using GFS.GrailCommon.Enums;
 using GFS.GrailCommon.Models;
 using GFS.QuotesService.Api.Common.Enum;
 
@@ -41,6 +42,7 @@ internal class SettingsService : ISettingsService
         => new()
         {
             QuotesProviderType = QuotesProviderTypeEnum.Tinkoff,
-            DealPriceCalcBehavior = DealPriceCalcBehaviorEnum.Close
+            DealPriceCalcBehavior = DealPriceCalcBehaviorEnum.Close,
+            TimeFrame = TimeFrameEnum.D1
         };
 }

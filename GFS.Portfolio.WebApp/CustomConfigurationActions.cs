@@ -1,3 +1,4 @@
+using GFS.Api.Client.Extensions;
 using GFS.Common.Extensions;
 using GFS.EF.Extensions;
 using GFS.Portfolio.DAL;
@@ -11,6 +12,7 @@ namespace GFS.Portfolio.WebApp
         public override void ConfigureServiceCollection()
         {
             ServiceCollection
+                .RegisterRemoteApi()
                 .RegisterDbContext<PortfolioDbContext>(Configuration.GetConnectionString("DefaultConnection"))
                 .RegisterAssemblyServicesByMember<BL.PlaceboRegistration>();
         }

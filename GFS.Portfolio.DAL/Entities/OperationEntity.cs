@@ -16,7 +16,7 @@ namespace GFS.Portfolio.DAL.Entities
         /// <summary>
         /// Может быть положительным (покупка) и отрицательным (продажа) числом
         /// </summary>
-        public int? AssetLotsChange { get; set; }
+        public int? AssetUnitsCountChange { get; set; }
 
         public decimal? AssetDealPrice { get; set; }
 

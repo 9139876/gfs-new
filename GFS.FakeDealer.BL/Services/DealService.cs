@@ -32,7 +32,7 @@ internal class DealService : IDealService
         var quoteRequest = new GetQuotesRequest
         {
             AssetId = assetId,
-            TimeFrame = request.TimeFrame,
+            TimeFrame = settings.TimeFrame,
             QuotesProviderType = settings.QuotesProviderType,
             StartDate = request.DealDateUtc,
             EndDate = request.DealDateUtc
@@ -40,14 +40,15 @@ internal class DealService : IDealService
 
         var quote = (await _remoteApiClient.Call<GetQuotes, GetQuotesRequest, GetQuotesResponse>(quoteRequest)).Quotes.Single();
         var dealPrice = _settingsService.GetDealPriceCalculator(request.OperationType)(quote);
-        var cashAmount = request.OperationType == DealerOperationTypeEnum.Sell
-            ? request.UnitsCount * dealPrice
-            : request.UnitsCount * dealPrice * (-1);
+        var cashAmount = request.AssetUnitsCount * dealPrice;
+
+        var multiplier = request.OperationType == DealerOperationTypeEnum.Sell ? 1 : -1;
 
         return new MakeDealResponse
         {
-            OperationRequest = request,
-            CashAmount = cashAmount
+            DealPrice = dealPrice,
+            DeltaCash = cashAmount * multiplier,
+            DeltaAsset = request.AssetUnitsCount * multiplier * -1
         };
     }
 }

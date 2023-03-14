@@ -1,5 +1,8 @@
 namespace GFS.FakeDealer.Api.Enums;
 
+/// <summary>
+/// Вид операции
+/// </summary>
 public enum DealerOperationTypeEnum
 {
     /// <summary>

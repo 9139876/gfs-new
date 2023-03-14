@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace GFS.Portfolio.Api.Interfaces
 {
     [Route(nameof(Operation))]
-    public abstract class Operation : ApiServiceWithRequestResponse<OperationRequestDto, OperationResponseDto>
+    public abstract class Operation : ApiServiceWithRequestResponse<PortfolioOperationRequestDto, OperationResponseDto>
     {
         protected Operation(ILogger logger) : base(logger)
         {

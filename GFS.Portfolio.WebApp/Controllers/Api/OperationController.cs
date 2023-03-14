@@ -15,7 +15,7 @@ namespace GFS.Portfolio.WebApp.Controllers.Api
             _portfolioService = portfolioService;
         }
 
-        protected override async Task<OperationResponseDto> ExecuteInternal(OperationRequestDto request)
+        protected override async Task<OperationResponseDto> ExecuteInternal(PortfolioOperationRequestDto request)
         {
             return await _portfolioService.PerformOperation(request);
         }
