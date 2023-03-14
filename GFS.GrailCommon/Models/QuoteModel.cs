@@ -1,4 +1,5 @@
-﻿using GFS.GrailCommon.Enums;
+﻿using GFS.Common.Attributes.Validation;
+using GFS.GrailCommon.Enums;
 
 namespace GFS.GrailCommon.Models
 {
@@ -6,6 +7,7 @@ namespace GFS.GrailCommon.Models
     {
         public TimeFrameEnum TimeFrame { get; set; }
         
+        [UtcDate]
         public DateTime Date { get; set; }
 
         public decimal Open { get; set; }

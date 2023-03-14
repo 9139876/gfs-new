@@ -1,3 +1,4 @@
+using GFS.Common.Attributes.Validation;
 using GFS.EF.Entities;
 using GFS.Portfolio.Api.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ namespace GFS.Portfolio.DAL.Entities
 {
     public class OperationEntity : GuidKeyEntity
     {
+        [UtcDate]
         public DateTime MomentUtc { get; set; }
 
         public PortfolioOperationTypeEnum PortfolioOperationType { get; set; }

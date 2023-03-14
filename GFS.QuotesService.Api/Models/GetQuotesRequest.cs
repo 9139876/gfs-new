@@ -1,3 +1,4 @@
+using GFS.Common.Attributes.Validation;
 using GFS.GrailCommon.Enums;
 using GFS.QuotesService.Api.Common.Enum;
 
@@ -11,7 +12,9 @@ public class GetQuotesRequest
     
     public QuotesProviderTypeEnum QuotesProviderType { get; init; }
     
+    [UtcDate]
     public DateTime StartDate { get; init; }
     
+    [UtcDate]
     public DateTime EndDate { get; init; }
 }

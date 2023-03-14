@@ -1,3 +1,4 @@
+using GFS.Common.Attributes;
 using GFS.FakeDealer.Api.Enums;
 using GFS.FakeDealer.Api.Models;
 using GFS.GrailCommon.Enums;
@@ -6,6 +7,7 @@ using GFS.QuotesService.Api.Common.Enum;
 
 namespace GFS.FakeDealer.BL.Services;
 
+[SingletonRegistration]
 public interface ISettingsService
 {
     void SetDealerSettings(DealerSettings request);

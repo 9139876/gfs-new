@@ -1,3 +1,7 @@
+using System.ComponentModel.DataAnnotations;
+using GFS.Common.Attributes.Validation;
+#pragma warning disable CS8618
+
 namespace GFS.FakeDealer.Api.Models;
 
 public class MakeDealResponse
@@ -5,11 +9,13 @@ public class MakeDealResponse
     /// <summary>
     /// Financial Instrument Global Identifier инструмента сделки
     /// </summary>
+    [Required]
     public string FIGI { get; init; }
     
     /// <summary>
     /// Дата совершения сделки
     /// </summary>
+    [UtcDate]
     public DateTime DealDateUtc { get; init; }
 
     /// <summary>

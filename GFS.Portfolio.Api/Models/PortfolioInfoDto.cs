@@ -1,9 +1,16 @@
+using System.ComponentModel.DataAnnotations;
+#pragma warning disable CS8618
+
 namespace GFS.Portfolio.Api.Models
 {
     public class PortfolioInfoDto
     {
-        public Guid PortfolioId { get; set; }
-        public string Name { get; set; }
-        public PortfolioStateDto PortfolioState { get; set; }
+        public Guid PortfolioId { get; init; }
+        
+        [Required]
+        public string Name { get; init; }
+        
+        [Required]
+        public PortfolioStateDto PortfolioState { get; init; }
     }
 }

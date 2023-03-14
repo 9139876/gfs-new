@@ -1,3 +1,4 @@
+using GFS.Common.Attributes.Validation;
 using GFS.EF.Entities;
 using GFS.GrailCommon.Enums;
 using GFS.QuotesService.Api.Common.Enum;
@@ -9,13 +10,22 @@ namespace GFS.QuotesService.DAL.Entities;
 public class QuoteEntity : GuidKeyEntity
 {
     public Guid AssetId { get; set; }
+    
     public QuotesProviderTypeEnum QuotesProviderType { get; set; }
+    
     public TimeFrameEnum TimeFrame { get; set; }
+    
+    [UtcDate]
     public DateTime Date { get; set; }
+    
     public decimal Open { get; set; }
+    
     public decimal High { get; set; }
+    
     public decimal Low { get; set; }
+    
     public decimal Close { get; set; }
+    
     public decimal? Volume { get; set; }
 
     #region Navigation
@@ -31,6 +41,7 @@ public class QuoteEntityConfiguration : IEntityTypeConfiguration<QuoteEntity>
     {
         builder.ToTable("Quotes");
         builder.HasKey(e => e.Id);
+        
         builder.HasOne(e => e.Asset)
             .WithMany(e => e.Quotes)
             .HasForeignKey(e => e.AssetId)

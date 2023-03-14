@@ -1,11 +1,14 @@
+using System.ComponentModel.DataAnnotations;
 using GFS.EF.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+#pragma warning disable CS8618
 
 namespace GFS.Portfolio.DAL.Entities
 {
     public class PortfolioEntity : GuidKeyEntity
     {
+        [Required]
         public string Name { get; set; }
 
         public List<OperationEntity> Operations { get; set; } = new();

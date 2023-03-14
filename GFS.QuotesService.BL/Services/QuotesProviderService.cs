@@ -1,8 +1,10 @@
 using AutoMapper;
+using GFS.Common.Extensions;
 using GFS.Common.Helpers;
 using GFS.EF.Extensions;
 using GFS.EF.Repository;
 using GFS.GrailCommon.Enums;
+using GFS.GrailCommon.Extensions;
 using GFS.QuotesService.Api.Common.Enum;
 using GFS.QuotesService.BL.Extensions;
 using GFS.QuotesService.DAL.Entities;
@@ -113,6 +115,10 @@ internal class QuotesProviderService : IQuotesProviderService
             quote.TimeFrame = timeFrame;
             quote.AssetId = assetId;
             quote.QuotesProviderType = quotesProviderType;
+            
+            quote.Date = quote.Date.CorrectDateByTf(timeFrame);
+            
+            quote.Validate();
         });
 
         var existingQuotesDates = await _dbContext.GetRepository<QuoteEntity>()
@@ -123,7 +129,7 @@ internal class QuotesProviderService : IQuotesProviderService
             .Select(q => q.Date)
             .ToListAsync();
 
-        _dbContext.GetRepository<QuoteEntity>().InsertRange(quoteEntities.Where(qe => !existingQuotesDates.Contains(qe.Date)));
+        _dbContext.GetRepository<QuoteEntity>().InsertRange(quoteEntities.Where(qe => !existingQuotesDates.Contains(qe.Date)).ToList());
         await _dbContext.SaveChangesAsync();
 
         return quoteEntities.LastOrDefault()?.Date;

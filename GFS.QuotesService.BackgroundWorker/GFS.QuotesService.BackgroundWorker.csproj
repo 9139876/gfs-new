@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\GFS.BkgWorker\GFS.BkgWorker.csproj" />
       <ProjectReference Include="..\GFS.QuotesService.BackgroundWorker.Api\GFS.QuotesService.BackgroundWorker.Api.csproj" />
       <ProjectReference Include="..\GFS.QuotesService.BL\GFS.QuotesService.BL.csproj" />
       <ProjectReference Include="..\GFS.WebApplication\GFS.WebApplication.csproj" />

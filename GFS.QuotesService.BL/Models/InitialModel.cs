@@ -1,4 +1,6 @@
+using System.ComponentModel.DataAnnotations;
 using GFS.QuotesService.Api.Enum;
+#pragma warning disable CS8618
 
 namespace GFS.QuotesService.BL.Models;
 
@@ -8,18 +10,23 @@ public class InitialModel
     public AssetTypeEnum AssetType { get; set; }
     
     /// <summary> Торговая площадка </summary>
+    [Required]
     public string Exchange { get; set; }
 
     /// <summary> Человекочитаемое имя </summary>
+    [Required]
     public string Name { get; set; }
 
     /// <summary> Financial Instrument Global Identifier </summary>
+    [Required]
     public string Figi { get; set; }
 
     /// <summary> Короткий код инструмента </summary>
+    [Required]
     public string Ticker { get; set; }
 
     /// <summary> Класс-код инструмента </summary>
+    [Required]
     public string ClassCode { get; set; }
 
     /// <summary> International Securities Identification Number - Международный идентификационный код ценной бумаги </summary>

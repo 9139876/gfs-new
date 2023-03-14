@@ -2,6 +2,6 @@ namespace GFS.Portfolio.Api.Models
 {
     public class PortfolioInfoWithHistoryDto : PortfolioInfoDto
     {
-        public List<PortfolioOperation> History { get; set; } 
+        public List<PortfolioOperation> History { get; set; } = new();
     }
 }

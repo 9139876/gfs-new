@@ -41,15 +41,15 @@ namespace GFS.GrailCommon.Extensions
 
             return timeFrame switch
             {
-                TimeFrameEnum.tick => (int) diff.TotalSeconds,
-                TimeFrameEnum.min1 => (int) diff.TotalMinutes,
-                TimeFrameEnum.min4 => (int) (diff.TotalMinutes / 4),
-                TimeFrameEnum.H1 => (int) diff.TotalHours,
-                TimeFrameEnum.D1 => (int) diff.TotalDays,
-                TimeFrameEnum.W1 => (int) (diff.TotalDays / 7),
-                TimeFrameEnum.M1 => (int) (diff.TotalDays / 30),
-                TimeFrameEnum.Seasonly => (int) (diff.TotalDays / 120),
-                TimeFrameEnum.Y1 => (int) (diff.TotalDays / 365.25),
+                TimeFrameEnum.tick => (int)diff.TotalSeconds,
+                TimeFrameEnum.min1 => (int)diff.TotalMinutes,
+                TimeFrameEnum.min4 => (int)(diff.TotalMinutes / 4),
+                TimeFrameEnum.H1 => (int)diff.TotalHours,
+                TimeFrameEnum.D1 => (int)diff.TotalDays,
+                TimeFrameEnum.W1 => (int)(diff.TotalDays / 7),
+                TimeFrameEnum.M1 => (int)(diff.TotalDays / 30),
+                TimeFrameEnum.Seasonly => (int)(diff.TotalDays / 120),
+                TimeFrameEnum.Y1 => (int)(diff.TotalDays / 365.25),
 
                 _ => throw new NotSupportedException($"Not supported timeframe '{timeFrame}'")
             };
@@ -61,9 +61,14 @@ namespace GFS.GrailCommon.Extensions
         /// <param name="date"></param>
         /// <param name="timeFrame"></param>
         /// <returns></returns>
-        public static DateTime CorrectDateByTf(DateTime date, TimeFrameEnum timeFrame)
+        public static DateTime CorrectDateByTf(this DateTime date, TimeFrameEnum timeFrame)
         {
-            int year = date.Year, month = date.Month, day = date.Day, hour = date.Hour, min = date.Minute, sec = date.Second;
+            int year = date.Year,
+                month = date.Month,
+                day = date.Day,
+                hour = date.Hour,
+                min = date.Minute,
+                sec = date.Second;
 
             switch (timeFrame)
             {
@@ -124,7 +129,7 @@ namespace GFS.GrailCommon.Extensions
                     sec = 0;
                     break;
                 case TimeFrameEnum.min4:
-                    min = (int) Math.Floor((double) min / 4) * 4 + 2;
+                    min = (int)Math.Floor((double)min / 4) * 4 + 2;
                     sec = 0;
                     break;
                 case TimeFrameEnum.min1:
@@ -137,7 +142,14 @@ namespace GFS.GrailCommon.Extensions
                     throw new NotSupportedException($"Not supported timeframe '{timeFrame}'");
             }
 
-            return new DateTime(year, month, day, hour, min, sec);
+            return new DateTime(
+                year,
+                month,
+                day,
+                hour,
+                min,
+                sec,
+                date.Kind);
         }
 
         /// <summary>
