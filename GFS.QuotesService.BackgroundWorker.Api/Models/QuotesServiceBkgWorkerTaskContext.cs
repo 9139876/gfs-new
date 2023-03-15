@@ -1,12 +1,13 @@
+using GFS.BackgroundWorker.Models;
 using GFS.QuotesService.Api.Common.Enum;
 using GFS.QuotesService.BackgroundWorker.Api.Enum;
 
 namespace GFS.QuotesService.BackgroundWorker.Api.Models;
 
 /// <summary>
-/// Модель для создания задачи для BackgroundWorker`а
+/// Контекст задачи для BackgroundWorker`а QuotesService
 /// </summary>
-public class BkgWorkerTaskCreateRequest
+public class QuotesServiceBkgWorkerTaskContext : IBkgWorkerTaskContext
 {
     public Guid? AssetId { get; init; }
 
@@ -30,4 +31,6 @@ public class BkgWorkerTaskCreateRequest
 
         return true;
     }
+
+    public int GetPriority() => (int)TaskType;
 }

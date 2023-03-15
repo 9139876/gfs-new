@@ -17,13 +17,13 @@ public class AddTasksRequestBillet
         => new AddTasksRequest
         {
             Tasks = AssetIds.Any() && TaskType != GetQuotesTaskTypeEnum.GetInitialData
-                ? AssetIds.Select(id => new BkgWorkerTaskCreateRequest
+                ? AssetIds.Select(id => new QuotesServiceBkgWorkerTaskContext
                 {
                     AssetId = id,
                     QuotesProviderType = QuotesProviderType,
                     TaskType = TaskType
                 }).ToList()
-                : new List<BkgWorkerTaskCreateRequest>
+                : new List<QuotesServiceBkgWorkerTaskContext>
                 {
                     new()
                     {

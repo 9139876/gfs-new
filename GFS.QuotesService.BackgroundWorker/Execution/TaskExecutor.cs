@@ -1,4 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using GFS.BackgroundWorker.Execution;
+using GFS.BackgroundWorker.Models;
 using GFS.QuotesService.Api.Common.Enum;
 using GFS.QuotesService.BackgroundWorker.Api.Enum;
 using GFS.QuotesService.BackgroundWorker.Api.Models;
@@ -10,15 +12,18 @@ public class TaskExecutor
 {
     private readonly QuotesProviderTypeEnum _quotesProviderType;
     private readonly IQuotesProviderService _quotesProviderService;
+    private readonly ITasksStorage<QuotesServiceBkgWorkerTaskContext> _tasksStorage;
     private readonly ILogger _logger;
 
     public TaskExecutor(
         QuotesProviderTypeEnum quotesProviderType,
         IQuotesProviderService quotesProviderService,
+        ITasksStorage<QuotesServiceBkgWorkerTaskContext> tasksStorage,
         ILogger logger)
     {
         _quotesProviderType = quotesProviderType;
         _quotesProviderService = quotesProviderService;
+        _tasksStorage = tasksStorage;
         _logger = logger;
     }
 
@@ -30,26 +35,26 @@ public class TaskExecutor
 
         while (true)
         {
-            while (TasksStorage.TryGetTaskForExecute(_quotesProviderType, out var task))
+            while (_tasksStorage.TryGetTaskForExecute(ctx => ctx.QuotesProviderType == _quotesProviderType, out var task))
             {
                 try
                 {
-                    Action action = task!.TaskType switch
+                    Action action = task!.Context.TaskType switch
                     {
                         GetQuotesTaskTypeEnum.GetInitialData => () => ExecuteInitialAssets(task),
                         GetQuotesTaskTypeEnum.GetRealtimeQuotes => throw new NotImplementedException("GetRealtimeQuotes not implemented yet"),
                         GetQuotesTaskTypeEnum.GetHistory => () => ExecuteGetHistoryQuotes(task),
-                        _ => throw new ArgumentOutOfRangeException(nameof(task.TaskType))
+                        _ => throw new ArgumentOutOfRangeException(nameof(task.Context.TaskType))
                     };
 
                     action.Invoke();
 
-                    TasksStorage.ReportOfSuccess(task.TaskId);
+                    _tasksStorage.ReportOfSuccess(task.TaskId);
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, $"Task {task!.TaskType} for {task.QuotesProviderType} failed");
-                    TasksStorage.ReportOfFail(task.TaskId, e.Message);
+                    _logger.LogError(e, "Task {TaskType} for {QuotesProviderType} failed", task!.Context.TaskType, task.Context.QuotesProviderType);
+                    _tasksStorage.ReportOfFail(task.TaskId, e.Message);
                 }
             }
 
@@ -57,13 +62,13 @@ public class TaskExecutor
         }
     }
 
-    private void ExecuteInitialAssets(BkgWorkerTask task)
+    private void ExecuteInitialAssets(BkgWorkerTask<QuotesServiceBkgWorkerTaskContext> task)
     {
-        _quotesProviderService.InitialAssets(task.QuotesProviderType).Wait();
+        _quotesProviderService.InitialAssets(task.Context.QuotesProviderType).Wait();
     }
 
-    private void ExecuteGetHistoryQuotes(BkgWorkerTask task)
+    private void ExecuteGetHistoryQuotes(BkgWorkerTask<QuotesServiceBkgWorkerTaskContext> task)
     {
-        _quotesProviderService.GetOrUpdateHistory(task.QuotesProviderType, task.AssetId ?? throw new ArgumentNullException(nameof(task.AssetId))).Wait();
+        _quotesProviderService.GetOrUpdateHistory(task.Context.QuotesProviderType, task.Context.AssetId ?? throw new ArgumentNullException(nameof(task.Context.AssetId))).Wait();
     }
 }

@@ -1,26 +1,26 @@
-using AutoMapper;
+using GFS.BackgroundWorker.Execution;
+using GFS.BackgroundWorker.Models;
 using GFS.Common.Models;
 using GFS.QuotesService.BackgroundWorker.Api.Interfaces;
 using GFS.QuotesService.BackgroundWorker.Api.Models;
 using GFS.QuotesService.BackgroundWorker.Api.Models.RequestResponse;
-using GFS.QuotesService.BackgroundWorker.Execution;
 
 namespace GFS.QuotesService.BackgroundWorker.Controllers.Api;
 
 public class AddTasksController : AddTasks
 {
-    private readonly IMapper _mapper;
+    private readonly ITasksStorage<QuotesServiceBkgWorkerTaskContext> _tasksStorage;
 
     public AddTasksController(
         ILogger logger,
-        IMapper mapper) : base(logger)
+        ITasksStorage<QuotesServiceBkgWorkerTaskContext> tasksStorage) : base(logger)
     {
-        _mapper = mapper;
+        _tasksStorage = tasksStorage;
     }
 
     protected override Task<StandardResponse> ExecuteInternal(AddTasksRequest request)
     {
-        TasksStorage.AddTasks(_mapper.Map<List<BkgWorkerTask>>(request.Tasks));
+        _tasksStorage.AddTasks(request.Tasks.Select(taskContext => new BkgWorkerTask<QuotesServiceBkgWorkerTaskContext> { Context = taskContext }));
         return Task.FromResult(StandardResponse.GetSuccessResponse());
     }
 }

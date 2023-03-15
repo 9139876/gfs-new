@@ -1,17 +1,23 @@
+using GFS.BackgroundWorker.Execution;
 using GFS.QuotesService.BackgroundWorker.Api.Interfaces;
+using GFS.QuotesService.BackgroundWorker.Api.Models;
 using GFS.QuotesService.BackgroundWorker.Api.Models.RequestResponse;
-using GFS.QuotesService.BackgroundWorker.Execution;
 
 namespace GFS.QuotesService.BackgroundWorker.Controllers.Api;
 
 public class GetTasksController : GetTasks
 {
-    public GetTasksController(ILogger logger) : base(logger)
+    private readonly ITasksStorage<QuotesServiceBkgWorkerTaskContext> _tasksStorage;
+
+    public GetTasksController(
+        ILogger logger,
+        ITasksStorage<QuotesServiceBkgWorkerTaskContext> tasksStorage) : base(logger)
     {
+        _tasksStorage = tasksStorage;
     }
 
     protected override Task<GetTasksResponse> ExecuteInternal(GetTasksRequest request)
     {
-        return Task.FromResult(new GetTasksResponse { Tasks = TasksStorage.GetTasks(request.TaskStates.ToArray()) });
+        return Task.FromResult(new GetTasksResponse { Tasks = _tasksStorage.GetTasks(request.TaskStates.ToArray()) });
     }
 }
