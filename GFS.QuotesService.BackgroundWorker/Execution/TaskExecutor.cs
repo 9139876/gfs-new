@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using GFS.BackgroundWorker.Execution;
 using GFS.BackgroundWorker.Models;
 using GFS.QuotesService.Api.Common.Enum;
@@ -8,67 +7,52 @@ using GFS.QuotesService.BL.Services;
 
 namespace GFS.QuotesService.BackgroundWorker.Execution;
 
-public class TaskExecutor
+public class TaskExecutor : AbstractTaskExecutor<QuotesServiceBkgWorkerTaskContext>
 {
     private readonly QuotesProviderTypeEnum _quotesProviderType;
     private readonly IQuotesProviderService _quotesProviderService;
-    private readonly ITasksStorage<QuotesServiceBkgWorkerTaskContext> _tasksStorage;
     private readonly ILogger _logger;
 
     public TaskExecutor(
         QuotesProviderTypeEnum quotesProviderType,
         IQuotesProviderService quotesProviderService,
         ITasksStorage<QuotesServiceBkgWorkerTaskContext> tasksStorage,
-        ILogger logger)
+        ILogger logger) : base(tasksStorage, logger)
     {
         _quotesProviderType = quotesProviderType;
         _quotesProviderService = quotesProviderService;
-        _tasksStorage = tasksStorage;
         _logger = logger;
     }
 
-    [SuppressMessage("ReSharper", "AccessToModifiedClosure")]
-    [SuppressMessage("ReSharper", "FunctionNeverReturns")]
-    public void Execute()
-    {
-        using var loggerScope = _logger.BeginScope("{TaskExecutorType}", $"Executor_{_quotesProviderType}");
+    protected override Predicate<QuotesServiceBkgWorkerTaskContext> TasksSelector
+        => ctx => ctx.QuotesProviderType == _quotesProviderType;
 
-        while (true)
+    protected override IDisposable LoggerScope
+        => _logger.BeginScope("{ExecutorNameSpace}, {TaskExecutorType}", GetType().Namespace, $"Executor_{_quotesProviderType}");
+
+    protected override Action<Exception, BkgWorkerTask<QuotesServiceBkgWorkerTaskContext>> LogErrorMessage
+        => (e, task) => _logger.LogError(e, "Task {TaskType} id {TaskId} for {QuotesProviderType} failed", task.Context.TaskType, task.TaskId, task.Context.QuotesProviderType);
+
+    protected override void ExecuteInternal(QuotesServiceBkgWorkerTaskContext ctx)
+    {
+        Action action = ctx.TaskType switch
         {
-            while (_tasksStorage.TryGetTaskForExecute(ctx => ctx.QuotesProviderType == _quotesProviderType, out var task))
-            {
-                try
-                {
-                    Action action = task!.Context.TaskType switch
-                    {
-                        GetQuotesTaskTypeEnum.GetInitialData => () => ExecuteInitialAssets(task),
-                        GetQuotesTaskTypeEnum.GetRealtimeQuotes => throw new NotImplementedException("GetRealtimeQuotes not implemented yet"),
-                        GetQuotesTaskTypeEnum.GetHistory => () => ExecuteGetHistoryQuotes(task),
-                        _ => throw new ArgumentOutOfRangeException(nameof(task.Context.TaskType))
-                    };
+            GetQuotesTaskTypeEnum.GetInitialData => () => ExecuteInitialAssets(ctx),
+            GetQuotesTaskTypeEnum.GetRealtimeQuotes => throw new NotImplementedException("GetRealtimeQuotes not implemented yet"),
+            GetQuotesTaskTypeEnum.GetHistory => () => ExecuteGetHistoryQuotes(ctx),
+            _ => throw new ArgumentOutOfRangeException(nameof(ctx.TaskType))
+        };
 
-                    action.Invoke();
-
-                    _tasksStorage.ReportOfSuccess(task.TaskId);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Task {TaskType} for {QuotesProviderType} failed", task!.Context.TaskType, task.Context.QuotesProviderType);
-                    _tasksStorage.ReportOfFail(task.TaskId, e.Message);
-                }
-            }
-
-            Thread.Sleep(1000);
-        }
+        action.Invoke();
     }
 
-    private void ExecuteInitialAssets(BkgWorkerTask<QuotesServiceBkgWorkerTaskContext> task)
+    private void ExecuteInitialAssets(QuotesServiceBkgWorkerTaskContext ctx)
     {
-        _quotesProviderService.InitialAssets(task.Context.QuotesProviderType).Wait();
+        _quotesProviderService.InitialAssets(ctx.QuotesProviderType).Wait();
     }
 
-    private void ExecuteGetHistoryQuotes(BkgWorkerTask<QuotesServiceBkgWorkerTaskContext> task)
+    private void ExecuteGetHistoryQuotes(QuotesServiceBkgWorkerTaskContext ctx)
     {
-        _quotesProviderService.GetOrUpdateHistory(task.Context.QuotesProviderType, task.Context.AssetId ?? throw new ArgumentNullException(nameof(task.Context.AssetId))).Wait();
+        _quotesProviderService.GetOrUpdateHistory(ctx.QuotesProviderType, ctx.AssetId ?? throw new ArgumentNullException(nameof(ctx.AssetId))).Wait();
     }
 }
