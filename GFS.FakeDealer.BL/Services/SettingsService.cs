@@ -12,6 +12,7 @@ public interface ISettingsService
 {
     void SetDealerSettings(DealerSettings request);
     DealerSettings GetDealerSettings();
+    decimal GetDealerCommission(decimal cashAmount);
 
     Func<QuoteModel, decimal> GetDealPriceCalculator(DealerOperationTypeEnum operationType);
 }
@@ -40,11 +41,25 @@ internal class SettingsService : ISettingsService
             _ => throw new ArgumentOutOfRangeException(nameof(_settings.DealPriceCalcBehavior), $"Value = {_settings.DealPriceCalcBehavior}")
         };
 
+    public decimal GetDealerCommission(decimal cashAmount)
+        => _settings.DealerCommission.CommissionType switch
+        {
+            DealerCommissionType.Fix => _settings.DealerCommission.Value,
+            DealerCommissionType.PercentOfDealSum => Math.Abs(cashAmount) * _settings.DealerCommission.Value,
+            _ => throw new ArgumentOutOfRangeException(nameof(_settings.DealerCommission.CommissionType), $"Value = {_settings.DealerCommission.CommissionType}")
+        };
+
+
     private static DealerSettings GetDefaultSettings()
         => new()
         {
             QuotesProviderType = QuotesProviderTypeEnum.Tinkoff,
             DealPriceCalcBehavior = DealPriceCalcBehaviorEnum.Close,
-            TimeFrame = TimeFrameEnum.D1
+            TimeFrame = TimeFrameEnum.D1,
+            DealerCommission = new DealerCommission
+            {
+                CommissionType = DealerCommissionType.Fix,
+                Value = 0
+            }
         };
 }

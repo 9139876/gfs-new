@@ -39,16 +39,19 @@ internal class DealService : IDealService
         };
 
         var quote = (await _remoteApiClient.Call<GetQuotes, GetQuotesRequest, GetQuotesResponse>(quoteRequest)).Quotes.Single();
+
         var dealPrice = _settingsService.GetDealPriceCalculator(request.OperationType)(quote);
         var cashAmount = request.AssetUnitsCount * dealPrice;
+        var dealerCommission = _settingsService.GetDealerCommission(cashAmount);
 
-        var multiplier = request.OperationType == DealerOperationTypeEnum.Sell ? 1 : -1;
+        var cashMultiplier = request.OperationType == DealerOperationTypeEnum.Sell ? 1 : -1;
+        var assetMultiplier = cashMultiplier * -1;
 
         return new MakeDealResponse
         {
             DealPrice = dealPrice,
-            DeltaCash = cashAmount * multiplier,
-            DeltaAsset = request.AssetUnitsCount * multiplier * -1
+            DeltaCash = cashAmount * cashMultiplier - dealerCommission,
+            DeltaAsset = request.AssetUnitsCount * assetMultiplier
         };
     }
 }

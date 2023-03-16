@@ -1,6 +1,7 @@
 using GFS.FakeDealer.Api.Enums;
 using GFS.GrailCommon.Enums;
 using GFS.QuotesService.Api.Common.Enum;
+#pragma warning disable CS8618
 
 namespace GFS.FakeDealer.Api.Models;
 
@@ -10,5 +11,7 @@ public class DealerSettings
 
     public DealPriceCalcBehaviorEnum DealPriceCalcBehavior { get; init; }
 
-    public TimeFrameEnum TimeFrame { get; set; }
+    public TimeFrameEnum TimeFrame { get; init; }
+    
+    public DealerCommission DealerCommission { get; init; }
 }
