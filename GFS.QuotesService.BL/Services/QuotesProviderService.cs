@@ -38,7 +38,6 @@ internal class QuotesProviderService : IQuotesProviderService
     {
         using var transaction = SystemTransaction.Default();
 
-        var assetRepository = _dbContext.GetRepository<AssetEntity>();
         var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
 
         var initialModels = await adapter.GetInitialData();
@@ -48,23 +47,20 @@ internal class QuotesProviderService : IQuotesProviderService
             var asset = _mapper.Map<AssetEntity>(im);
             asset.AssetInfo = _mapper.Map<AssetInfoEntity>(im);
             asset.AssetInfo.AssetId = asset.Id;
+            asset.ProviderCompatibilities.Add(new AssetProviderCompatibilityEntity
+            {
+                AssetId = asset.Id,
+                QuotesProviderType = quotesProviderType,
+                IsCompatibility = true
+            });
+            
             return asset;
         }).ToList();
 
-        var existing = await assetRepository.Get().ToListAsync();
+        var existingAssets = await _dbContext.GetRepository<AssetEntity>().Get().ToListAsync();
+        var newAssets = assets.Except(existingAssets).ToList();
 
-        var newAssets = assets.Except(existing).ToList();
-
-        assetRepository.InsertRange(newAssets);
-
-        var assetProviderCompatibilities = newAssets.Select(asset => new AssetProviderCompatibilityEntity
-        {
-            AssetId = asset.Id,
-            QuotesProviderType = quotesProviderType,
-            IsCompatibility = true
-        });
-
-        _dbContext.GetRepository<AssetProviderCompatibilityEntity>().InsertRange(assetProviderCompatibilities);
+        _dbContext.GetRepository<AssetEntity>().InsertRange(newAssets);
 
         await _dbContext.SaveChangesAsync();
         transaction.Complete();
@@ -115,9 +111,9 @@ internal class QuotesProviderService : IQuotesProviderService
             quote.TimeFrame = timeFrame;
             quote.AssetId = assetId;
             quote.QuotesProviderType = quotesProviderType;
-            
+
             quote.Date = quote.Date.CorrectDateByTf(timeFrame);
-            
+
             quote.Validate();
         });
 

@@ -30,7 +30,7 @@ public class AssetProviderCompatibilityEntityConfiguration : IEntityTypeConfigur
         builder.ToTable("AssetProviderCompatibilities");
         builder.HasKey(e => e.Id);
         builder.HasOne(e => e.Asset)
-            .WithMany()
+            .WithMany(e => e.ProviderCompatibilities)
             .HasForeignKey(e => e.AssetId)
             .OnDelete(DeleteBehavior.Cascade);
         builder.HasIndex(e => new { e.AssetId, e.QuotesProviderType }).IsUnique();

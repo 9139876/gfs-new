@@ -11,14 +11,23 @@ public class MappingProfile : Profile
 {
     public MappingProfile(Action<IProfileExpression>? configureExt = null)
     {
+        CreateMap<Google.Protobuf.WellKnownTypes.Timestamp, DateTime>()
+            .ConvertUsing(ts => ts.ToDateTime());
+
         CreateMap<Share, InitialModel>()
             .ForMember(dest => dest.IpoDate, opt => opt.MapFrom(src => src.IpoDate.ToDateTime()));
+
         CreateMap<Currency, InitialModel>();
+
         CreateMap<Etf, InitialModel>();
+
         CreateMap<InitialModel, AssetEntity>();
+
         CreateMap<InitialModel, AssetInfoEntity>();
+
         CreateMap<HistoricCandle, QuoteModel>()
             .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Time.ToDateTime()));
+
         CreateMap<QuoteModel, QuoteEntity>()
             .ReverseMap();
 
@@ -29,7 +38,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Lot, opt => opt.MapFrom(src => src.AssetInfo != null ? src.AssetInfo.Lot : null))
             .ForMember(dest => dest.IpoDate, opt => opt.MapFrom(src => src.AssetInfo != null ? src.AssetInfo.IpoDate : null))
             .ForMember(dest => dest.Sector, opt => opt.MapFrom(src => src.AssetInfo != null ? src.AssetInfo.Sector : null));
-        
+
         configureExt?.Invoke(this);
     }
 }

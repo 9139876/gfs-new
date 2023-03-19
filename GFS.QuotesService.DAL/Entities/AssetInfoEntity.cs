@@ -23,6 +23,12 @@ public class AssetInfoEntity : GuidKeyEntity
     /// <summary> Сектор экономики </summary>
     public string? Sector { get; set; }
 
+    /// <summary> Дата первой 1-минутной свечи у Тинькофф </summary>
+    public DateTime? First1MinCandleDate { get; set; }
+    
+    /// <summary> Дата первой 1-дневной свечи у Тинькофф </summary>
+    public DateTime? First1DayCandleDate { get; set; }
+    
     #region Navigation
 
     public AssetEntity? Asset { get; set; }
@@ -39,7 +45,6 @@ public class AssetInfoEntityConfiguration : IEntityTypeConfiguration<AssetInfoEn
         builder.HasOne(entity => entity.Asset)
             .WithOne(entity => entity.AssetInfo)
             .HasForeignKey<AssetInfoEntity>(e => e.AssetId)
-            .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

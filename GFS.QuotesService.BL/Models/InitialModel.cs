@@ -46,4 +46,10 @@ public class InitialModel
 
     /// <summary> Сектор экономики </summary>
     public string? Sector { get; set; }
+    
+    /// <summary> Дата первой 1-минутной свечи у Тинькофф </summary>
+    public DateTime? First1MinCandleDate { get; set; }
+    
+    /// <summary> Дата первой 1-дневной свечи у Тинькофф </summary>
+    public DateTime? First1DayCandleDate { get; set; }
 }

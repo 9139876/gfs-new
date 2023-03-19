@@ -32,10 +32,10 @@ public class AssetEntity : GuidKeyEntity
     #region Equals
 
     public override bool Equals(object? obj)
-        => obj is AssetEntity other && other.Ticker == Ticker;
+        => obj is AssetEntity other && other.FIGI == FIGI;
 
     public override int GetHashCode()
-        => Ticker.GetHashCode();
+        => FIGI.GetHashCode();
 
     #endregion
 
@@ -44,6 +44,8 @@ public class AssetEntity : GuidKeyEntity
     public AssetInfoEntity? AssetInfo { get; set; }
 
     public List<QuoteEntity> Quotes { get; set; } = new();
+
+    public List<AssetProviderCompatibilityEntity> ProviderCompatibilities { get; set; } = new();
 
     #endregion
 }
@@ -54,6 +56,6 @@ public class AssetEntityConfiguration : IEntityTypeConfiguration<AssetEntity>
     {
         builder.ToTable("Assets");
         builder.HasKey(e => e.Id);
-        builder.HasIndex(e => e.Ticker).IsUnique();
+        builder.HasIndex(e => e.FIGI).IsUnique();
     }
 }

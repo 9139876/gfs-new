@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\GFS.Api.Client\GFS.Api.Client.csproj" />
       <ProjectReference Include="..\GFS.TradingStrategyTester.Api\GFS.TradingStrategyTester.Api.csproj" />
     </ItemGroup>
 

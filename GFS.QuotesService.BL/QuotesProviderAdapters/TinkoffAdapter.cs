@@ -70,11 +70,11 @@ public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
     protected override async Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(AssetEntity asset, TimeFrameEnum timeFrame, DateTime lastQuoteDate)
     {
         //Работает в UTC
-        var request = new GetCandlesRequest()
+        var request = new GetCandlesRequest
         {
             Figi = asset.FIGI,
             Interval = TimeframeToCandleInterval(timeFrame),
-            From = lastQuoteDate.AddDate(timeFrame,1).ToUniversalTime().ToTimestamp(),
+            From = lastQuoteDate.AddDate(timeFrame, 1).ToUniversalTime().ToTimestamp(),
             To = GetEndPeriodDate(lastQuoteDate, timeFrame).ToUniversalTime().ToTimestamp()
         };
 
