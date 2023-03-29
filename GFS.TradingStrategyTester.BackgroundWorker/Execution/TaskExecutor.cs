@@ -14,7 +14,7 @@ public class TaskExecutor : AbstractTaskExecutor<TradingStrategyTestingItemConte
         ITasksStorage<TradingStrategyTestingItemContext> tasksStorage,
         ILogger logger,
         IRemoteApiClient remoteApiClient)
-        : base(tasksStorage, logger)
+        : base(tasksStorage)
     {
         _logger = logger;
         _remoteApiClient = remoteApiClient;

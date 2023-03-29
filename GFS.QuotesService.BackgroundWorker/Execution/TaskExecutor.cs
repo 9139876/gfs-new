@@ -17,7 +17,7 @@ public class TaskExecutor : AbstractTaskExecutor<QuotesServiceBkgWorkerTaskConte
         QuotesProviderTypeEnum quotesProviderType,
         IQuotesProviderService quotesProviderService,
         ITasksStorage<QuotesServiceBkgWorkerTaskContext> tasksStorage,
-        ILogger logger) : base(tasksStorage, logger)
+        ILogger logger) : base(tasksStorage)
     {
         _quotesProviderType = quotesProviderType;
         _quotesProviderService = quotesProviderService;

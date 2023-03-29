@@ -1,13 +1,16 @@
+using System.IO.Compression;
+using System.Net.Http.Headers;
+using System.Web;
 using AutoMapper;
 using GFS.Common.Extensions;
 using GFS.GrailCommon.Enums;
-using GFS.GrailCommon.Extensions;
 using GFS.GrailCommon.Models;
 using GFS.QuotesService.Api.Enum;
 using GFS.QuotesService.BL.Models;
 using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
 using GFS.QuotesService.DAL.Entities;
 using Google.Protobuf.WellKnownTypes;
+using Microsoft.Extensions.Configuration;
 using Tinkoff.InvestApi;
 using Tinkoff.InvestApi.V1;
 
@@ -20,14 +23,20 @@ public interface ITinkoffAdapter : IQuotesProviderAdapter
 public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 {
     private readonly InvestApiClient _apiClient;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly IMapper _mapper;
+    private readonly IConfiguration _configuration;
 
     public TinkoffAdapter(
         InvestApiClient apiClient,
-        IMapper mapper)
+        IHttpClientFactory httpClientFactory,
+        IMapper mapper,
+        IConfiguration configuration)
     {
         _apiClient = apiClient;
+        _httpClientFactory = httpClientFactory;
         _mapper = mapper;
+        _configuration = configuration;
     }
 
     public override async Task<List<InitialModel>> GetInitialData()
@@ -67,15 +76,83 @@ public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         return result;
     }
 
-    protected override async Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(AssetEntity asset, TimeFrameEnum timeFrame, DateTime lastQuoteDate)
+    protected override async Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(AssetEntity asset, TimeFrameEnum timeFrame, DateTime batchEndDate)
+    {
+        return timeFrame == TimeFrameEnum.min1
+            ? await GetQuotesBatchFromArchive(asset, timeFrame, batchEndDate)
+            : await GetQuotesBatchFromCandles(asset, timeFrame, batchEndDate);
+    }
+
+    private async Task<IEnumerable<QuoteModel>> GetQuotesBatchFromArchive(AssetEntity asset, TimeFrameEnum timeFrame, DateTime batchEndDate)
+    {
+        if (timeFrame != TimeFrameEnum.min1)
+            throw new NotSupportedException($"{nameof(timeFrame)} is {timeFrame}");
+
+        using var httpClient = _httpClientFactory.CreateClient();
+
+        var token = _configuration.GetSection("TinkoffApiToken").Value ?? throw new InvalidOperationException("Tinkoff api key not specified in environment variables");
+        httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        var tinkoffResponse = await httpClient.SendAsync(BuildRequestGetQuotesBatchFromArchive(asset, batchEndDate));
+
+        var zipArchive = new ZipArchive(await tinkoffResponse.Content.ReadAsStreamAsync());
+
+        var result = new List<QuoteModel>();
+
+        foreach (var itemStream in zipArchive.Entries.Select(entry => entry.Open()))
+        {
+            using var sr = new StreamReader(itemStream);
+
+            while (!sr.EndOfStream)
+            {
+                var itemDataLine = (await sr.ReadLineAsync())!.Split(';');
+
+                result.Add(new QuoteModel
+                {
+                    TimeFrame = timeFrame,
+                    Date = DateTime.Parse(itemDataLine[1]).ToUniversalTime(),
+                    Open = decimal.Parse(itemDataLine[2]),
+                    Close = decimal.Parse(itemDataLine[3]),
+                    High = decimal.Parse(itemDataLine[4]),
+                    Low = decimal.Parse(itemDataLine[5]),
+                    Volume = decimal.Parse(itemDataLine[6])
+                });
+            }
+        }
+
+        return result;
+    }
+
+    private HttpRequestMessage BuildRequestGetQuotesBatchFromArchive(AssetEntity asset, DateTime batchEndDate)
+    {
+        var baseUri = _configuration.GetSection("TinkoffApi:UriHistoryData").Value ??
+                      throw new InvalidOperationException("TinkoffApi.UriHistoryData not specified in configuration");
+
+        var builder = new UriBuilder(baseUri);
+
+        var query = HttpUtility.ParseQueryString(builder.Query);
+        query["figi"] = asset.FIGI;
+        query["year"] = batchEndDate.Year.ToString();
+
+        builder.Query = query.ToString();
+
+        var httpRequest = new HttpRequestMessage();
+        httpRequest.Method = HttpMethod.Get;
+        httpRequest.RequestUri = builder.Uri;
+
+        return httpRequest;
+    }
+
+    private async Task<IEnumerable<QuoteModel>> GetQuotesBatchFromCandles(AssetEntity asset, TimeFrameEnum timeFrame, DateTime batchEndDate)
     {
         //Работает в UTC
         var request = new GetCandlesRequest
         {
             Figi = asset.FIGI,
             Interval = TimeframeToCandleInterval(timeFrame),
-            From = lastQuoteDate.AddDate(timeFrame, 1).ToUniversalTime().ToTimestamp(),
-            To = GetEndPeriodDate(lastQuoteDate, timeFrame).ToUniversalTime().ToTimestamp()
+            From = GetBatchStartDate(batchEndDate, timeFrame).ToUniversalTime().ToTimestamp(),
+            To = batchEndDate.ToUniversalTime().ToTimestamp(),
         };
 
         var apiResponse = await _apiClient.MarketData.GetCandlesAsync(request);
@@ -106,12 +183,12 @@ public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
             _ => throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame.ToString())
         };
 
-    private static DateTime GetEndPeriodDate(DateTime start, TimeFrameEnum timeFrame)
+    private static DateTime GetBatchStartDate(DateTime end, TimeFrameEnum timeFrame)
         => timeFrame switch
         {
-            TimeFrameEnum.min1 => start.AddDays(1),
-            TimeFrameEnum.H1 => start.AddDays(7),
-            TimeFrameEnum.D1 => start.AddDays(365),
+            TimeFrameEnum.min1 => end.AddDays(-1),
+            TimeFrameEnum.H1 => end.AddDays(-7),
+            TimeFrameEnum.D1 => end.AddDays(-365),
             _ => throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame.ToString())
         };
 

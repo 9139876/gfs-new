@@ -22,6 +22,7 @@ public class CustomConfigurationActions : CustomConfigurationActionsAbstract
             .RegisterDbContext<QuotesServiceDbContext>(Configuration.GetConnectionString("DefaultConnection"))
             .RegisterAssemblyServicesByMember<BL.PlaceboRegistration>()
             .RegistryTinkoffRemoteApi(Configuration)
+            .AddHttpClient()
             .RegisterTaskStorage<QuotesServiceBkgWorkerTaskContext>();
     }
 
@@ -38,8 +39,8 @@ public class CustomConfigurationActions : CustomConfigurationActionsAbstract
 
     public override void OnApplicationStarted()
     {
-        //Грязный хак - tasksStorage получаем из rootServiceProvider, иначе это будет синглтон из другого скоупа и у основного приложения будет другой его экземпляр,
-        //а quotesProviderService и logger получаем из scopedServiceProvider, т.к. rootServiceProvider может отдавать только синглтоны, вот так вот :)
+        //Грязный хак - tasksStorage получаем из rootServiceProvider, а не из scopedServiceProvider, иначе это будет синглтон из другого скоупа и у основного приложения
+        //будет другой его экземпляр,а quotesProviderService и logger получаем из scopedServiceProvider, т.к. rootServiceProvider может отдавать только синглтоны, вот так вот :)
         
         var rootServiceProvider = Application.Services;
         var scopedServiceProvider = ServiceCollection.BuildServiceProvider();

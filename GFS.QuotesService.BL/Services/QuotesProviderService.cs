@@ -53,7 +53,7 @@ internal class QuotesProviderService : IQuotesProviderService
                 QuotesProviderType = quotesProviderType,
                 IsCompatibility = true
             });
-            
+
             return asset;
         }).ToList();
 
@@ -72,44 +72,59 @@ internal class QuotesProviderService : IQuotesProviderService
 
         foreach (var timeFrame in adapter.NativeSupportedTimeFrames)
         {
-            var lastQuote = await _dbContext.GetRepository<QuoteEntity>()
+            var prevBatchSmallestDate = DateTime.UtcNow;
+
+            var lastQuoteDate = await _dbContext.GetRepository<QuoteEntity>()
                 .Get(q => q.AssetId == assetId && q.QuotesProviderType == quotesProviderType && q.TimeFrame == timeFrame)
                 .OrderBy(q => q.Date)
+                .Select(q => q.Date)
                 .LastOrDefaultAsync();
 
-            var lastDate = lastQuote?.Date;
-
-            while (true)
+            var asset = await _dbContext.GetRepository<AssetEntity>()
+                .Get(asset => asset.Id == assetId)
+                .SingleOrFailAsync();
+            
+            while (DateWithTimeFrameExtensions.DatesDifferent(prevBatchSmallestDate, lastQuoteDate, timeFrame) > 0)
             {
-                var lastBatchDate = await GetAndSaveNextQuotesBatch(quotesProviderType, assetId, timeFrame, lastDate);
+                var lastBatchQuotes = await GetNextQuotesBatch(quotesProviderType, asset, timeFrame, prevBatchSmallestDate);
 
-                if (lastBatchDate.HasValue && (!lastDate.HasValue || lastDate < lastBatchDate))
-                    lastDate = lastBatchDate;
-                else
+                var lastBatchSmallestDate = lastBatchQuotes
+                    .OrderBy(q => q.Date)
+                    .Select(q => q.Date)
+                    .FirstOrDefault();
+
+                if (lastBatchSmallestDate == default || lastBatchSmallestDate >= prevBatchSmallestDate)
                     break;
+
+                var existingQuotesDates = await _dbContext.GetRepository<QuoteEntity>()
+                    .Get(q => q.AssetId == assetId
+                              && q.QuotesProviderType == quotesProviderType
+                              && q.TimeFrame == timeFrame
+                              && lastBatchQuotes.Select(qe => qe.Date).Contains(q.Date))
+                    .Select(q => q.Date)
+                    .ToListAsync();
+
+                _dbContext.GetRepository<QuoteEntity>().InsertRange(lastBatchQuotes.Where(qe => !existingQuotesDates.Contains(qe.Date)).ToList());
+                await _dbContext.SaveChangesAsync();
+
+                prevBatchSmallestDate = lastBatchSmallestDate;
             }
         }
     }
 
     #region private
 
-    private async Task<DateTime?> GetAndSaveNextQuotesBatch(QuotesProviderTypeEnum quotesProviderType, Guid assetId, TimeFrameEnum timeFrame, DateTime? lastQuoteDate)
+    private async Task<List<QuoteEntity>> GetNextQuotesBatch(QuotesProviderTypeEnum quotesProviderType, AssetEntity asset, TimeFrameEnum timeFrame, DateTime prevBatchSmallestDate)
     {
         var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
 
-        if (!adapter.IsNativeSupportedTimeframe(timeFrame))
-            throw new InvalidOperationException($"Timeframe {timeFrame} is not supported on {quotesProviderType}");
-
-        var asset = await _dbContext.GetRepository<AssetEntity>()
-            .Get(asset => asset.Id == assetId)
-            .SingleOrFailAsync();
-
-        var batch = await adapter.GetQuotesBatch(asset, timeFrame, lastQuoteDate);
+        var batch = await adapter.GetQuotesBatch(asset, timeFrame, prevBatchSmallestDate);
         var quoteEntities = _mapper.Map<List<QuoteEntity>>(batch);
+        
         quoteEntities.ForEach(quote =>
         {
             quote.TimeFrame = timeFrame;
-            quote.AssetId = assetId;
+            quote.AssetId = asset.Id;
             quote.QuotesProviderType = quotesProviderType;
 
             quote.Date = quote.Date.CorrectDateByTf(timeFrame);
@@ -117,18 +132,7 @@ internal class QuotesProviderService : IQuotesProviderService
             quote.Validate();
         });
 
-        var existingQuotesDates = await _dbContext.GetRepository<QuoteEntity>()
-            .Get(q => q.AssetId == assetId
-                      && q.QuotesProviderType == quotesProviderType
-                      && q.TimeFrame == timeFrame
-                      && quoteEntities.Select(qe => qe.Date).Contains(q.Date))
-            .Select(q => q.Date)
-            .ToListAsync();
-
-        _dbContext.GetRepository<QuoteEntity>().InsertRange(quoteEntities.Where(qe => !existingQuotesDates.Contains(qe.Date)).ToList());
-        await _dbContext.SaveChangesAsync();
-
-        return quoteEntities.LastOrDefault()?.Date;
+        return quoteEntities;
     }
 
     #endregion

@@ -8,14 +8,11 @@ public abstract class AbstractTaskExecutor<TContext>
     where TContext : class, IBkgWorkerTaskContext
 {
     private readonly ITasksStorage<TContext> _tasksStorage;
-    private readonly ILogger _logger;
 
     protected AbstractTaskExecutor(
-        ITasksStorage<TContext> tasksStorage,
-        ILogger logger)
+        ITasksStorage<TContext> tasksStorage)
     {
         _tasksStorage = tasksStorage;
-        _logger = logger;
     }
 
     [SuppressMessage("ReSharper", "FunctionNeverReturns")]

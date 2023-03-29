@@ -12,7 +12,7 @@ public interface IBcsExpressAdapter : IQuotesProviderAdapter
 public class BcsExpressAdapter : QuotesProviderAbstractAdapter, IBcsExpressAdapter
 {
 
-    protected override Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(AssetEntity asset, TimeFrameEnum timeFrame,  DateTime lastQuoteDate)
+    protected override Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(AssetEntity asset, TimeFrameEnum timeFrame,  DateTime batchEndDate)
     {
         throw new NotImplementedException();
     }

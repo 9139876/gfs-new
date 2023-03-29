@@ -11,7 +11,7 @@ public interface IInvestingComAdapter : IQuotesProviderAdapter
 
 public class InvestingComAdapter : QuotesProviderAbstractAdapter, IInvestingComAdapter
 {
-    protected override Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(AssetEntity asset, TimeFrameEnum timeFrame,  DateTime lastQuoteDate)
+    protected override Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(AssetEntity asset, TimeFrameEnum timeFrame,  DateTime batchEndDate)
     {
         throw new NotImplementedException();
     }

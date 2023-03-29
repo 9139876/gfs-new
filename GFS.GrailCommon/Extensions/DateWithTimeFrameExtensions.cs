@@ -55,6 +55,9 @@ namespace GFS.GrailCommon.Extensions
             };
         }
 
+        public static bool EqualsForTimeFrame(this DateTime dt1, DateTime dt2, TimeFrameEnum timeFrame)
+            => DatesDifferent(dt1, dt2, timeFrame) == 0;
+
         /// <summary>
         /// Приведение даты к единому формату - усреднение незначащих разрядов
         /// </summary>

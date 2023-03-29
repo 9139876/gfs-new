@@ -11,7 +11,7 @@ public interface IFinamAdapter : IQuotesProviderAdapter
 
 public class FinamAdapter : QuotesProviderAbstractAdapter, IFinamAdapter
 {
-    protected override Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(AssetEntity asset, TimeFrameEnum timeFrame,  DateTime lastQuoteDate)
+    protected override Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(AssetEntity asset, TimeFrameEnum timeFrame,  DateTime batchEndDate)
     {
         throw new NotImplementedException();
     }
