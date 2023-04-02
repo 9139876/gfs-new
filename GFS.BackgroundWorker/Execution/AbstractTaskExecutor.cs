@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using GFS.BackgroundWorker.Models;
-using Microsoft.Extensions.Logging;
 
 namespace GFS.BackgroundWorker.Execution;
 

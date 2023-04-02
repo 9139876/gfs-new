@@ -5,7 +5,9 @@ using AutoMapper;
 using GFS.Common.Extensions;
 using GFS.GrailCommon.Enums;
 using GFS.GrailCommon.Models;
+using GFS.QuotesService.Api.Common.Enum;
 using GFS.QuotesService.Api.Enum;
+using GFS.QuotesService.BL.Enum;
 using GFS.QuotesService.BL.Models;
 using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
 using GFS.QuotesService.DAL.Entities;
@@ -20,7 +22,7 @@ public interface ITinkoffAdapter : IQuotesProviderAdapter
 {
 }
 
-public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
+internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 {
     private readonly InvestApiClient _apiClient;
     private readonly IHttpClientFactory _httpClientFactory;
@@ -76,17 +78,47 @@ public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         return result;
     }
 
-    protected override async Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(AssetEntity asset, TimeFrameEnum timeFrame, DateTime batchEndDate)
+    protected override async Task<GetQuotesBatchResponseModel> GetQuotesBatchInternal(GetQuotesBatchRequestModel request)
     {
-        return timeFrame == TimeFrameEnum.min1
-            ? await GetQuotesBatchFromArchive(asset, timeFrame, batchEndDate)
-            : await GetQuotesBatchFromCandles(asset, timeFrame, batchEndDate);
+        return request.TimeFrame == TimeFrameEnum.min1
+            ? await GetQuotesBatchFromArchive(request)
+            : await GetQuotesBatchFromCandles(request);
     }
 
-    private async Task<IEnumerable<QuoteModel>> GetQuotesBatchFromArchive(AssetEntity asset, TimeFrameEnum timeFrame, DateTime batchEndDate)
+    public override TimeFrameEnum[] NativeSupportedTimeFrames => new[] { TimeFrameEnum.min1, TimeFrameEnum.H1, TimeFrameEnum.D1 };
+
+    public override QuotesProviderTypeEnum ProviderType => QuotesProviderTypeEnum.Tinkoff;
+
+    #region private
+
+    private async Task<GetQuotesBatchResponseModel> GetQuotesBatchFromCandles(GetQuotesBatchRequestModel request)
     {
-        if (timeFrame != TimeFrameEnum.min1)
-            throw new NotSupportedException($"{nameof(timeFrame)} is {timeFrame}");
+        //Работает в UTC
+        var candlesRequest = new GetCandlesRequest
+        {
+            Figi = request.Asset.FIGI,
+            Interval = TimeframeToCandleInterval(request.TimeFrame),
+            From = request.TimeDirection == TimeDirectionEnum.Forward
+                ? request.BatchBeginningDate.ToUniversalTime().ToTimestamp()
+                : GetBatchStartDate(request.BatchBeginningDate, request.TimeFrame).ToUniversalTime().ToTimestamp(),
+            To = request.TimeDirection == TimeDirectionEnum.Forward
+                ? GetBatchEndDate(request.BatchBeginningDate, request.TimeFrame).ToUniversalTime().ToTimestamp()
+                : request.BatchBeginningDate.ToUniversalTime().ToTimestamp()
+        };
+
+        var apiResponse = await _apiClient.MarketData.GetCandlesAsync(candlesRequest);
+        apiResponse.RequiredNotNull();
+
+        return new GetQuotesBatchResponseModel
+        {
+            Quotes = _mapper.Map<List<QuoteModel>>(apiResponse.Candles.ToList())
+        };
+    }
+
+    private async Task<GetQuotesBatchResponseModel> GetQuotesBatchFromArchive(GetQuotesBatchRequestModel request)
+    {
+        if (request.TimeFrame != TimeFrameEnum.min1)
+            throw new NotSupportedException($"{nameof(request.TimeFrame)} is {request.TimeFrame}");
 
         using var httpClient = _httpClientFactory.CreateClient();
 
@@ -94,7 +126,7 @@ public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
 
-        var tinkoffResponse = await httpClient.SendAsync(BuildRequestGetQuotesBatchFromArchive(asset, batchEndDate));
+        var tinkoffResponse = await httpClient.SendAsync(BuildRequestGetQuotesBatchFromArchive(request.Asset, request.BatchBeginningDate));
 
         var zipArchive = new ZipArchive(await tinkoffResponse.Content.ReadAsStreamAsync());
 
@@ -110,7 +142,7 @@ public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 
                 result.Add(new QuoteModel
                 {
-                    TimeFrame = timeFrame,
+                    TimeFrame = request.TimeFrame,
                     Date = DateTime.Parse(itemDataLine[1]).ToUniversalTime(),
                     Open = decimal.Parse(itemDataLine[2]),
                     Close = decimal.Parse(itemDataLine[3]),
@@ -121,7 +153,10 @@ public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
             }
         }
 
-        return result;
+        return new GetQuotesBatchResponseModel
+        {
+            Quotes = result
+        };
     }
 
     private HttpRequestMessage BuildRequestGetQuotesBatchFromArchive(AssetEntity asset, DateTime batchEndDate)
@@ -144,24 +179,7 @@ public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         return httpRequest;
     }
 
-    private async Task<IEnumerable<QuoteModel>> GetQuotesBatchFromCandles(AssetEntity asset, TimeFrameEnum timeFrame, DateTime batchEndDate)
-    {
-        //Работает в UTC
-        var request = new GetCandlesRequest
-        {
-            Figi = asset.FIGI,
-            Interval = TimeframeToCandleInterval(timeFrame),
-            From = GetBatchStartDate(batchEndDate, timeFrame).ToUniversalTime().ToTimestamp(),
-            To = batchEndDate.ToUniversalTime().ToTimestamp(),
-        };
-
-        var apiResponse = await _apiClient.MarketData.GetCandlesAsync(request);
-        apiResponse.RequiredNotNull();
-
-        return _mapper.Map<List<QuoteModel>>(apiResponse.Candles.ToList());
-    }
-
-    public override TimeFrameEnum[] NativeSupportedTimeFrames => new[] { TimeFrameEnum.min1, TimeFrameEnum.H1, TimeFrameEnum.D1 };
+    #endregion
 
     #region static
 
@@ -189,6 +207,15 @@ public class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
             TimeFrameEnum.min1 => end.AddDays(-1),
             TimeFrameEnum.H1 => end.AddDays(-7),
             TimeFrameEnum.D1 => end.AddDays(-365),
+            _ => throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame.ToString())
+        };
+
+    private static DateTime GetBatchEndDate(DateTime end, TimeFrameEnum timeFrame)
+        => timeFrame switch
+        {
+            TimeFrameEnum.min1 => end.AddDays(1),
+            TimeFrameEnum.H1 => end.AddDays(7),
+            TimeFrameEnum.D1 => end.AddDays(365),
             _ => throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame.ToString())
         };
 

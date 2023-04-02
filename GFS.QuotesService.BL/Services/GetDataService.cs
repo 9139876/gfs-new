@@ -45,9 +45,9 @@ public class GetDataService : IGetDataService
         if (request.AssetId.HasValue)
             selectors.Add(query => query.Where(asset => asset.Id == request.AssetId));
 
-        if(!string.IsNullOrWhiteSpace(request.FIGI))
+        if (!string.IsNullOrWhiteSpace(request.FIGI))
             selectors.Add(query => query.Where(asset => asset.FIGI == request.FIGI));
-        
+
         if (!string.IsNullOrWhiteSpace(request.NameFilter))
             selectors.Add(query => query.Where(asset => asset.Name.ToUpper().Contains(request.NameFilter.ToUpper())));
 

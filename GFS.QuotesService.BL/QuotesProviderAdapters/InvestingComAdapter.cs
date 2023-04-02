@@ -1,7 +1,7 @@
 using GFS.GrailCommon.Enums;
-using GFS.GrailCommon.Models;
+using GFS.QuotesService.Api.Common.Enum;
+using GFS.QuotesService.BL.Models;
 using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
-using GFS.QuotesService.DAL.Entities;
 
 namespace GFS.QuotesService.BL.QuotesProviderAdapters;
 
@@ -9,9 +9,9 @@ public interface IInvestingComAdapter : IQuotesProviderAdapter
 {
 }
 
-public class InvestingComAdapter : QuotesProviderAbstractAdapter, IInvestingComAdapter
+internal class InvestingComAdapter : QuotesProviderAbstractAdapter, IInvestingComAdapter
 {
-    protected override Task<IEnumerable<QuoteModel>> GetQuotesBatchInternal(AssetEntity asset, TimeFrameEnum timeFrame,  DateTime batchEndDate)
+    protected override Task<GetQuotesBatchResponseModel> GetQuotesBatchInternal(GetQuotesBatchRequestModel request)
     {
         throw new NotImplementedException();
     }
@@ -23,4 +23,6 @@ public class InvestingComAdapter : QuotesProviderAbstractAdapter, IInvestingComA
         TimeFrameEnum.W1,
         TimeFrameEnum.M1
     };
+
+    public override QuotesProviderTypeEnum ProviderType => QuotesProviderTypeEnum.InvestingCom;
 }

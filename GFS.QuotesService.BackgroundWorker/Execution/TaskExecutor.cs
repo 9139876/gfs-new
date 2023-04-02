@@ -53,6 +53,6 @@ public class TaskExecutor : AbstractTaskExecutor<QuotesServiceBkgWorkerTaskConte
 
     private void ExecuteGetHistoryQuotes(QuotesServiceBkgWorkerTaskContext ctx)
     {
-        _quotesProviderService.GetOrUpdateHistory(ctx.QuotesProviderType, ctx.AssetId ?? throw new ArgumentNullException(nameof(ctx.AssetId))).Wait();
+        _quotesProviderService.GetQuotesHistory(ctx.QuotesProviderType, ctx.AssetId ?? throw new ArgumentNullException(nameof(ctx.AssetId))).Wait();
     }
 }

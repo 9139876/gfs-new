@@ -21,7 +21,7 @@ namespace GFS.Portfolio.BL.Services
         Task<OperationResponseDto> PerformOperation(PortfolioOperationRequestDto request);
     }
 
-    public class PortfolioService : IPortfolioService
+    internal class PortfolioService : IPortfolioService
     {
         private readonly IDbContext _dbContext;
         private readonly IRemoteApiClient _remoteApiClient;
