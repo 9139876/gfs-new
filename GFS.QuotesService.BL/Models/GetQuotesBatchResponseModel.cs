@@ -11,9 +11,14 @@ public class GetQuotesBatchResponseModel
     /// Котировки
     /// </summary>
     public List<QuoteModel> Quotes { get; init; } = new();
-    
+
     /// <summary>
     /// Признак, что больше котировок нет
     /// </summary>
-    public bool IsLastBatch { get; init; }
+    public bool IsLastBatch => NextBatchBeginningDate == null;
+    
+    /// <summary>
+    /// Стартовая дата следующей партии
+    /// </summary>
+    public DateTime? NextBatchBeginningDate { get; init; }
 }

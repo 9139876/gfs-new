@@ -1,9 +1,11 @@
 using System.IO.Compression;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Web;
 using AutoMapper;
 using GFS.Common.Extensions;
 using GFS.GrailCommon.Enums;
+using GFS.GrailCommon.Extensions;
 using GFS.GrailCommon.Models;
 using GFS.QuotesService.Api.Common.Enum;
 using GFS.QuotesService.Api.Enum;
@@ -80,9 +82,31 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 
     protected override async Task<GetQuotesBatchResponseModel> GetQuotesBatchInternal(GetQuotesBatchRequestModel request)
     {
-        return request.TimeFrame == TimeFrameEnum.min1
-            ? await GetQuotesBatchFromArchive(request)
-            : await GetQuotesBatchFromCandles(request);
+        if (request.TimeFrame == TimeFrameEnum.min1)
+            return await GetQuotesBatchFromArchive(request);
+
+        var attempts = request.TimeFrame switch
+        {
+            TimeFrameEnum.H1 => 3,
+            TimeFrameEnum.D1 => 1,
+            _ => throw new ArgumentOutOfRangeException(nameof(request.TimeFrame), request.TimeFrame.ToString())
+        };
+
+        while (attempts > 0)
+        {
+            var response = await GetQuotesBatchFromCandles(request);
+            if (response.Quotes.Any())
+                return response;
+
+            request.BatchBeginningDate = response.NextBatchBeginningDate!.Value;
+            attempts--;
+        }
+
+        return new GetQuotesBatchResponseModel
+        {
+            Quotes = new List<QuoteModel>(),
+            NextBatchBeginningDate = null
+        };
     }
 
     public override TimeFrameEnum[] NativeSupportedTimeFrames => new[] { TimeFrameEnum.min1, TimeFrameEnum.H1, TimeFrameEnum.D1 };
@@ -111,7 +135,10 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 
         return new GetQuotesBatchResponseModel
         {
-            Quotes = _mapper.Map<List<QuoteModel>>(apiResponse.Candles.ToList())
+            Quotes = _mapper.Map<List<QuoteModel>>(apiResponse.Candles.ToList()),
+            NextBatchBeginningDate = request.TimeDirection == TimeDirectionEnum.Forward
+                ? candlesRequest.To.ToDateTime().AddDate(request.TimeFrame, 1)
+                : candlesRequest.From.ToDateTime().AddDate(request.TimeFrame, -1)
         };
     }
 
@@ -127,6 +154,24 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
             new AuthenticationHeaderValue("Bearer", token);
 
         var tinkoffResponse = await httpClient.SendAsync(BuildRequestGetQuotesBatchFromArchive(request.Asset, request.BatchBeginningDate));
+
+        if (!tinkoffResponse.IsSuccessStatusCode)
+        {
+            //Достал, пришлось захардкодить - это ошибка что год неправильный (просто за этот год котировок нет) 
+            if (tinkoffResponse.StatusCode == HttpStatusCode.NotFound || (tinkoffResponse.Headers.TryGetValues("code", out var tinkoffCodes) && tinkoffCodes.FirstOrDefault() == "30086"))
+                return new GetQuotesBatchResponseModel
+                {
+                    Quotes = new List<QuoteModel>(),
+                    NextBatchBeginningDate = null
+                };
+
+            var error = "Unknown";
+
+            if (tinkoffResponse.Headers.TryGetValues("message", out var errors))
+                error = errors.FirstOrDefault() ?? error;
+
+            throw new InvalidOperationException($"Tinkoff api response code is {tinkoffResponse.StatusCode}, error: {error}");
+        }
 
         var zipArchive = new ZipArchive(await tinkoffResponse.Content.ReadAsStreamAsync());
 
@@ -155,7 +200,10 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 
         return new GetQuotesBatchResponseModel
         {
-            Quotes = result
+            Quotes = result,
+            NextBatchBeginningDate = request.TimeDirection == TimeDirectionEnum.Forward
+                ? request.BatchBeginningDate.AddYears(1)
+                : request.BatchBeginningDate.AddYears(-1)
         };
     }
 

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using EFCore.BulkExtensions;
 using GFS.EF.Entities;
 using GFS.EF.Repository;
 using Microsoft.EntityFrameworkCore;
@@ -60,5 +61,8 @@ namespace GFS.EF.Context
         public IRepository<T> GetRepository<T>()
             where T : GuidKeyEntity
             => new GenericRepository<T>(this);
+
+        public async Task BulkSaveChangesAsync()
+            => await ((DbContext)this).BulkSaveChangesAsync();
     }
 }

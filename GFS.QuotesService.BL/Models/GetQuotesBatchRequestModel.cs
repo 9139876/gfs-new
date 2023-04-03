@@ -14,5 +14,5 @@ public class GetQuotesBatchRequestModel
     public AssetEntity Asset { get; init; }
     public TimeFrameEnum TimeFrame { get; init; }
     public TimeDirectionEnum TimeDirection { get; init; }
-    public DateTime BatchBeginningDate { get; init; }
+    public DateTime BatchBeginningDate { get; set; }
 }

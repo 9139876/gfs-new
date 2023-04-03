@@ -79,8 +79,8 @@ internal class QuotesProviderService : IQuotesProviderService
             ? await GetInitialQuotesHistory(adapter, assetId)
             : await RefreshQuotesHistory(adapter, assetId);
 
-        _dbContext.GetRepository<QuoteEntity>().InsertRange(quotes.Distinct(new QuoteEntityComparerByTfAndDate()));
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.GetRepository<QuoteEntity>().BulkInsertRangeAsync(quotes.Distinct(new QuoteEntityComparerByTfAndDate()).ToList());
+        await _dbContext.BulkSaveChangesAsync();
     }
 
     #region private
@@ -107,15 +107,17 @@ internal class QuotesProviderService : IQuotesProviderService
                 {
                     Asset = asset,
                     TimeFrame = timeFrame,
-                    TimeDirection = TimeDirectionEnum.Forward,
+                    TimeDirection = TimeDirectionEnum.Backward,
                     BatchBeginningDate = date
                 };
 
-                var (quoteEntities, isLastBatch) = await GetNextQuotesBatch(adapter, adapterRequest);
+                var (quoteEntities, isLastBatch, nextBatchBeginningDate) = await GetNextQuotesBatch(adapter, adapterRequest);
                 tfQuotes.AddRange(quoteEntities);
 
-                date = quoteEntities.Min(q => q.Date).Date;
                 mustGoOn = !isLastBatch;
+
+                if (!isLastBatch)
+                    date = nextBatchBeginningDate!.Value;
             }
 
             quotes.AddRange(tfQuotes);
@@ -142,6 +144,8 @@ internal class QuotesProviderService : IQuotesProviderService
                 .Select(q => q.Date)
                 .LastAsync();
 
+            var dbLastQuoteDate = lastQuoteDate;
+            
             var mustGoOn = true;
 
             while (mustGoOn)
@@ -154,20 +158,22 @@ internal class QuotesProviderService : IQuotesProviderService
                     BatchBeginningDate = lastQuoteDate
                 };
 
-                var (quoteEntities, isLastBatch) = await GetNextQuotesBatch(adapter, adapterRequest);
+                var (quoteEntities, isLastBatch, nextBatchBeginningDate) = await GetNextQuotesBatch(adapter, adapterRequest);
                 tfQuotes.AddRange(quoteEntities);
 
-                lastQuoteDate = quotes.Max(q => q.Date).Date;
                 mustGoOn = !isLastBatch;
+                
+                if (!isLastBatch)
+                    lastQuoteDate = nextBatchBeginningDate!.Value;
             }
 
-            quotes.AddRange(tfQuotes.Where(q => q.Date > lastQuoteDate));
+            quotes.AddRange(tfQuotes.Where(q => q.Date > dbLastQuoteDate));
         }
 
         return quotes;
     }
 
-    private async Task<(List<QuoteEntity> quotes, bool isLastBatch)> GetNextQuotesBatch(IQuotesProviderAdapter adapter, GetQuotesBatchRequestModel adapterRequest)
+    private async Task<(List<QuoteEntity> quotes, bool isLastBatch, DateTime? nextBatchBeginningDate)> GetNextQuotesBatch(IQuotesProviderAdapter adapter, GetQuotesBatchRequestModel adapterRequest)
     {
         var batch = await adapter.GetQuotesBatch(adapterRequest);
         var quoteEntities = _mapper.Map<List<QuoteEntity>>(batch.Quotes);
@@ -183,7 +189,7 @@ internal class QuotesProviderService : IQuotesProviderService
             quote.Validate();
         });
 
-        return (quoteEntities, batch.IsLastBatch);
+        return (quoteEntities, batch.IsLastBatch, batch.NextBatchBeginningDate);
     }
 
     #endregion

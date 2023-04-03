@@ -20,7 +20,7 @@ public class Description : Attribute
             var attrs = memInfo[0].GetCustomAttributes(typeof(Description), false);
 
             if (attrs.Length > 0)
-                return ((Description) attrs[0])._text;
+                return ((Description)attrs[0])._text;
         }
 
         return @enum.ToString();
@@ -37,7 +37,7 @@ public class Description : Attribute
     public static T GetValueFromDescription<T>(string desc) where T : Enum
     {
         foreach (T? val in Enum.GetValues(typeof(T)))
-            if (GetDescription(val) == desc)
+            if (val != null && GetDescription(val) == desc)
                 return val;
 
         throw new ArgumentException($"Перечисление {typeof(T).Name} не имеет значения с описанием '{desc}'");

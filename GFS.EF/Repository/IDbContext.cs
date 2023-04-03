@@ -8,5 +8,7 @@ namespace GFS.EF.Repository
             where T : GuidKeyEntity;
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+        Task BulkSaveChangesAsync();
     }
 }
