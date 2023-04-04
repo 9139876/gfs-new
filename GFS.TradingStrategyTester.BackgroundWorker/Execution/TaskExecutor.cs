@@ -23,17 +23,22 @@ public class TaskExecutor : AbstractTaskExecutor<TradingStrategyTestingItemConte
     protected override Predicate<TradingStrategyTestingItemContext> TasksSelector
         => _ => true;
 
-    protected override void ExecuteInternal(TradingStrategyTestingItemContext ctx)
+    protected override void ExecuteInternal(TradingStrategyTestingItemContext ctx, Action<string?> updateState)
     {
         //получить все котировки всех нужных инструментов
         
-        //выбрать из них даты
+        //В словари, где ключ - дата
         
-        //foreach по датам
+        //var currentDate = Дата самой первой котировки 
+        
+        //while (currentDate <= дата последней котировки && Portfolio говорит что еще не просрали все полимеры)
             //foreach по инструментам
-                //анализ
-                //Анализ прогнозов
+                //if(quote.exist)
+                    //Отложенные ордера
+                    //анализ
+                    //Анализ прогнозов
             //Совершение операций
+            //CurrentDate++
     }
 
     protected override IDisposable LoggerScope

@@ -16,8 +16,8 @@ namespace GFS.QuotesService.BL.Services;
 
 public interface IQuotesProviderService
 {
-    Task InitialAssets(QuotesProviderTypeEnum quotesProviderType);
-    Task GetQuotesHistory(QuotesProviderTypeEnum quotesProviderType, Guid assetId);
+    Task InitialAssets(QuotesProviderTypeEnum quotesProviderType, Action<string?> updateSubState);
+    Task GetQuotesHistory(QuotesProviderTypeEnum quotesProviderType, Guid assetId, Action<string?> updateSubState);
 }
 
 internal class QuotesProviderService : IQuotesProviderService
@@ -36,12 +36,13 @@ internal class QuotesProviderService : IQuotesProviderService
         _dbContext = dbContext;
     }
 
-    public async Task InitialAssets(QuotesProviderTypeEnum quotesProviderType)
+    public async Task InitialAssets(QuotesProviderTypeEnum quotesProviderType, Action<string?> updateSubState)
     {
         using var transaction = SystemTransaction.Default();
 
         var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
 
+        updateSubState("Получение данных");
         var initialModels = await adapter.GetInitialData();
 
         var assets = initialModels.Select(im =>
@@ -59,16 +60,19 @@ internal class QuotesProviderService : IQuotesProviderService
             return asset;
         }).ToList();
 
+        updateSubState("Данные получены, обработка");
+
         var existingAssets = await _dbContext.GetRepository<AssetEntity>().Get().ToListAsync();
         var newAssets = assets.Except(existingAssets).ToList();
 
+        updateSubState("Сохранение в БД");
         _dbContext.GetRepository<AssetEntity>().InsertRange(newAssets);
-
         await _dbContext.SaveChangesAsync();
         transaction.Complete();
+        updateSubState("Готово");
     }
 
-    public async Task GetQuotesHistory(QuotesProviderTypeEnum quotesProviderType, Guid assetId)
+    public async Task GetQuotesHistory(QuotesProviderTypeEnum quotesProviderType, Guid assetId, Action<string?> updateSubState)
     {
         var isInitial = !await _dbContext.GetRepository<QuoteEntity>()
             .Exist(q => q.AssetId == assetId && q.QuotesProviderType == quotesProviderType);
@@ -76,21 +80,24 @@ internal class QuotesProviderService : IQuotesProviderService
         var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
 
         var quotes = isInitial
-            ? await GetInitialQuotesHistory(adapter, assetId)
-            : await RefreshQuotesHistory(adapter, assetId);
+            ? await GetInitialQuotesHistory(adapter, assetId, updateSubState)
+            : await RefreshQuotesHistory(adapter, assetId, updateSubState);
 
+        updateSubState("Сохранение в БД");
         await _dbContext.GetRepository<QuoteEntity>().BulkInsertRangeAsync(quotes.Distinct(new QuoteEntityComparerByTfAndDate()).ToList());
         await _dbContext.BulkSaveChangesAsync();
+        updateSubState("Готово");
     }
 
     #region private
 
-    private async Task<List<QuoteEntity>> GetInitialQuotesHistory(IQuotesProviderAdapter adapter, Guid assetId)
+    private async Task<List<QuoteEntity>> GetInitialQuotesHistory(IQuotesProviderAdapter adapter, Guid assetId, Action<string?> updateSubState)
     {
         var quotes = new List<QuoteEntity>();
 
         foreach (var timeFrame in adapter.NativeSupportedTimeFrames)
         {
+            updateSubState($"Получение данных {timeFrame}");
             var tfQuotes = new List<QuoteEntity>();
 
             var asset = await _dbContext.GetRepository<AssetEntity>()
@@ -126,12 +133,13 @@ internal class QuotesProviderService : IQuotesProviderService
         return quotes;
     }
 
-    private async Task<List<QuoteEntity>> RefreshQuotesHistory(IQuotesProviderAdapter adapter, Guid assetId)
+    private async Task<List<QuoteEntity>> RefreshQuotesHistory(IQuotesProviderAdapter adapter, Guid assetId, Action<string?> updateSubState)
     {
         var quotes = new List<QuoteEntity>();
 
         foreach (var timeFrame in adapter.NativeSupportedTimeFrames)
         {
+            updateSubState($"Получение данных {timeFrame}");
             var tfQuotes = new List<QuoteEntity>();
 
             var asset = await _dbContext.GetRepository<AssetEntity>()
@@ -145,7 +153,7 @@ internal class QuotesProviderService : IQuotesProviderService
                 .LastAsync();
 
             var dbLastQuoteDate = lastQuoteDate;
-            
+
             var mustGoOn = true;
 
             while (mustGoOn)
@@ -162,7 +170,7 @@ internal class QuotesProviderService : IQuotesProviderService
                 tfQuotes.AddRange(quoteEntities);
 
                 mustGoOn = !isLastBatch;
-                
+
                 if (!isLastBatch)
                     lastQuoteDate = nextBatchBeginningDate!.Value;
             }
@@ -173,7 +181,8 @@ internal class QuotesProviderService : IQuotesProviderService
         return quotes;
     }
 
-    private async Task<(List<QuoteEntity> quotes, bool isLastBatch, DateTime? nextBatchBeginningDate)> GetNextQuotesBatch(IQuotesProviderAdapter adapter, GetQuotesBatchRequestModel adapterRequest)
+    private async Task<(List<QuoteEntity> quotes, bool isLastBatch, DateTime? nextBatchBeginningDate)> GetNextQuotesBatch(IQuotesProviderAdapter adapter,
+        GetQuotesBatchRequestModel adapterRequest)
     {
         var batch = await adapter.GetQuotesBatch(adapterRequest);
         var quoteEntities = _mapper.Map<List<QuoteEntity>>(batch.Quotes);

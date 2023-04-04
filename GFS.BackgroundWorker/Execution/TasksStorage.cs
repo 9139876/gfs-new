@@ -16,6 +16,8 @@ public interface ITasksStorage<TContext>
 
     void ReportOfFail(Guid taskId, string errorMessage);
 
+    void ChangeSubState(Guid taskId, string? subState);
+    
     List<BkgWorkerTask<TContext>> GetTasks(params TaskStateEnum[] states);
 }
 
@@ -101,6 +103,19 @@ public class TasksStorage<TContext> : ITasksStorage<TContext>
 
             _tasks[TaskStateEnum.Executing].Remove(task);
             _tasks[TaskStateEnum.Failed].Add(task);
+        }
+    }
+
+    public void ChangeSubState(Guid taskId, string? subState)
+    {
+        lock (_tasks)
+        {
+            var task = _tasks[TaskStateEnum.Executing].Single(t => t.TaskId == taskId);
+
+            if (task.State != TaskStateEnum.Executing)
+                return;
+
+            task.SubState = subState ?? "unknown";
         }
     }
 

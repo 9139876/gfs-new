@@ -25,7 +25,8 @@ public abstract class AbstractTaskExecutor<TContext>
             {
                 try
                 {
-                    ExecuteInternal(task!.Context);
+                    // ReSharper disable once AccessToModifiedClosure
+                    ExecuteInternal(task!.Context, ( subState) => _tasksStorage.ChangeSubState(task.TaskId, subState));
                     _tasksStorage.ReportOfSuccess(task.TaskId);
                 }
                 catch (Exception e)
@@ -41,7 +42,7 @@ public abstract class AbstractTaskExecutor<TContext>
 
     protected abstract Predicate<TContext> TasksSelector { get; }
 
-    protected abstract void ExecuteInternal(TContext ctx);
+    protected abstract void ExecuteInternal(TContext ctx, Action<string?> updateState);
 
     protected abstract IDisposable LoggerScope { get; }
 

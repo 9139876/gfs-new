@@ -1,4 +1,5 @@
 using GFS.BackgroundWorker.Enums;
+
 #pragma warning disable CS8618
 
 namespace GFS.BackgroundWorker.Models;
@@ -7,13 +8,14 @@ namespace GFS.BackgroundWorker.Models;
 /// Задача для BackgroundWorker`а
 /// </summary>
 public class BkgWorkerTask<TContext>
-    where TContext : class, IBkgWorkerTaskContext 
+    where TContext : class, IBkgWorkerTaskContext
 {
     public Guid TaskId { get; } = Guid.NewGuid();
     public DateTime CreatedAt { get; } = DateTime.Now;
-    public TaskStateEnum State { get; set; }
-    public DateTime? StateDate { get; set; }
-    public string? Error { get; set; }
+    public TaskStateEnum State { get; internal set; }
+    public string SubState { get; internal set; } = "unknown";
+    public DateTime? StateDate { get; internal set; }
+    public string? Error { get; internal set; }
 
     public TContext Context { get; init; }
 
