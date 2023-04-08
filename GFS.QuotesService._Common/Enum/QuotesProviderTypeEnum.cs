@@ -1,4 +1,4 @@
-namespace GFS.QuotesService.Api.Common.Enum;
+namespace GFS.QuotesService.Common.Enum;
 
 public enum QuotesProviderTypeEnum
 {

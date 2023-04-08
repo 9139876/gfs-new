@@ -73,14 +73,20 @@ public class GetDataService : IGetDataService
 
     public async Task<GetQuotesResponse> GetQuotes(GetQuotesRequest request)
     {
-        var quotes = await _dbContext.GetRepository<QuoteEntity>()
+        var query = _dbContext.GetRepository<QuoteEntity>()
             .Get(quote => quote.AssetId == request.AssetId
                           && quote.TimeFrame == request.TimeFrame
-                          && quote.QuotesProviderType == request.QuotesProviderType
-                          && quote.Date >= request.StartDate
-                          && quote.Date <= request.EndDate)
-            .AsNoTracking()
-            .ToListAsync();
+                          && quote.QuotesProviderType == request.QuotesProviderType)
+            .AsNoTracking();
+
+        if (request.StartDate.HasValue)
+            query = query.Where(quote => quote.Date >= request.StartDate);
+
+        if (request.EndDate.HasValue)
+            query = query.Where(quote => quote.Date <= request.EndDate);
+
+
+        var quotes = await query.ToListAsync();
 
         return new GetQuotesResponse
         {

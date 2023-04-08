@@ -1,7 +1,8 @@
 using GFS.Common.Attributes;
+using GFS.Common.Exceptions;
 using GFS.GrailCommon.Enums;
-using GFS.QuotesService.Api.Common.Enum;
 using GFS.QuotesService.BL.Models;
+using GFS.QuotesService.Common.Enum;
 
 namespace GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
 
@@ -25,7 +26,7 @@ internal abstract class QuotesProviderAbstractAdapter : IQuotesProviderAdapter
 {
     public virtual Task<List<InitialModel>> GetInitialData()
     {
-        throw new NotImplementedException("У данного адаптера метод не реализован");
+        throw new NotImplementedYetException("У данного адаптера метод не реализован");
     }
 
     public bool IsNativeSupportedTimeframe(TimeFrameEnum timeFrame)

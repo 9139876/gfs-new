@@ -1,7 +1,7 @@
 using GFS.BackgroundWorker.Execution;
-using GFS.QuotesService.Api.Common.Enum;
 using GFS.QuotesService.BackgroundWorker.Api.Models;
 using GFS.QuotesService.BL.Services;
+using GFS.QuotesService.Common.Enum;
 
 namespace GFS.QuotesService.BackgroundWorker.Execution;
 

@@ -4,11 +4,11 @@ using GFS.Common.Helpers;
 using GFS.EF.Extensions;
 using GFS.EF.Repository;
 using GFS.GrailCommon.Extensions;
-using GFS.QuotesService.Api.Common.Enum;
 using GFS.QuotesService.BL.Enum;
 using GFS.QuotesService.BL.Extensions;
 using GFS.QuotesService.BL.Models;
 using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
+using GFS.QuotesService.Common.Enum;
 using GFS.QuotesService.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 

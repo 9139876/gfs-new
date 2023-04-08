@@ -1,9 +1,10 @@
 using GFS.BackgroundWorker.Execution;
 using GFS.BackgroundWorker.Models;
-using GFS.QuotesService.Api.Common.Enum;
+using GFS.Common.Exceptions;
 using GFS.QuotesService.BackgroundWorker.Api.Enum;
 using GFS.QuotesService.BackgroundWorker.Api.Models;
 using GFS.QuotesService.BL.Services;
+using GFS.QuotesService.Common.Enum;
 
 namespace GFS.QuotesService.BackgroundWorker.Execution;
 
@@ -38,7 +39,7 @@ public class TaskExecutor : AbstractTaskExecutor<QuotesServiceBkgWorkerTaskConte
         Action action = ctx.TaskType switch
         {
             GetQuotesTaskTypeEnum.GetInitialData => () => ExecuteInitialAssets(ctx, updateState),
-            GetQuotesTaskTypeEnum.GetRealtimeQuotes => throw new NotImplementedException("GetRealtimeQuotes not implemented yet"),
+            GetQuotesTaskTypeEnum.GetRealtimeQuotes => throw new NotImplementedYetException("GetRealtimeQuotes not implemented yet"),
             GetQuotesTaskTypeEnum.GetHistory => () => ExecuteGetHistoryQuotes(ctx, updateState),
             _ => throw new ArgumentOutOfRangeException(nameof(ctx.TaskType))
         };

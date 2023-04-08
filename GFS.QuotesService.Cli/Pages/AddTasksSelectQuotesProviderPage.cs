@@ -1,6 +1,6 @@
 using GFS.ConsoleLibrary.Menu;
-using GFS.QuotesService.Api.Common.Enum;
 using GFS.QuotesService.Cli.Models;
+using GFS.QuotesService.Common.Enum;
 using Spectre.Console;
 
 namespace GFS.QuotesService.Cli.Pages;

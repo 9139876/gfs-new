@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\GFS.Broker.Api\GFS.Broker.Api.csproj" />
+      <ProjectReference Include="..\GFS.EF\GFS.EF.csproj" />
+    </ItemGroup>
+
 </Project>

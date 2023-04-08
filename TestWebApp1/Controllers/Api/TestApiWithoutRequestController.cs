@@ -1,3 +1,4 @@
+using GFS.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using testApi1;
 
@@ -12,7 +13,7 @@ namespace TestWebApp1.Controllers.Api
     
         protected override Task ExecuteInternal()
         {
-            throw new NotImplementedException();
+            throw new NotImplementedYetException();
         }
     }
 }

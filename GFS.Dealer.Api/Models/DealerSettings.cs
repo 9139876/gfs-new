@@ -1,6 +1,7 @@
 using GFS.FakeDealer.Api.Enums;
 using GFS.GrailCommon.Enums;
-using GFS.QuotesService.Api.Common.Enum;
+using GFS.QuotesService.Common.Enum;
+
 #pragma warning disable CS8618
 
 namespace GFS.FakeDealer.Api.Models;

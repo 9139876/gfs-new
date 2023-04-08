@@ -1,23 +1,23 @@
-using GFS.Api.Client.Services;
 using GFS.BackgroundWorker.Execution;
 using GFS.BackgroundWorker.Models;
 using GFS.TradingStrategyTester.Api.Models;
+using GFS.TradingStrategyTester.BL.Services;
 
 namespace GFS.TradingStrategyTester.BackgroundWorker.Execution;
 
 public class TaskExecutor : AbstractTaskExecutor<TradingStrategyTestingItemContext>
 {
     private readonly ILogger _logger;
-    private readonly IRemoteApiClient _remoteApiClient;
+    private readonly ITestTradeOrchestratorService _testTradeOrchestratorService;
 
     public TaskExecutor(
         ITasksStorage<TradingStrategyTestingItemContext> tasksStorage,
         ILogger logger,
-        IRemoteApiClient remoteApiClient)
+        ITestTradeOrchestratorService testTradeOrchestratorService)
         : base(tasksStorage)
     {
         _logger = logger;
-        _remoteApiClient = remoteApiClient;
+        _testTradeOrchestratorService = testTradeOrchestratorService;
     }
 
     protected override Predicate<TradingStrategyTestingItemContext> TasksSelector
@@ -25,20 +25,8 @@ public class TaskExecutor : AbstractTaskExecutor<TradingStrategyTestingItemConte
 
     protected override void ExecuteInternal(TradingStrategyTestingItemContext ctx, Action<string?> updateState)
     {
-        //получить все котировки всех нужных инструментов
-        
-        //В словари, где ключ - дата
-        
-        //var currentDate = Дата самой первой котировки 
-        
-        //while (currentDate <= дата последней котировки && Portfolio говорит что еще не просрали все полимеры)
-            //foreach по инструментам
-                //if(quote.exist)
-                    //Отложенные ордера
-                    //анализ
-                    //Анализ прогнозов
-            //Совершение операций
-            //CurrentDate++
+        ctx.TestingItemSettings.ValidateModel();
+        _testTradeOrchestratorService.Test(ctx.TestingItemSettings, updateState).Wait();
     }
 
     protected override IDisposable LoggerScope

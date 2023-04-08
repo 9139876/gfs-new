@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=6.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+        <HintPath>..\..\..\..\..\usr\lib\dotnet\shared\Microsoft.AspNetCore.App\6.0.13\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+      </Reference>
+      <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=6.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+        <HintPath>..\..\..\..\..\usr\lib\dotnet\shared\Microsoft.AspNetCore.App\6.0.13\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\GFS.Api.Client\GFS.Api.Client.csproj" />
+      <ProjectReference Include="..\GFS.Broker.DAL\GFS.Broker.DAL.csproj" />
+      <ProjectReference Include="..\GFS.Common\GFS.Common.csproj" />
+      <ProjectReference Include="..\GFS.EF\GFS.EF.csproj" />
+      <ProjectReference Include="..\GFS.QuotesService.Api\GFS.QuotesService.Api.csproj" />
+    </ItemGroup>
+
+</Project>

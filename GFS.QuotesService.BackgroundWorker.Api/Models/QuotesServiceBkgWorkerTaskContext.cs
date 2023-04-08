@@ -1,6 +1,6 @@
 using GFS.BackgroundWorker.Models;
-using GFS.QuotesService.Api.Common.Enum;
 using GFS.QuotesService.BackgroundWorker.Api.Enum;
+using GFS.QuotesService.Common.Enum;
 
 namespace GFS.QuotesService.BackgroundWorker.Api.Models;
 

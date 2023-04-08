@@ -1,7 +1,7 @@
 using GFS.Common.Attributes.Validation;
 using GFS.EF.Entities;
 using GFS.GrailCommon.Enums;
-using GFS.QuotesService.Api.Common.Enum;
+using GFS.QuotesService.Common.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

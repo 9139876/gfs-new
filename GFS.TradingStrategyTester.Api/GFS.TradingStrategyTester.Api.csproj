@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\GFS.Api\GFS.Api.csproj" />
       <ProjectReference Include="..\GFS.BackgroundWorker\GFS.BackgroundWorker.csproj" />
+      <ProjectReference Include="..\GFS.TradingStrategyTester._Common\GFS.TradingStrategyTester._Common.csproj" />
     </ItemGroup>
 
 </Project>
