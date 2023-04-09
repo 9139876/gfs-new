@@ -6,7 +6,7 @@ namespace GFS.Broker.Api.Models.TestDealer;
 public class DealerCommission
 {
     public DealerCommissionType CommissionType { get; init; }
-    
+
     [PositiveNumberOrZero]
     public decimal Value { get; init; }
 }

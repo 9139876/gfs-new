@@ -9,6 +9,11 @@ namespace GFS.Broker.Api.Models;
 public class MakeDealRequest
 {
     /// <summary>
+    /// Идентификатор портфеля, с которым выполняется сделка
+    /// </summary>
+    public Guid PortfolioId { get; init; }
+    
+    /// <summary>
     /// Financial Instrument Global Identifier инструмента сделки
     /// </summary>
     [Required]
@@ -29,5 +34,5 @@ public class MakeDealRequest
     /// <summary>
     /// Вид операции
     /// </summary>
-    public DealerOperationTypeEnum OperationType { get; init; }
+    public DealOperationType OperationType { get; init; }
 }

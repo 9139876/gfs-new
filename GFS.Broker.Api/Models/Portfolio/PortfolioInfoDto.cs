@@ -13,5 +13,8 @@ namespace GFS.Broker.Api.Models.Portfolio
         
         [Required]
         public PortfolioStateDto PortfolioState { get; init; }
+
+        [Required]
+        public List<PendingOrderDto> PendingOrders { get; init; } = new();
     }
 }

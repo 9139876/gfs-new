@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using GFS.EF.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 #pragma warning disable CS8618
 
 namespace GFS.Broker.DAL.Entities
@@ -11,7 +12,13 @@ namespace GFS.Broker.DAL.Entities
         [Required]
         public string Name { get; set; }
 
-        public List<OperationEntity> Operations { get; set; } = new();
+        public string Description { get; set; }
+
+        public List<DealOperationEntity> DealOperations { get; set; } = new();
+        
+        public List<DepositOperationEntity> DepositOperations { get; set; } = new();
+        
+        public List<PendingOrderEntity> PendingOrders { get; set; } = new();
     }
 
     public class PortfolioEntityConfiguration : IEntityTypeConfiguration<PortfolioEntity>

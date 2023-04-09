@@ -16,7 +16,7 @@ public interface IRepository<TEntity>
     Task<TEntity?> TryGetById(Guid id);
     Task<bool> Exist(Expression<Func<TEntity, bool>>? predicate = null);
     Task<bool> Exist(Guid id);
-    void Insert(TEntity entity);
+    TEntity Insert(TEntity entity);
     void InsertRange(IEnumerable<TEntity> entities);
     void Update(TEntity entity);
     void UpdateRange(IEnumerable<TEntity> entities);
@@ -75,8 +75,8 @@ public class GenericRepository<TEntity> : IRepository<TEntity>
     public Task<bool> Exist(Guid id)
         => _dbSet.Where(e => e.Id == id).AnyAsync();
 
-    public void Insert(TEntity entity)
-        => _dbSet.Add(entity);
+    public TEntity Insert(TEntity entity)
+        => _dbSet.Add(entity).Entity;
 
     public void InsertRange(IEnumerable<TEntity> entities)
         => _dbSet.AddRange(entities);
