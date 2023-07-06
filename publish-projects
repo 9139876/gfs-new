@@ -1,0 +1,2 @@
+gfs_quotes_bkg GFS.QuotesService.BackgroundWorker/GFS.QuotesService.BackgroundWorker.csproj
+gfs_quotes_web GFS.QuotesService.WebApp/GFS.QuotesService.WebApp.csproj

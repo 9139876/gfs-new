@@ -1,8 +1,5 @@
-FROM arm64v8/alpine:3.13
+FROM ubuntu:22.04
 
-RUN apk add --no-cache libstdc++ libintl
-
-WORKDIR /app
 COPY ./publish ./
 
 EXPOSE 5100

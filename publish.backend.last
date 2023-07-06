@@ -1,3 +1,0 @@
-#quotes-service 0a076e56efbcebd31af7c3730ca62f69671242f7 ./GFS.QuotesService.WebApp/GFS.QuotesService.WebApp.csproj
-quotes-service-bkgworker 672b82844992943ad26b0b9201c638ca3bdcda6c ./GFS.QuotesService.BackgroundWorker/GFS.QuotesService.BackgroundWorker.csproj
-#portfolio-service 7c01316 ./GFS.Portfolio.WebApp/GFS.Portfolio.WebApp.csproj

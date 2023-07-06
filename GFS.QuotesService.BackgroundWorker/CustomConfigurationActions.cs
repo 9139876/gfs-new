@@ -41,7 +41,7 @@ public class CustomConfigurationActions : CustomConfigurationActionsAbstract
     {
         //Грязный хак - tasksStorage получаем из rootServiceProvider, а не из scopedServiceProvider, иначе это будет синглтон из другого скоупа и у основного приложения
         //будет другой его экземпляр,а quotesProviderService и logger получаем из scopedServiceProvider, т.к. rootServiceProvider может отдавать только синглтоны, вот так вот :)
-        
+
         var rootServiceProvider = Application.Services;
         var scopedServiceProvider = ServiceCollection.BuildServiceProvider();
 
@@ -53,9 +53,10 @@ public class CustomConfigurationActions : CustomConfigurationActionsAbstract
         WorkersManager.Init(quotesProviderService, tasksStorage, logger);
     }
 
-    public override LoggerConfiguration CustomConfigureLogger(LoggerConfiguration lc)
+    protected override LoggerConfiguration CustomConfigureLoggerInternal(LoggerConfiguration lc)
     {
         return lc
-            .Enrich.WithProperty("Application", "GFS.QuotesService.BackgroundWorker");
+            .Enrich.WithProperty("Application", "GFS.QuotesService.BackgroundWorker")
+            .Enrich.WithProperty("Environment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
     }
 }
