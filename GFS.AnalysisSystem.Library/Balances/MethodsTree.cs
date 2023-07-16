@@ -1,9 +1,9 @@
-using GFS.BalanceCalculation.BL.Abstractions;
-using GFS.BalanceCalculation.BL.Groups;
-using GFS.BalanceCalculation.BL.Models;
+using GFS.AnalysisSystem.Library.Balances.Abstractions;
+using GFS.AnalysisSystem.Library.Balances.Groups;
+using GFS.AnalysisSystem.Library.Balances.Models;
 using GFS.Common.Extensions;
 
-namespace GFS.BalanceCalculation.BL
+namespace GFS.AnalysisSystem.Library.Balances
 {
     public static class MethodsTree
     {

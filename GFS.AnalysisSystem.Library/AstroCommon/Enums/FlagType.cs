@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace GFS.BalanceCalculation.BL.Auxiliary.Astro.Enums
+namespace GFS.AnalysisSystem.Library.AstroCommon.Enums
 {
     [Flags]
     [SuppressMessage("ReSharper", "InconsistentNaming")]

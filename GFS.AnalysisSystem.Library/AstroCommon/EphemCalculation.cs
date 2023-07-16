@@ -1,8 +1,8 @@
-using GFS.BalanceCalculation.BL.Auxiliary.Astro.Enums;
-using GFS.BalanceCalculation.BL.Auxiliary.Astro.Models;
+using GFS.AnalysisSystem.Library.AstroCommon.Enums;
+using GFS.AnalysisSystem.Library.AstroCommon.Models;
 using SwissEphNet;
 
-namespace GFS.BalanceCalculation.BL.Auxiliary.Astro
+namespace GFS.AnalysisSystem.Library.AstroCommon
 {
     public static class EphemCalculation
     {

@@ -1,7 +1,7 @@
 using System.Data;
 using GFS.Common.Helpers;
 
-namespace GFS.BalanceCalculation.BL.Abstractions
+namespace GFS.AnalysisSystem.Library.Balances.Abstractions
 {
     public abstract class BalanceCalculationMethodsGroup<TParentGroup> : IBalanceCalculationMethodsGroup
         where TParentGroup : IBalanceCalculationMethodsGroup

@@ -1,7 +1,7 @@
-using GFS.BalanceCalculation.BL.Models;
+using GFS.AnalysisSystem.Library.Balances.Models;
 using GFS.Common.Helpers;
 
-namespace GFS.BalanceCalculation.BL.Abstractions
+namespace GFS.AnalysisSystem.Library.Balances.Abstractions
 {
     public abstract class BalanceCalculationMethod<TParentGroup> : IBalanceCalculationMethod
         where TParentGroup : IBalanceCalculationMethodsGroup

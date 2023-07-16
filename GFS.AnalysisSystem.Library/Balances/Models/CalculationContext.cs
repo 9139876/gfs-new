@@ -1,4 +1,4 @@
-namespace GFS.BalanceCalculation.BL.Models
+namespace GFS.AnalysisSystem.Library.Balances.Models
 {
     public class CalculationContext
     {

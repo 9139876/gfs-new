@@ -1,6 +1,6 @@
 using GFS.Common.Attributes;
 
-namespace GFS.BalanceCalculation.BL.Auxiliary.Astro.Enums
+namespace GFS.AnalysisSystem.Library.AstroCommon.Enums
 {   
     public enum PlanetType
     {

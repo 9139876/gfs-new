@@ -1,7 +1,7 @@
-using GFS.BalanceCalculation.BL.Auxiliary.Astro.Enums;
+using GFS.AnalysisSystem.Library.AstroCommon.Enums;
 using GFS.Common.Attributes;
 
-namespace GFS.BalanceCalculation.BL.Auxiliary.Astro
+namespace GFS.AnalysisSystem.Library.AstroCommon
 {
     public class Planet
     {

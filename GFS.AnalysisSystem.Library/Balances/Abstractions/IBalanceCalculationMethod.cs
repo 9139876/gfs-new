@@ -1,6 +1,6 @@
-using GFS.BalanceCalculation.BL.Models;
+using GFS.AnalysisSystem.Library.Balances.Models;
 
-namespace GFS.BalanceCalculation.BL.Abstractions
+namespace GFS.AnalysisSystem.Library.Balances.Abstractions
 {
     public interface IBalanceCalculationMethod : IGroupedItem
     {

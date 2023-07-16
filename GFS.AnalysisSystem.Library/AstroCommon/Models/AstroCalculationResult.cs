@@ -1,4 +1,4 @@
-namespace GFS.BalanceCalculation.BL.Auxiliary.Astro.Models
+namespace GFS.AnalysisSystem.Library.AstroCommon.Models
 {
     public class AstroCalculationResult
     {

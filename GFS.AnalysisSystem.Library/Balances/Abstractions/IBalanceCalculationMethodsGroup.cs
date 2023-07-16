@@ -1,4 +1,4 @@
-namespace GFS.BalanceCalculation.BL.Abstractions
+namespace GFS.AnalysisSystem.Library.Balances.Abstractions
 {
     public interface IBalanceCalculationMethodsGroup : IGroupedItem
     {

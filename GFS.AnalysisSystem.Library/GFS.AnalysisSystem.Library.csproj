@@ -11,10 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Methods" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="SwissEphNet" Version="2.8.0.2" />
     </ItemGroup>
 

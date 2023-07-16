@@ -1,6 +1,6 @@
-using GFS.BalanceCalculation.BL.Abstractions;
+using GFS.AnalysisSystem.Library.Balances.Abstractions;
 
-namespace GFS.BalanceCalculation.BL.Groups
+namespace GFS.AnalysisSystem.Library.Balances.Groups
 {
     public sealed class RootGroup : BalanceCalculationMethodsGroup<RootGroup>
     {
