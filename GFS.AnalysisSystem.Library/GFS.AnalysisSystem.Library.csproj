@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\GFS.Common\GFS.Common.csproj" />
+      <ProjectReference Include="..\GFS.GrailCommon\GFS.GrailCommon.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -38,64 +38,68 @@ internal class TestDealService : IDealService
 
     public async Task<MakeDealResponse> MakeDeal(MakeDealRequest request)
     {
-        var settings = _settingsService.GetDealerSettings();
-        var assetId = (await _remoteApiClient.Call<GetAssetsInfo, AssetsFilter, List<AssetsInfoDto>>(new AssetsFilter { FIGI = request.FIGI })).Single().AssetId;
+        throw new NotImplementedException();
 
-        !!!
-            var quoteRequest = new GetQuotesRequest
-        {
-            AssetId = assetId,
-            TimeFrame = settings.TimeFrame,
-            QuotesProviderType = settings.QuotesProviderType,
-            StartDate = request.DealDateUtc,
-            EndDate = request.DealDateUtc
-        };
-
-        var quote = (await _remoteApiClient.Call<GetQuotes, GetQuotesRequest, GetQuotesResponse>(quoteRequest)).Quotes.Single();
-
-        var dealPrice = _settingsService.GetDealPriceCalculator(request.OperationType)(quote);
-        var cashAmount = request.AssetUnitsCount * dealPrice;
-        var dealerCommission = _settingsService.GetDealerCommission(cashAmount);
-
-        var cashMultiplier = request.OperationType == DealOperationType.Sell ? 1 : -1;
-        var assetMultiplier = cashMultiplier * -1;
-
-        return new MakeDealResponse
-        {
-            DealPrice = dealPrice,
-            DeltaCash = cashAmount * cashMultiplier - dealerCommission,
-            DeltaAsset = request.AssetUnitsCount * assetMultiplier
-        };
+        // var settings = _settingsService.GetDealerSettings();
+        // var assetId = (await _remoteApiClient.Call<GetAssetsInfo, AssetsFilter, List<AssetsInfoDto>>(new AssetsFilter { FIGI = request.FIGI })).Single().AssetId;
+        //
+        // !!!
+        //     var quoteRequest = new GetQuotesRequest
+        // {
+        //     AssetId = assetId,
+        //     TimeFrame = settings.TimeFrame,
+        //     QuotesProviderType = settings.QuotesProviderType,
+        //     StartDate = request.DealDateUtc,
+        //     EndDate = request.DealDateUtc
+        // };
+        //
+        // var quote = (await _remoteApiClient.Call<GetQuotes, GetQuotesRequest, GetQuotesResponse>(quoteRequest)).Quotes.Single();
+        //
+        // var dealPrice = _settingsService.GetDealPriceCalculator(request.OperationType)(quote);
+        // var cashAmount = request.AssetUnitsCount * dealPrice;
+        // var dealerCommission = _settingsService.GetDealerCommission(cashAmount);
+        //
+        // var cashMultiplier = request.OperationType == DealOperationType.Sell ? 1 : -1;
+        // var assetMultiplier = cashMultiplier * -1;
+        //
+        // return new MakeDealResponse
+        // {
+        //     DealPrice = dealPrice,
+        //     DeltaCash = cashAmount * cashMultiplier - dealerCommission,
+        //     DeltaAsset = request.AssetUnitsCount * assetMultiplier
+        // };
     }
 
     public async Task<TryPerformPendingOrdersResponse> TryPerformPendingOrders(TryPerformPendingOrdersRequest request)
     {
-        using var transaction = SystemTransaction.Default();
-        
-        var portfolioInfo = await _portfolioService.GetPortfolioInfo(_mapper.Map<GetPortfolioInfoRequestDto>(request));
+        throw new NotImplementedException();
 
-        var assetIds = request.AssetsWithQuotes.Select(awq => awq.AssetId);
-
-        var ordersToRemove = new List<PendingOrderDto>();
-        
-        foreach (var order in portfolioInfo.PendingOrders.Where(po => assetIds.Contains(po.AssetId)))
-        {
-            var portfolioAssetPosition = portfolioInfo.PortfolioState.Assets.SingleOrDefault(asset => asset.AssetId == order.AssetId);
-
-            if (portfolioAssetPosition == null)
-            {
-                 ordersToRemove.Add(order);
-                continue;
-            }
-            
-            var quote = request.AssetsWithQuotes.Single(awq => awq.AssetId == order.AssetId).Quote;
-            if (order.Price >= quote.Low && order.Price <= quote.High)
-            {
-                _portfolioService.PerformDealOperation()    
-            }
-        }
-
-        transaction.Complete();
+        // using var transaction = SystemTransaction.Default();
+        //
+        // var portfolioInfo = await _portfolioService.GetPortfolioInfo(_mapper.Map<GetPortfolioInfoRequestDto>(request));
+        //
+        // var assetIds = request.AssetsWithQuotes.Select(awq => awq.AssetId);
+        //
+        // var ordersToRemove = new List<PendingOrderDto>();
+        //
+        // foreach (var order in portfolioInfo.PendingOrders.Where(po => assetIds.Contains(po.AssetId)))
+        // {
+        //     var portfolioAssetPosition = portfolioInfo.PortfolioState.Assets.SingleOrDefault(asset => asset.AssetId == order.AssetId);
+        //
+        //     if (portfolioAssetPosition == null)
+        //     {
+        //          ordersToRemove.Add(order);
+        //         continue;
+        //     }
+        //     
+        //     var quote = request.AssetsWithQuotes.Single(awq => awq.AssetId == order.AssetId).Quote;
+        //     if (order.Price >= quote.Low && order.Price <= quote.High)
+        //     {
+        //         _portfolioService.PerformDealOperation()    
+        //     }
+        // }
+        //
+        // transaction.Complete();
     }
 }
 

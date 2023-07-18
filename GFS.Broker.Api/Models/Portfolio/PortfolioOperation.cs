@@ -11,7 +11,7 @@ namespace GFS.Broker.Api.Models.Portfolio
         [UtcDate]
         public DateTime MomentUtc { get; set; }
         
-        public PortfolioOperationTypeEnum PortfolioOperationType { get; set; }
+        // public PortfolioOperationTypeEnum PortfolioOperationType { get; set; }
         
         public Guid? AssetId { get; set; }
         
