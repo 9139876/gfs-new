@@ -8,30 +8,36 @@ public class AssetTable
     private readonly List<AssetTableRecord> _records;
     private readonly LivermoreRecordHandler _handler;
 
-    private readonly Func<QuoteModel, PriceTimePoint> _quoteToPoint;
+    private readonly Func<QuoteModel, PriceValue> _quoteToPriceValue;
 
     public Guid AssetId { get; }
-    
+
     public AssetTable(Guid assetId, LivermoreAnalyzeSettings settings)
     {
         AssetId = assetId;
-        _quoteToPoint = settings.QuoteToPriceConverterType switch
+        _quoteToPriceValue = settings.QuoteToPriceConverterType switch
         {
-            QuoteToPriceConverterTypeEnum.Close => q => new PriceTimePoint { Date = q.Date, Price = q.Close },
-            QuoteToPriceConverterTypeEnum.HiLowMedian => q => new PriceTimePoint { Date = q.Date, Price = (q.High + q.Low) / 2 },
+            QuoteToPriceConverterTypeEnum.Close => q => new PriceValue(price: q.Close, kPrice: settings.KPrice),
+            QuoteToPriceConverterTypeEnum.HiLowMedian => q => new PriceValue(price: (q.High + q.Low) / 2, kPrice: settings.KPrice),
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        _handler = new LivermoreRecordHandler(this, (one, two) => Math.Abs(one - two) >= 6 / settings.KPrice);
+        _handler = new LivermoreRecordHandler(this);
         _records = new List<AssetTableRecord>();
     }
 
-    public void HandleQuote(QuoteModel quote) => _handler.Handle(_quoteToPoint(quote));
+    public void HandleQuote(QuoteModel quote)
+    {
+        var column = _handler.Handle(_quoteToPriceValue(quote));
+
+        if (column != null)
+            AddRecord(new AssetTableRecord(_quoteToPriceValue(quote), column.Value));
+    }
 
     public void AddRecord(AssetTableRecord record) => _records.Add(record);
 
     public void UnderlineLastRecord(TableColumnTypeEnum column) => LastRecord(column).Underline();
-    
+
     public TableColumnTypeEnum CurrentColumn() => LastRecord().Column;
 
     public decimal LastValue() => _records.Last().Value;
@@ -47,8 +53,27 @@ public class AssetTable
             ? decimal.MaxValue
             : decimal.MinValue;
     }
-    
+
     private AssetTableRecord LastRecord() => _records.Last();
 
     private AssetTableRecord LastRecord(TableColumnTypeEnum column) => _records.Last(r => r.Column == column);
+}
+
+public class PriceValue
+{
+    private readonly decimal _price;
+    private readonly decimal _kPrice;
+
+    public PriceValue(decimal price, decimal kPrice)
+    {
+        _price = price;
+        _kPrice = kPrice;
+    }
+
+    public bool IsMoreOnSixPointsThan(decimal value) => false;
+    public bool IsMoreOnThreePointsThan(decimal value) => false;
+    public bool IsLessOnSixPointsThan(decimal value) => false;
+    public bool IsLessOnThreePointsThan(decimal value) => false;
+    public bool IsMoreThan(decimal value) => false;
+    public bool IsLessThan(decimal value) => false;
 }
