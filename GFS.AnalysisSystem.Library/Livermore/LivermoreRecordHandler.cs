@@ -15,7 +15,7 @@ public class LivermoreRecordHandler
         _table = table;
     }
 
-    public TableColumnTypeEnum? Handle(PriceValue price)
+    public TableColumnTypeEnum? Handle(IPriceValue price)
         => _table.CurrentColumn switch
         {
             TableColumnTypeEnum.UpwardTrend => OnUpwardTrend(price),
@@ -27,14 +27,14 @@ public class LivermoreRecordHandler
             _ => throw new ArgumentOutOfRangeException(nameof(_table.CurrentColumn))
         };
 
-    private TableColumnTypeEnum? OnUpwardTrend(PriceValue price)
+    private TableColumnTypeEnum? OnUpwardTrend(IPriceValue price)
     {
         if (price.IsMoreThan(_table.LastValue()))
             return TableColumnTypeEnum.UpwardTrend;
 
         if (price.IsLessOnSixPointsThan(_table.LastValue()))
         {
-            var (needUnderlined, column) = TurnToDown(point.Price);
+            var (needUnderlined, column) = TurnToDown(price);
 
             if (needUnderlined)
                 _table.UnderlineLastRecord(TableColumnTypeEnum.UpwardTrend);
@@ -45,7 +45,7 @@ public class LivermoreRecordHandler
         return null;
     }
 
-    private TableColumnTypeEnum? OnNaturalRally(PriceValue price)
+    private TableColumnTypeEnum? OnNaturalRally(IPriceValue price)
     {
         if (price.IsMoreThan(_table.LastValue()))
         {
@@ -57,7 +57,7 @@ public class LivermoreRecordHandler
 
         if (price.IsLessOnSixPointsThan(_table.LastValue()))
         {
-            var (needUnderlined, column) = TurnToDown(point.Price);
+            var (needUnderlined, column) = TurnToDown(price);
 
             if (needUnderlined)
                 _table.UnderlineLastRecord(TableColumnTypeEnum.NaturalRally);
@@ -68,7 +68,7 @@ public class LivermoreRecordHandler
         return null;
     }
 
-    private TableColumnTypeEnum? OnSecondaryRally(PriceValue price)
+    private TableColumnTypeEnum? OnSecondaryRally(IPriceValue price)
     {
         if (price.IsMoreThan(_table.LastValue()))
             return true switch
@@ -79,39 +79,40 @@ public class LivermoreRecordHandler
             };
 
         return price.IsLessOnSixPointsThan(_table.LastValue())
-            ? TurnToDown(point.Price).Item2
+            ? TurnToDown(price).Item2
             : null;
     }
 
-    private TableColumnTypeEnum? OnSecondaryReaction(PriceValue price)
+    private TableColumnTypeEnum? OnSecondaryReaction(IPriceValue price)
     {
         if (price.IsLessThan(_table.LastValue()))
         {
-            if (point.Price < _table.ColumnLastUnderlinedValue(TableColumnTypeEnum.DownwardTrend))
+            if (price.IsLessThan(_table.ColumnLastUnderlinedValue(TableColumnTypeEnum.DownwardTrend)))
                 return TableColumnTypeEnum.DownwardTrend;
 
-            return point.Price < _table.ColumnLastUnderlinedValue(TableColumnTypeEnum.NaturalReaction)
+            return price.IsLessThan(_table.ColumnLastUnderlinedValue(TableColumnTypeEnum.NaturalReaction))
                 ? TableColumnTypeEnum.NaturalReaction
                 : TableColumnTypeEnum.SecondaryReaction;
         }
 
-        return price.IsMoreThan(_table.LastValue()) && _isSixPointDifference(_table.LastValue(), point.Price)
-            ? TurnToUp(point.Price).Item2
+        return price.IsMoreOnSixPointsThan(_table.LastValue())
+            ? TurnToUp(price).Item2
             : null;
     }
 
-    private TableColumnTypeEnum? OnNaturalReaction(PriceValue price)
+    private TableColumnTypeEnum? OnNaturalReaction(IPriceValue price)
     {
         if (price.IsLessThan(_table.LastValue()))
         {
-            return point.Price < _table.ColumnLastUnderlinedValue(TableColumnTypeEnum.DownwardTrend) || //5a5b
+            return price.IsLessThan(_table.ColumnLastUnderlinedValue(TableColumnTypeEnum.DownwardTrend)) ||
+                   price.IsLessOnThreePointsThan(_table.ColumnLastUnderlinedValue(TableColumnTypeEnum.NaturalReaction))
                 ? TableColumnTypeEnum.DownwardTrend
                 : TableColumnTypeEnum.NaturalReaction;
         }
 
-        if (price.IsMoreThan(_table.LastValue()) && _isSixPointDifference(_table.LastValue(), point.Price))
+        if (price.IsMoreOnSixPointsThan(_table.LastValue()))
         {
-            var (needUnderlined, column) = TurnToUp(point.Price);
+            var (needUnderlined, column) = TurnToUp(price);
 
             if (needUnderlined)
                 _table.UnderlineLastRecord(TableColumnTypeEnum.NaturalReaction);
@@ -122,15 +123,14 @@ public class LivermoreRecordHandler
         return null;
     }
 
-    private TableColumnTypeEnum? OnDownwardTrend(PriceValue price)
+    private TableColumnTypeEnum? OnDownwardTrend(IPriceValue price)
     {
         if (price.IsLessThan(_table.LastValue()))
             return TableColumnTypeEnum.DownwardTrend;
 
-
-        if (price.IsMoreThan(_table.LastValue()) && _isSixPointDifference(_table.LastValue(), point.Price))
+        if (price.IsMoreOnSixPointsThan(_table.LastValue()))
         {
-            var (needUnderlined, column) = TurnToUp(point.Price);
+            var (needUnderlined, column) = TurnToUp(price);
 
             if (needUnderlined)
                 _table.UnderlineLastRecord(TableColumnTypeEnum.DownwardTrend);
@@ -141,24 +141,20 @@ public class LivermoreRecordHandler
         return null;
     }
 
-    private bool PriceIsUp(PriceValue price) => point.Price > _table.LastValue();
-
-    private bool PriceIsDown(PriceValue price) => point.Price < _table.LastValue();
-
-    private (bool, TableColumnTypeEnum) TurnToDown(decimal price)
+    private (bool, TableColumnTypeEnum) TurnToDown(IPriceValue price)
         => true switch
         {
-            true when _table.ColumnLastUnderlinedValue(TableColumnTypeEnum.DownwardTrend) > price => (true, TableColumnTypeEnum.DownwardTrend),
-            true when _table.ColumnLastUnderlinedValue(TableColumnTypeEnum.NaturalReaction) > price => (true, TableColumnTypeEnum.NaturalReaction),
+            true when price.IsLessThan(_table.ColumnLastUnderlinedValue(TableColumnTypeEnum.DownwardTrend)) => (true, TableColumnTypeEnum.DownwardTrend),
+            true when price.IsLessThan(_table.ColumnLastUnderlinedValue(TableColumnTypeEnum.NaturalReaction)) => (true, TableColumnTypeEnum.NaturalReaction),
             _ => (false, TableColumnTypeEnum.SecondaryReaction)
         };
 
 
-    private (bool, TableColumnTypeEnum) TurnToUp(decimal price)
+    private (bool, TableColumnTypeEnum) TurnToUp(IPriceValue price)
         => true switch
         {
-            true when _table.ColumnLastUnderlinedValue(TableColumnTypeEnum.UpwardTrend) < price => (true, TableColumnTypeEnum.UpwardTrend),
-            true when _table.ColumnLastUnderlinedValue(TableColumnTypeEnum.NaturalRally) < price => (true, TableColumnTypeEnum.NaturalRally),
+            true when price.IsMoreThan(_table.ColumnLastUnderlinedValue(TableColumnTypeEnum.UpwardTrend)) => (true, TableColumnTypeEnum.UpwardTrend),
+            true when price.IsMoreThan(_table.ColumnLastUnderlinedValue(TableColumnTypeEnum.NaturalRally)) => (true, TableColumnTypeEnum.NaturalRally),
             _ => (false, TableColumnTypeEnum.SecondaryRally)
         };
 }

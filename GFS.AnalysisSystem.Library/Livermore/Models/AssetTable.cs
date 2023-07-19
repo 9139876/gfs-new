@@ -8,33 +8,39 @@ public class AssetTable
     private readonly List<AssetTableRecord> _records;
     private readonly LivermoreRecordHandler _handler;
 
-    private readonly Func<QuoteModel, PriceValue> _quoteToPriceValue;
+    private readonly Func<PriceTimePoint, IPriceValue> _pointToPriceValue;
+
+    private DateTime _lastRecordDate = DateTime.MinValue;
 
     public Guid AssetId { get; }
 
     public AssetTable(Guid assetId, LivermoreAnalyzeSettings settings)
     {
         AssetId = assetId;
-        _quoteToPriceValue = settings.QuoteToPriceConverterType switch
+
+        _pointToPriceValue = settings.PriceComparisonType switch
         {
-            QuoteToPriceConverterTypeEnum.Close => q => new PriceValue(price: q.Close, kPrice: settings.KPrice),
-            QuoteToPriceConverterTypeEnum.HiLowMedian => q => new PriceValue(price: (q.High + q.Low) / 2, kPrice: settings.KPrice),
-            _ => throw new ArgumentOutOfRangeException()
+            PriceComparisonTypeEnum.Absolute => p => new PriceValueAbsoluteComparison(p.Price, settings.KPrice),
+            PriceComparisonTypeEnum.Percentage => p => new PriceValuePercentageComparison(p.Price),
+            _ => throw new ArgumentOutOfRangeException(nameof(settings.PriceComparisonType))
         };
 
         _handler = new LivermoreRecordHandler(this);
         _records = new List<AssetTableRecord>();
     }
 
-    public void HandleQuote(QuoteModel quote)
+    public void HandleQuote(PriceTimePoint point)
     {
-        var column = _handler.Handle(_quoteToPriceValue(quote));
+        if (_lastRecordDate >= point.Date)
+            throw new InvalidOperationException($"Попытка обработать котировку на дату {point.Date:g}, когда уже была обработана за {_lastRecordDate:g}");
+
+        _lastRecordDate = point.Date;
+
+        var column = _handler.Handle(_pointToPriceValue(point));
 
         if (column != null)
-            AddRecord(new AssetTableRecord(_quoteToPriceValue(quote), column.Value));
+            AddRecord(new AssetTableRecord(point, column.Value));
     }
-
-    public void AddRecord(AssetTableRecord record) => _records.Add(record);
 
     public void UnderlineLastRecord(TableColumnTypeEnum column) => LastRecord(column).Underline();
 
@@ -54,26 +60,9 @@ public class AssetTable
             : decimal.MinValue;
     }
 
+    private void AddRecord(AssetTableRecord record) => _records.Add(record);
+
     private AssetTableRecord LastRecord() => _records.Last();
 
     private AssetTableRecord LastRecord(TableColumnTypeEnum column) => _records.Last(r => r.Column == column);
-}
-
-public class PriceValue
-{
-    private readonly decimal _price;
-    private readonly decimal _kPrice;
-
-    public PriceValue(decimal price, decimal kPrice)
-    {
-        _price = price;
-        _kPrice = kPrice;
-    }
-
-    public bool IsMoreOnSixPointsThan(decimal value) => false;
-    public bool IsMoreOnThreePointsThan(decimal value) => false;
-    public bool IsLessOnSixPointsThan(decimal value) => false;
-    public bool IsLessOnThreePointsThan(decimal value) => false;
-    public bool IsMoreThan(decimal value) => false;
-    public bool IsLessThan(decimal value) => false;
 }
