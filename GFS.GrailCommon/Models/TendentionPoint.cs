@@ -69,7 +69,7 @@ namespace GFS.GrailCommon.Models
 
     public class TendentionPointComparer : IComparer<TendentionPoint>
     {
-        public int Compare(TendentionPoint x, TendentionPoint y)
+        public int Compare(TendentionPoint? x, TendentionPoint? y)
         {
             if (ReferenceEquals(x, y)) return 0;
             if (ReferenceEquals(null, y)) return 1;

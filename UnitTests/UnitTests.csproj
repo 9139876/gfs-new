@@ -21,6 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\GFS.AnalysisSystem.Library\GFS.AnalysisSystem.Library.csproj" />
       <ProjectReference Include="..\GFS.GrailCommon\GFS.GrailCommon.csproj" />
     </ItemGroup>
 

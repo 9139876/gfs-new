@@ -1,7 +1,7 @@
 namespace GFS.GrailCommon.Enums;
 
-/// <summary> Тип движения в тенденции </summary>
-public enum TendentionMoveDirectionTypeEnum
+/// <summary> Тип движения цены </summary>
+public enum PriceMoveDirectionTypeEnum
 {
     /// <summary> Горизонтально </summary>
     Flat = 0,

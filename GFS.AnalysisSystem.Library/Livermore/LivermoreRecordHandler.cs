@@ -16,7 +16,7 @@ public class LivermoreRecordHandler
     }
 
     public TableColumnTypeEnum? Handle(IPriceValue price)
-        => _table.CurrentColumn switch
+        => _table.CurrentColumn() switch
         {
             TableColumnTypeEnum.UpwardTrend => OnUpwardTrend(price),
             TableColumnTypeEnum.NaturalRally => OnNaturalRally(price),

@@ -16,8 +16,4 @@
       <PackageReference Include="SwissEphNet" Version="2.8.0.2" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Gann\Tendention" />
-    </ItemGroup>
-
 </Project>

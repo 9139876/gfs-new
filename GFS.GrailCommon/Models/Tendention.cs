@@ -7,7 +7,7 @@ public class Tendention
     private readonly List<TendentionPoint> _points = new();
     private readonly List<TendentionMove> _moves = new();
     private bool _isCorrect;
-    private TendentionMoveDirectionTypeEnum _nextDirection = TendentionMoveDirectionTypeEnum.Flat;
+    private PriceMoveDirectionTypeEnum _nextDirection = PriceMoveDirectionTypeEnum.Flat;
 
     public bool IsCorrect
     {
@@ -17,7 +17,7 @@ public class Tendention
             if (value == false)
             {
                 _points.ForEach(p => p.SetPointType(TendentionPointTypeEnum.Unknown));
-                _nextDirection = TendentionMoveDirectionTypeEnum.Flat;
+                _nextDirection = PriceMoveDirectionTypeEnum.Flat;
                 _moves.Clear();
             }
 
@@ -50,7 +50,7 @@ public class Tendention
         return true;
     }
 
-    public bool TryGetNextDirection(out TendentionMoveDirectionTypeEnum nextDirection)
+    public bool TryGetNextDirection(out PriceMoveDirectionTypeEnum nextDirection)
     {
         nextDirection = _nextDirection;
         return _isCorrect;
@@ -81,7 +81,7 @@ public class Tendention
         for (var i = 0; i < _points.Count - 1; i++)
             _moves.Add(new TendentionMove(_points[i], _points[i + 1]));
 
-        if (_moves.Any(m => m.MoveDirectionType == TendentionMoveDirectionTypeEnum.Flat))
+        if (_moves.Any(m => m.MoveDirectionType == PriceMoveDirectionTypeEnum.Flat))
         {
             IsCorrect = false;
             return;
@@ -90,8 +90,8 @@ public class Tendention
         var firstMove = _moves.First();
 
         var currentDirection = firstMove.MoveDirectionType;
-        firstMove.FirstPoint.SetPointType(currentDirection == TendentionMoveDirectionTypeEnum.Up ? TendentionPointTypeEnum.Bottom : TendentionPointTypeEnum.Top);
-        firstMove.SecondPoint.SetPointType(currentDirection == TendentionMoveDirectionTypeEnum.Up ? TendentionPointTypeEnum.Top : TendentionPointTypeEnum.Bottom);
+        firstMove.Begin.SetPointType(currentDirection == PriceMoveDirectionTypeEnum.Up ? TendentionPointTypeEnum.Bottom : TendentionPointTypeEnum.Top);
+        firstMove.End.SetPointType(currentDirection == PriceMoveDirectionTypeEnum.Up ? TendentionPointTypeEnum.Top : TendentionPointTypeEnum.Bottom);
 
         foreach (var move in _moves.Skip(1))
         {
@@ -102,10 +102,10 @@ public class Tendention
             }
 
             currentDirection = move.MoveDirectionType;
-            move.SecondPoint.SetPointType(currentDirection == TendentionMoveDirectionTypeEnum.Up ? TendentionPointTypeEnum.Top : TendentionPointTypeEnum.Bottom);
+            move.End.SetPointType(currentDirection == PriceMoveDirectionTypeEnum.Up ? TendentionPointTypeEnum.Top : TendentionPointTypeEnum.Bottom);
         }
 
-        _nextDirection = currentDirection == TendentionMoveDirectionTypeEnum.Up ? TendentionMoveDirectionTypeEnum.Down : TendentionMoveDirectionTypeEnum.Up;
+        _nextDirection = currentDirection == PriceMoveDirectionTypeEnum.Up ? PriceMoveDirectionTypeEnum.Down : PriceMoveDirectionTypeEnum.Up;
         IsCorrect = true;
     }
 }
