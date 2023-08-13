@@ -1,5 +1,6 @@
 ﻿using GFS.Common.Attributes;
 using GFS.GrailCommon.Enums;
+
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 #pragma warning disable CS8618
 
@@ -9,10 +10,19 @@ namespace GFS.GrailCommon.Models
     public class TendentionPoint
     {
         /// <summary> Позиция в координатах цена время </summary>
-        public PriceTimePoint Point { get; init; }
+        public PriceTimePoint Point { get; }
 
         /// <summary> Тип точки тенденции </summary>
-        public TendentionPointTypeEnum TendentionPointType { get; init; }
+        public TendentionPointTypeEnum TendentionPointType { get; private set; }
+
+        public TendentionPoint(PriceTimePoint point)
+        {
+            Point = point;
+            TendentionPointType = TendentionPointTypeEnum.Unknown;
+        }
+
+        public void SetPointType(TendentionPointTypeEnum pointType)
+            => TendentionPointType = pointType;
 
         public override bool Equals(object? obj)
         {
@@ -23,17 +33,17 @@ namespace GFS.GrailCommon.Models
 
         public static bool operator ==(TendentionPoint? left, TendentionPoint? right)
         {
-            return (left is null && right is null) || left!.Equals(right);
+            return left is not null && right is not null && left.Equals(right);
         }
 
-        public static bool operator !=(TendentionPoint left, TendentionPoint right)
+        public static bool operator !=(TendentionPoint? left, TendentionPoint right)
         {
             return !(left == right);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Point, TendentionPointType);
+            return HashCode.Combine(Point);
         }
 
         public override string ToString()
@@ -54,6 +64,18 @@ namespace GFS.GrailCommon.Models
             var price = Point.Price.ToString($"F{fractionalPart}");
 
             return $"{Description.GetDescription(TendentionPointType)} {date} - {price}";
+        }
+    }
+
+    public class TendentionPointComparer : IComparer<TendentionPoint>
+    {
+        public int Compare(TendentionPoint x, TendentionPoint y)
+        {
+            if (ReferenceEquals(x, y)) return 0;
+            if (ReferenceEquals(null, y)) return 1;
+            if (ReferenceEquals(null, x)) return -1;
+
+            return x.Point.Date.CompareTo(y.Point.Date);
         }
     }
 }

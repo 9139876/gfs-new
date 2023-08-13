@@ -89,6 +89,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFS.AnalysisSystem.API", "G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFS.AnalysisSystem.Library", "GFS.AnalysisSystem.Library\GFS.AnalysisSystem.Library.csproj", "{FDFC8056-25C6-4863-AE81-49C249ED9E5C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{1BDA47F6-A91B-40AF-97A7-B26040393868}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -231,6 +233,10 @@ Global
 		{FDFC8056-25C6-4863-AE81-49C249ED9E5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDFC8056-25C6-4863-AE81-49C249ED9E5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDFC8056-25C6-4863-AE81-49C249ED9E5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BDA47F6-A91B-40AF-97A7-B26040393868}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BDA47F6-A91B-40AF-97A7-B26040393868}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BDA47F6-A91B-40AF-97A7-B26040393868}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BDA47F6-A91B-40AF-97A7-B26040393868}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -272,6 +278,7 @@ Global
 		{791E7D66-1D00-495D-ABF3-E53EFB2E8865} = {ED447BC4-4478-43EB-BC7A-EEC4D7C102E2}
 		{306EB086-439D-432B-80EA-DEBA62E9240E} = {ED447BC4-4478-43EB-BC7A-EEC4D7C102E2}
 		{FDFC8056-25C6-4863-AE81-49C249ED9E5C} = {ED447BC4-4478-43EB-BC7A-EEC4D7C102E2}
+		{1BDA47F6-A91B-40AF-97A7-B26040393868} = {87A66F75-8C34-47A9-A296-D67529B58628}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7A7DC65A-A5FF-44D3-A316-2470826084D9}

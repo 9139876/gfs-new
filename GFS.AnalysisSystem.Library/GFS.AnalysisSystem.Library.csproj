@@ -12,7 +12,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="HtmlAgilityPack" Version="1.11.41" />
       <PackageReference Include="SwissEphNet" Version="2.8.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Gann\Tendention" />
     </ItemGroup>
 
 </Project>

@@ -5,12 +5,11 @@ namespace GFS.AnalysisSystem.Library.Livermore.Models;
 
 public class AssetTable
 {
+    private readonly List<DateTime> _recordDates = new List<DateTime>();
     private readonly List<AssetTableRecord> _records;
     private readonly LivermoreRecordHandler _handler;
 
     private readonly Func<PriceTimePoint, IPriceValue> _pointToPriceValue;
-
-    private DateTime _lastRecordDate = DateTime.MinValue;
 
     public Guid AssetId { get; }
 
@@ -29,12 +28,14 @@ public class AssetTable
         _records = new List<AssetTableRecord>();
     }
 
+    private DateTime LastRecordDate => _recordDates.LastOrDefault();
+    
     public void HandleQuote(PriceTimePoint point)
     {
-        if (_lastRecordDate >= point.Date)
-            throw new InvalidOperationException($"Попытка обработать котировку на дату {point.Date:g}, когда уже была обработана за {_lastRecordDate:g}");
+        if (LastRecordDate >= point.Date)
+            throw new InvalidOperationException($"Попытка обработать котировку на дату {point.Date:g}, когда уже была обработана за {LastRecordDate:g}");
 
-        _lastRecordDate = point.Date;
+        _recordDates.Add(point.Date);
 
         var column = _handler.Handle(_pointToPriceValue(point));
 
@@ -60,6 +61,10 @@ public class AssetTable
             : decimal.MinValue;
     }
 
+    public DateTime[] GetAllRecordDates() => _recordDates.ToArray();
+
+    public AssetTableRecord? GetRecordByDate(DateTime date) => _records.SingleOrDefault(r => r.Date == date);
+    
     private void AddRecord(AssetTableRecord record) => _records.Add(record);
 
     private AssetTableRecord LastRecord() => _records.Last();
