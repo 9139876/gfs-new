@@ -7,7 +7,7 @@ namespace GFS.AnalysisSystem.Library.Gann.Tendention;
 public class TendentionBuilder
 {
     private readonly List<QuoteModel> _quotes;
-    private GrailCommon.Models.Tendention _tendention;
+    private GrailCommon.Models.Tendention? _tendention;
 
     public TendentionBuilder(IEnumerable<QuoteModel> quotes)
     {
@@ -31,9 +31,70 @@ public class TendentionBuilder
 
     private void Build(DateTime firstPointDate, PriceMoveDirectionTypeEnum direction)
     {
-        // var firstPointQuote = _quotes.Single(q => q.Date == firstPointDate);
-        // _quotes.Skip(_quotes.IndexOf(firstPointQuote)).ToList()
+        /*
+         * moveLastQuote - последняя котировка, которая участвует в текущем движении
+         * pivotCandidate - точка-кандидат на разворотную точку тенденции
+         */
+
+        PriceTimePoint? pivotCandidate = null;
+        QuoteModel? contrTrendMoveLastQuote = null;
+        var inTrendMoveLastQuote = _quotes.Single(q => q.Date == firstPointDate);
+        var contrTrendMovesCount = 0;
+
+        foreach (var quote in _quotes.Skip(_quotes.IndexOf(inTrendMoveLastQuote) + 1))
+        {
+            var currentRelation = GetQuotesRelationStatus(inTrendMoveLastQuote, quote);
+
+            if (currentRelation == QuotesRelationStatus.InnerBar)
+                continue;
+
+            if (currentRelation == QuotesRelationStatus.OuterBar)
+                throw new NotImplementedException();
+
+            if (InOneDirection(currentRelation, direction))
+            {
+                inTrendMoveLastQuote = quote;
+                contrTrendMoveLastQuote = null;
+                pivotCandidate = null;
+                contrTrendMovesCount = 0;
+            }
+            else if (pivotCandidate == null)
+            {
+                contrTrendMoveLastQuote = quote;
+                pivotCandidate = GetPivotCandidate(inTrendMoveLastQuote, direction);
+                contrTrendMovesCount++;
+            }
+            else if (InOneDirection(GetQuotesRelationStatus(contrTrendMoveLastQuote!, quote), ContrDirection(direction)))
+            {
+                contrTrendMoveLastQuote = quote;
+                contrTrendMovesCount++;
+            }
+
+            if (contrTrendMovesCount >= 3)
+                break;
+        }
+
+        if (pivotCandidate is null || contrTrendMovesCount < 3)
+            return;
+
+        _tendention!.AddPoint(pivotCandidate);
+        Build(pivotCandidate.Date, ContrDirection(direction));
     }
+
+    private static PriceMoveDirectionTypeEnum ContrDirection(PriceMoveDirectionTypeEnum direction)
+        => direction switch
+        {
+            PriceMoveDirectionTypeEnum.Up => PriceMoveDirectionTypeEnum.Down,
+            PriceMoveDirectionTypeEnum.Down => PriceMoveDirectionTypeEnum.Up,
+            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+        };
+
+    private static bool InOneDirection(QuotesRelationStatus relation, PriceMoveDirectionTypeEnum direction)
+        => relation == QuotesRelationStatus.MoveUp && direction == PriceMoveDirectionTypeEnum.Up ||
+           relation == QuotesRelationStatus.MoveDown && direction == PriceMoveDirectionTypeEnum.Down;
+
+    private static PriceTimePoint GetPivotCandidate(QuoteModel quote, PriceMoveDirectionTypeEnum direction)
+        => direction == PriceMoveDirectionTypeEnum.Up ? new PriceTimePoint { Date = quote.Date, Price = quote.High } : new PriceTimePoint { Date = quote.Date, Price = quote.Low };
 
     private bool TryGetFirstMove(out (DateTime, PriceMoveDirectionTypeEnum) result)
     {
@@ -45,15 +106,15 @@ public class TendentionBuilder
             switch (GetQuotesRelationStatus(_quotes[i], _quotes[i + 1]))
             {
                 case QuotesRelationStatus.MoveUp:
-                    if(!moveUp.Any())
-                        moveUp.AddRange(new []{_quotes[i], _quotes[i + 1]});
-                    else if(GetQuotesRelationStatus(moveUp.Last(), _quotes[i + 1]) == QuotesRelationStatus.MoveUp)
+                    if (!moveUp.Any())
+                        moveUp.AddRange(new[] { _quotes[i], _quotes[i + 1] });
+                    else if (GetQuotesRelationStatus(moveUp.Last(), _quotes[i + 1]) == QuotesRelationStatus.MoveUp)
                         moveUp.Add(_quotes[i + 1]);
                     break;
                 case QuotesRelationStatus.MoveDown:
-                    if(!moveDown.Any())
-                        moveDown.AddRange(new []{_quotes[i], _quotes[i + 1]});
-                    else if(GetQuotesRelationStatus(moveDown.Last(), _quotes[i + 1]) == QuotesRelationStatus.MoveDown)
+                    if (!moveDown.Any())
+                        moveDown.AddRange(new[] { _quotes[i], _quotes[i + 1] });
+                    else if (GetQuotesRelationStatus(moveDown.Last(), _quotes[i + 1]) == QuotesRelationStatus.MoveDown)
                         moveDown.Add(_quotes[i + 1]);
                     break;
                 case QuotesRelationStatus.InnerBar:
