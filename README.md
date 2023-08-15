@@ -12,8 +12,12 @@ Disclaimer: Плевал я на безопасность (токены, авт�
 </PropertyGroup>
 ``
 
-Конфиги хранятся в БД, получаются из сервиса Configuration и хранятся локально в виде HotCache.
-НАХРЕН НЕ НАДО!!!
+Ports:
+5000 GFS.QuotesService.WebApp
+5100 GFS.QuotesService.BackgroundWorker
+
+6000 ChartService.WebApp
+
 
 dotnet ef migrations add --startup-project GFS.Portfolio.WebApp/ --project GFS.Portfolio.DAL --context PortfolioDbContext -v Init
 

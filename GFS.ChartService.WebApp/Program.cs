@@ -1,6 +1,6 @@
 using GFS.WebApplication;
 
-namespace GFS.QuotesService.WebApp;
+namespace GFS.ChartService.WebApp;
 
 public static class Program
 {
