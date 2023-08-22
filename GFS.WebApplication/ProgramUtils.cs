@@ -24,16 +24,31 @@ namespace GFS.WebApplication
             builder
                 .ConfigureLogger(customConfigurationActions.CustomConfigureLogger, builder.Services)
                 .Services.AddControllers()
-                .AddNewtonsoftJson(options => 
+                .AddNewtonsoftJson(options =>
                     options.SerializerSettings.Converters.Add(new StringEnumConverter()))
                 .Services.AddEndpointsApiExplorer()
                 .AddSwaggerGen()
                 .AddSwaggerGenNewtonsoftSupport();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    configurePolicy => configurePolicy
+                        .AllowAnyHeader()
+                        // .AllowAnyOrigin()
+                        .SetIsOriginAllowed(s => true)
+                        .AllowAnyMethod()
+                        .AllowCredentials());
+            });
+
             var app = builder.Build();
 
             app.UseSwagger()
                 .UseSwaggerUI();
+
+            app.UseRouting();
+
+            app.UseCors("CorsPolicy");
 
             app.MapControllers();
 

@@ -1,9 +1,12 @@
 using GFS.ChartService.BL.Services;
+using GFS.Common.Models;
 using GFS.QuotesService.Api.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GFS.ChartService.WebApp.Controllers;
 
+[EnableCors("CorsPolicy")]
 [Route(nameof(QuotesController))]
 public class QuotesController : ControllerBase
 {
@@ -16,8 +19,9 @@ public class QuotesController : ControllerBase
     }
 
     [HttpPost(nameof(GetAssetsInfo))]
-    public async Task<List<AssetsInfoDto>> GetAssetsInfo([FromBody]AssetsFilter request)
+    public async Task<WebAppResponseContainer<List<AssetsInfoDto>>> GetAssetsInfo([FromBody]AssetsFilter request)
     {
-        return await _quotesService.GetAssetsInfo(request);
+        var result = await _quotesService.GetAssetsInfo(request);
+        return WebAppResponseContainer<List<AssetsInfoDto>>.GetSuccessResponse(result); 
     } 
 }
