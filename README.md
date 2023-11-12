@@ -23,6 +23,8 @@ dotnet ef migrations add --startup-project GFS.Portfolio.WebApp/ --project GFS.P
 
 dotnet ef migrations add --startup-project GFS.QuotesService.BackgroundWorker/ --project GFS.QuotesService.DAL --context QuotesServiceDbContext -v Init
 
+dotnet ef migrations add --startup-project GFS.ChartService.WebApp/ --project GFS.ChartService.DAL --context ChartServiceDbContext -v Init
+
 add env variable to service TinkoffApiToken - сейчас без swarm, поэтому добавить в переменные окружения на тачке где будет собираться и запускаться $TinkoffApiToken 
 
 dotnet publish -c Release -r alpine-arm64 --self-contained true /p:PublishTrimmed=true -o ./publish

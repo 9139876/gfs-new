@@ -1,13 +1,8 @@
 using AutoMapper;
 using GFS.Api.Client.Services;
-using GFS.Broker.Api.Enums;
 using GFS.Broker.Api.Models;
-using GFS.Broker.Api.Models.Portfolio;
 using GFS.Broker.Api.Models.TestDealer;
 using GFS.Common.Exceptions;
-using GFS.Common.Helpers;
-using GFS.QuotesService.Api.Interfaces;
-using GFS.QuotesService.Api.Models;
 
 namespace GFS.Broker.BL.Services;
 

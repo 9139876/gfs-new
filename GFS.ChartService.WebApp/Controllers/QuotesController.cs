@@ -19,9 +19,9 @@ public class QuotesController : ControllerBase
     }
 
     [HttpPost(nameof(GetAssetsInfo))]
-    public async Task<WebAppResponseContainer<List<AssetsInfoDto>>> GetAssetsInfo([FromBody]AssetsFilter request)
+    public async Task<WebAppResponseContainer<List<AssetsInfoDto>>> GetAssetsInfo([FromBody] AssetsFilter request)
     {
         var result = await _quotesService.GetAssetsInfo(request);
-        return WebAppResponseContainer<List<AssetsInfoDto>>.GetSuccessResponse(result); 
-    } 
+        return WebAppResponseContainer<List<AssetsInfoDto>>.GetSuccessResponse(result);
+    }
 }

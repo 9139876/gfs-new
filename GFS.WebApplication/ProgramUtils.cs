@@ -35,8 +35,7 @@ namespace GFS.WebApplication
                 options.AddPolicy("CorsPolicy",
                     configurePolicy => configurePolicy
                         .AllowAnyHeader()
-                        // .AllowAnyOrigin()
-                        .SetIsOriginAllowed(s => true)
+                        .SetIsOriginAllowed(_ => true)
                         .AllowAnyMethod()
                         .AllowCredentials());
             });
