@@ -3,6 +3,7 @@ using System;
 using GFS.ChartService.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GFS.ChartService.DAL.Migrations
 {
     [DbContext(typeof(ChartServiceDbContext))]
-    partial class ChartServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231121200457_RemoveProjectVersion")]
+    partial class RemoveProjectVersion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

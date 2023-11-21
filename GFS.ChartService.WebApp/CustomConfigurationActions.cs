@@ -2,6 +2,7 @@ using GFS.Api.Client.Extensions;
 using GFS.ChartService.BL.Extensions;
 using GFS.ChartService.BL.Mapping;
 using GFS.ChartService.BL.Models;
+using GFS.ChartService.BL.Models.Settings;
 using GFS.ChartService.DAL;
 using GFS.Common.Extensions;
 using GFS.EF.Extensions;
@@ -21,6 +22,7 @@ public class CustomConfigurationActions : CustomConfigurationActionsAbstract
             .RegisterAssemblyServicesByMember<BL.PlaceboRegistration>();
         
         ServiceCollection.Configure<ProjectStorageSettings>(Configuration.GetSection("ProjectStorageSettings"));
+        ServiceCollection.Configure<SessionSettings>(Configuration.GetSection("SessionSettings"));
     }
     
     public override async Task ConfigureApplication()

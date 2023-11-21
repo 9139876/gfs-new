@@ -6,7 +6,7 @@ public abstract class BaseControllerWithClientIdentifier : ControllerBase
 {
     private const string CLIENT_ID_HEADER_NAME = "ClientId";
     
-    public Guid GetClientId()
+    protected Guid GetClientId()
     {
         if (!Request.Headers.TryGetValue(CLIENT_ID_HEADER_NAME, out var headerValue))
             throw new InvalidOperationException($"Не передан обязательный заголовок {CLIENT_ID_HEADER_NAME}");

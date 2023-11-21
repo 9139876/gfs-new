@@ -2,6 +2,7 @@ using AutoMapper;
 using GFS.ChartService.BL.Models;
 using GFS.ChartService.BL.Models.ProjectModel;
 using GFS.ChartService.BL.Models.ProjectViewModel;
+using GFS.ChartService.BL.Models.Responses;
 using GFS.ChartService.DAL.Entities;
 
 namespace GFS.ChartService.BL.Mapping;

@@ -1,8 +1,10 @@
 using AutoMapper;
-using GFS.ChartService.BL.Models;
 using GFS.ChartService.BL.Models.ProjectViewModel;
 using GFS.ChartService.BL.Models.Requests;
+using GFS.ChartService.BL.Models.Responses;
 using GFS.ChartService.BL.Services.Project;
+using GFS.Common.Attributes;
+using GFS.GrailCommon.Enums;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,9 +26,9 @@ public class ProjectsController : BaseControllerWithClientIdentifier
     }
 
     [HttpPost(nameof(CreateProject))]
-    public async Task<ProjectViewModel> CreateProject([FromBody]CreateProjectRequest request)
+    public async Task<ProjectViewModel> CreateProject([FromBody] CreateProjectRequest request)
     {
-        var project = await _projectService.CreateProject(request);
+        var project = await _projectService.CreateProject(request, GetClientId());
         return _mapper.Map<ProjectViewModel>(project);
     }
 
@@ -34,5 +36,20 @@ public class ProjectsController : BaseControllerWithClientIdentifier
     public async Task<List<ProjectInfoViewModel>> GetExistingProjects()
     {
         return await _projectService.GetExistingProjects();
+    }
+
+    [HttpGet(nameof(GetProjectExtInfo))]
+    public async Task<ProjectInfoExtViewModel> GetProjectExtInfo(Guid projectId)
+    {
+        var fakeResult = new ProjectInfoExtViewModel
+        {
+            SheetsInfos = new List<SheetInfoExtViewModel>
+            {
+                new("Лукойл", Description.GetDescription(TimeFrameEnum.D1), new DateTime(1999, 01, 01), new DateTime(2023, 01, 01)),
+                new("Аэрофлот", Description.GetDescription(TimeFrameEnum.D1), new DateTime(1999, 01, 01), new DateTime(2023, 01, 01))
+            }
+        };
+
+        return await Task.FromResult(fakeResult);
     }
 }
