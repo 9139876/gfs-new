@@ -2,6 +2,7 @@ using AutoMapper;
 using GFS.ChartService.BL.Models.ProjectViewModel;
 using GFS.ChartService.BL.Models.Requests;
 using GFS.ChartService.BL.Models.Responses;
+using GFS.ChartService.BL.Services;
 using GFS.ChartService.BL.Services.Project;
 using GFS.Common.Attributes;
 using GFS.GrailCommon.Enums;
@@ -15,13 +16,16 @@ namespace GFS.ChartService.WebApp.Controllers;
 public class ProjectsController : BaseControllerWithClientIdentifier
 {
     private readonly IProjectService _projectService;
+    private readonly ISessionService _sessionService;
     private readonly IMapper _mapper;
 
     public ProjectsController(
         IProjectService projectService,
+        ISessionService sessionService,
         IMapper mapper)
     {
         _projectService = projectService;
+        _sessionService = sessionService;
         _mapper = mapper;
     }
 
@@ -51,5 +55,23 @@ public class ProjectsController : BaseControllerWithClientIdentifier
         };
 
         return await Task.FromResult(fakeResult);
+    }
+
+    [HttpPost(nameof(RefreshAccess))]
+    public void RefreshAccess()
+    {
+        _sessionService.RefreshCacheAccess(GetClientId());
+    }
+
+    [HttpPost(nameof(SaveProject))]
+    public void SaveProject()
+    {
+        //потом
+    }
+
+    [HttpPost(nameof(CloseProject))]
+    public void CloseProject()
+    {
+        _sessionService.CloseSession(GetClientId());
     }
 }
