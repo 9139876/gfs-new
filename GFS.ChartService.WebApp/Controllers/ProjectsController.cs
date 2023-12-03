@@ -69,6 +69,13 @@ public class ProjectsController : BaseControllerWithClientIdentifier
         //потом
     }
 
+    [HttpGet(nameof(LoadProject))]
+    public async Task<ProjectViewModel> LoadProject(Guid projectId)
+    {
+        //потом
+        return await Task.FromResult(new ProjectViewModel());
+    }
+
     [HttpPost(nameof(CloseProject))]
     public void CloseProject()
     {
