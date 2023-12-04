@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using GFS.Broker.Api.Enums;
 using GFS.Common.Attributes.Validation;
 
 #pragma warning disable CS8618

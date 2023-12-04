@@ -2,7 +2,7 @@
 
 namespace GFS.Common.Models;
 
-public class WebAppResponseContainer<TPayload>
+public class WebAppResponseContainer
 {
     private WebAppResponseContainer()
     {
@@ -12,11 +12,30 @@ public class WebAppResponseContainer<TPayload>
 
     public string? ErrorMessage { get; private init; }
 
-    public TPayload? Payload { get; private init; }
+    public object? Payload { get; private init; }
 
-    public static WebAppResponseContainer<TPayload> GetSuccessResponse(TPayload payload)
+    public static WebAppResponseContainer GetSuccessResponse(object? payload)
         => new() { IsSuccess = true, Payload = payload };
 
-    public static WebAppResponseContainer<TPayload> GetFailResponse(string errorMessage)
+    public static WebAppResponseContainer GetFailResponse(string errorMessage)
         => new() { IsSuccess = false, ErrorMessage = errorMessage };
 }
+
+// public class WebAppResponseContainer<TPayload>
+// {
+//     private WebAppResponseContainer()
+//     {
+//     }
+//
+//     public bool IsSuccess { get; private init; }
+//
+//     public string? ErrorMessage { get; private init; }
+//
+//     public TPayload? Payload { get; private init; }
+//
+//     public static WebAppResponseContainer<TPayload> GetSuccessResponse(TPayload payload)
+//         => new() { IsSuccess = true, Payload = payload };
+//
+//     public static WebAppResponseContainer<TPayload> GetFailResponse(string errorMessage)
+//         => new() { IsSuccess = false, ErrorMessage = errorMessage };
+// }

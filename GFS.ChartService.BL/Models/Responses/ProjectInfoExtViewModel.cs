@@ -1,5 +1,3 @@
-using GFS.GrailCommon.Enums;
-
 namespace GFS.ChartService.BL.Models.Responses;
 
 public class ProjectInfoExtViewModel

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -13,6 +14,8 @@ namespace GFS.WebApplication
         public IServiceCollection ServiceCollection { protected get; init; }
         public IConfiguration Configuration { protected get; init; }
         public Microsoft.AspNetCore.Builder.WebApplication Application { protected get; set; }
+
+        public virtual Action<MvcOptions> ConfigureControllers => _ => { };
 
         /// <summary>
         /// Регистрация специфичных сервисов (BL, DbContext)

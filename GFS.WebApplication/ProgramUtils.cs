@@ -23,7 +23,7 @@ namespace GFS.WebApplication
 
             builder
                 .ConfigureLogger(customConfigurationActions.CustomConfigureLogger, builder.Services)
-                .Services.AddControllers()
+                .Services.AddControllers(customConfigurationActions.ConfigureControllers)
                 .AddNewtonsoftJson(options =>
                     options.SerializerSettings.Converters.Add(new StringEnumConverter()))
                 .Services.AddEndpointsApiExplorer()
