@@ -8,7 +8,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection RegisterProjectsCache(this IServiceCollection services)
     {
-        services.AddSingleton<IProjectsStorage, ProjectsStorage>();
+        services.AddSingleton<IProjectsCache, ProjectsCache>();
         services.AddSingleton<ISessionService, SessionService>();
 
         return services;

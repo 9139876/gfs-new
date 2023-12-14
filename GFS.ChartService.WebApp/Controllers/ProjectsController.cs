@@ -64,16 +64,15 @@ public class ProjectsController : BaseControllerWithClientIdentifier
     }
 
     [HttpPost(nameof(SaveProject))]
-    public void SaveProject()
+    public async Task SaveProject()
     {
-        //потом
+        await _projectService.SaveProject(GetClientId());
     }
 
     [HttpGet(nameof(LoadProject))]
     public async Task<ProjectViewModel> LoadProject(Guid projectId)
     {
-        //потом
-        return await Task.FromResult(new ProjectViewModel());
+        return _mapper.Map<ProjectViewModel>(await _projectService.LoadProject(projectId, GetClientId()));
     }
 
     [HttpPost(nameof(CloseProject))]

@@ -22,16 +22,16 @@ public interface ISessionService
 [IgnoreRegistration]
 internal class SessionService : ISessionService
 {
-    private readonly IProjectsStorage _projectsStorage;
+    private readonly IProjectsCache _projectsCache;
     private readonly SemaphoreSlim _semaphore;
     private readonly Dictionary<Guid, DataWithLastAccess<Guid>> _cache;
     private readonly int _maxClientInactiveAgeInSeconds;
 
     public SessionService(
         IOptions<SessionSettings> sessionSettings,
-        IProjectsStorage projectsStorage)
+        IProjectsCache projectsCache)
     {
-        _projectsStorage = projectsStorage;
+        _projectsCache = projectsCache;
         sessionSettings
             .ThrowIfNull(new InvalidOperationException("Не заданы параметры сессий"));
 
@@ -110,7 +110,7 @@ internal class SessionService : ISessionService
         if (!_cache.ContainsKey(clientId))
             return;
 
-        _projectsStorage.UnloadProject(_cache[clientId].Data);
+        _projectsCache.UnloadProject(_cache[clientId].Data);
         _cache.Remove(clientId);
     }
 
