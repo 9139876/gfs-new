@@ -14,4 +14,13 @@ public class AssetTimeFrameQuotesInfoDto
     
     [UtcDate]
     public DateTime LastDate { get; set; }
+    
+    public decimal MinPrice { get; init; }
+    public decimal MaxPrice { get; init; }
+    
+    [UtcDate]
+    public DateTime MinPriceDate { get; set; }
+    
+    [UtcDate]
+    public DateTime MaxPriceDate { get; set; }
 }

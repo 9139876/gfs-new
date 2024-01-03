@@ -104,12 +104,19 @@ public class GetDataService : IGetDataService
         {
             var tfBaseQuery = baseQuery.Where(quote => quote.TimeFrame == tf);
 
+            var minPriceValue = await tfBaseQuery.OrderBy(quote => quote.Low).Select(quote => new { quote.Low, quote.Date }).FirstAsync();
+            var maxPriceValue = await tfBaseQuery.OrderBy(quote => quote.High).Select(quote => new { quote.High, quote.Date }).LastAsync();
+            
             result.Add(new AssetTimeFrameQuotesInfoDto
             {
                 TimeFrame = tf,
                 Count = await tfBaseQuery.CountAsync(),
                 FirstDate = await tfBaseQuery.Select(quote => quote.Date).MinAsync(),
-                LastDate = await tfBaseQuery.Select(quote => quote.Date).MaxAsync()
+                LastDate = await tfBaseQuery.Select(quote => quote.Date).MaxAsync(),
+                MinPrice = minPriceValue.Low,
+                MinPriceDate = minPriceValue.Date,
+                MaxPrice = maxPriceValue.High,
+                MaxPriceDate = maxPriceValue.Date
             });
         }
 
