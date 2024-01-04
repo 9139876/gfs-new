@@ -77,6 +77,7 @@ public class GetDataService : IGetDataService
             .Get(quote => quote.AssetId == request.AssetId
                           && quote.TimeFrame == request.TimeFrame
                           && quote.QuotesProviderType == request.QuotesProviderType)
+            .OrderBy(q => q.Date)
             .AsNoTracking();
 
         if (request.StartDate.HasValue)
@@ -106,7 +107,7 @@ public class GetDataService : IGetDataService
 
             var minPriceValue = await tfBaseQuery.OrderBy(quote => quote.Low).Select(quote => new { quote.Low, quote.Date }).FirstAsync();
             var maxPriceValue = await tfBaseQuery.OrderBy(quote => quote.High).Select(quote => new { quote.High, quote.Date }).LastAsync();
-            
+
             result.Add(new AssetTimeFrameQuotesInfoDto
             {
                 TimeFrame = tf,

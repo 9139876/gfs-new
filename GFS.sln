@@ -99,6 +99,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFS.ChartService.WebApp", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFS.ChartService.DAL", "GFS.ChartService.DAL\GFS.ChartService.DAL.csproj", "{EAF7A7E9-3A7B-4CE8-91B4-0AF4FC4199B3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CalculationLibrary", "CalculationLibrary", "{4880F6EA-324E-4B5F-B1CF-4922F93239C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFS.CalculationLibrary.Core", "GFS.CalculationLibrary.Core\GFS.CalculationLibrary.Core.csproj", "{D16B605D-0E3A-443E-B08C-357065746813}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -257,6 +261,10 @@ Global
 		{EAF7A7E9-3A7B-4CE8-91B4-0AF4FC4199B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EAF7A7E9-3A7B-4CE8-91B4-0AF4FC4199B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EAF7A7E9-3A7B-4CE8-91B4-0AF4FC4199B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D16B605D-0E3A-443E-B08C-357065746813}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D16B605D-0E3A-443E-B08C-357065746813}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D16B605D-0E3A-443E-B08C-357065746813}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D16B605D-0E3A-443E-B08C-357065746813}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -302,6 +310,7 @@ Global
 		{8A2E282A-6180-44C5-AA79-27D41D9673E6} = {C1E2EB28-78B5-4430-941E-8413CC93D97C}
 		{AB64FAC5-3133-47FD-BAD3-6404FEB75403} = {C1E2EB28-78B5-4430-941E-8413CC93D97C}
 		{EAF7A7E9-3A7B-4CE8-91B4-0AF4FC4199B3} = {C1E2EB28-78B5-4430-941E-8413CC93D97C}
+		{D16B605D-0E3A-443E-B08C-357065746813} = {4880F6EA-324E-4B5F-B1CF-4922F93239C4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7A7DC65A-A5FF-44D3-A316-2470826084D9}

@@ -9,12 +9,12 @@ public class GetQuotesRequest
     public TimeFrameEnum TimeFrame { get; init; }
     
     public Guid AssetId { get; init; }
+
+    public QuotesProviderTypeEnum QuotesProviderType { get; init; } = QuotesProviderTypeEnum.Tinkoff;
     
-    public QuotesProviderTypeEnum QuotesProviderType { get; init; }
-    
-    [UtcDate]
+    [NullableUtcDate]
     public DateTime? StartDate { get; init; }
     
-    [UtcDate]
+    [NullableUtcDate]
     public DateTime? EndDate { get; init; }
 }
