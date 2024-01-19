@@ -49,11 +49,15 @@ internal class SheetsService : ISheetsService
 
         var sheetSize = GetSheetSize(quotesResponse.Quotes, request.KPrice, request.RightEmptySpace);
 
+        var trackerData = GetTrackerData(sheetSize, request.KPrice, quotesResponse.Quotes, request.TimeFrame);
+        var tickerData = GetTickerData(quotesResponse.Quotes, request.KPrice, trackerData.TimeValues);
+
         var result = new SheetViewModel
         {
             Name = request.Name,
             Size = sheetSize,
-            TrackerData = GetTrackerData(sheetSize, request.KPrice, quotesResponse.Quotes, request.TimeFrame)
+            TrackerData = trackerData,
+            TickerLayerData = tickerData
         };
 
         return result;
@@ -108,5 +112,22 @@ internal class SheetsService : ISheetsService
 
             current += 1 / kPrice;
         }
+    }
+
+    private static TickerLayerDataViewModel GetTickerData(IEnumerable<QuoteModel> quotes, decimal kPrice, DateTime[] trackerTimeValues)
+    {
+        int ValueToCellValue(decimal value) => (int)Math.Round(value * kPrice);
+
+        return new TickerLayerDataViewModel
+        {
+            Candles = quotes.Select(quote => new CandleInCells
+            {
+                Date = Array.IndexOf(trackerTimeValues, quote.Date),
+                Open = ValueToCellValue(quote.Open),
+                High = ValueToCellValue(quote.High),
+                Low = ValueToCellValue(quote.Low),
+                Close = ValueToCellValue(quote.Close),
+            }).ToList()
+        };
     }
 }
