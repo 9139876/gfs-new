@@ -57,6 +57,7 @@ internal class SheetsService : ISheetsService
             Name = request.Name,
             Size = sheetSize,
             TrackerData = trackerData,
+            GridLayerData = new GridLayerDataViewModel(),
             TickerLayerData = tickerData
         };
 
