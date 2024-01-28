@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Globalization;
 using GFS.Api.Client.Services;
+using GFS.ChartService.BL.Models.ProjectViewModel;
 using GFS.ChartService.BL.Models.ProjectViewModel.Sheet;
 using GFS.ChartService.BL.Models.ProjectViewModel.Sheet.Layers;
 using GFS.ChartService.BL.Models.Requests;
@@ -23,13 +24,16 @@ internal class SheetsService : ISheetsService
     private const int DEFAULT_OFFSET = 10;
 
     private readonly ISessionService _sessionService;
+    private readonly IProjectsCache _projectsCache;
     private readonly IRemoteApiClient _remoteApiClient;
 
     public SheetsService(
         ISessionService sessionService,
+        IProjectsCache projectsCache,
         IRemoteApiClient remoteApiClient)
     {
         _sessionService = sessionService;
+        _projectsCache = projectsCache;
         _remoteApiClient = remoteApiClient;
     }
 
@@ -52,7 +56,7 @@ internal class SheetsService : ISheetsService
         var trackerData = GetTrackerData(sheetSize, request.KPrice, quotesResponse.Quotes, request.TimeFrame);
         var tickerData = GetTickerData(quotesResponse.Quotes, request.KPrice, trackerData.TimeValues);
 
-        var result = new SheetViewModel
+        var sheetModel = new SheetViewModel
         {
             Name = request.Name,
             Size = sheetSize,
@@ -62,7 +66,20 @@ internal class SheetsService : ISheetsService
             PfLayerData = new PfLayerDataViewModel()
         };
 
-        return result;
+        UpdateInProject(clientId, project => project.Sheets.Add(sheetModel));
+
+        return sheetModel;
+    }
+
+    private void UpdateInProject(Guid clientId, Action<ProjectViewModel>? updateAction)
+    {
+        if (!_sessionService.TryGetProject(clientId, out var projectId))
+            throw new InvalidOperationException($"Попытка создать лист не имея активного проекта у клиента {clientId}");
+
+        if (!_projectsCache.TryGetProject(projectId, out var project))
+            throw new InvalidOperationException($"Проект {projectId} не найден в кэше");
+
+        updateAction?.Invoke(project!);
     }
 
     private static Size GetSheetSize(IReadOnlyCollection<QuoteModel> quoteModels, decimal kPrice, int rightEmptySpace)

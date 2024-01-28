@@ -1,6 +1,4 @@
 using AutoMapper;
-using GFS.ChartService.BL.Models.ProjectModel;
-using GFS.ChartService.BL.Models.ProjectViewModel;
 using GFS.ChartService.BL.Models.Responses;
 using GFS.ChartService.DAL.Entities;
 
@@ -12,7 +10,5 @@ public class MappingProfile : Profile
     {
         CreateMap<ProjectInfoEntity, ProjectInfoViewModel>()
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Name));
-
-        CreateMap<ProjectModel, ProjectViewModel>();
     }
 }

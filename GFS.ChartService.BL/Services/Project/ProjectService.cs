@@ -1,5 +1,6 @@
 using AutoMapper;
-using GFS.ChartService.BL.Models.ProjectModel;
+using GFS.ChartService.BL.Models.ProjectViewModel;
+using GFS.ChartService.BL.Models.ProjectViewModel.Sheet;
 using GFS.ChartService.BL.Models.Requests;
 using GFS.ChartService.BL.Models.Responses;
 using GFS.ChartService.BL.Models.Settings;
@@ -13,12 +14,14 @@ namespace GFS.ChartService.BL.Services.Project;
 
 public interface IProjectService
 {
-    Task<ProjectModel> CreateProject(CreateProjectRequest request, Guid clientId, bool isDevelopment);
+    Task<ProjectViewModel> CreateProject(CreateProjectRequest request, Guid clientId, bool isDevelopment);
 
     Task<List<ProjectInfoViewModel>> GetExistingProjects();
 
-    Task<ProjectModel> LoadProject(Guid projectId, Guid clientId, bool isDevelopment);
+    Task<ProjectViewModel> LoadProject(Guid projectId, Guid clientId, bool isDevelopment);
+
     Task SaveProject(Guid clientId);
+
     Task DeleteProject(Guid projectId);
 }
 
@@ -48,7 +51,7 @@ internal class ProjectService : IProjectService
             .ThrowIfTrue(new InvalidOperationException("Не указан путь к хранилищу проектов"));
     }
 
-    public async Task<ProjectModel> CreateProject(CreateProjectRequest request, Guid clientId, bool isDevelopment)
+    public async Task<ProjectViewModel> CreateProject(CreateProjectRequest request, Guid clientId, bool isDevelopment)
     {
         if (string.IsNullOrWhiteSpace(request.ProjectName))
             throw new InvalidOperationException("Имя проекта не может быть пустым");
@@ -76,7 +79,7 @@ internal class ProjectService : IProjectService
         return _mapper.Map<List<ProjectInfoViewModel>>(entities);
     }
 
-    public async Task<ProjectModel> LoadProject(Guid projectId, Guid clientId, bool isDevelopment)
+    public async Task<ProjectViewModel> LoadProject(Guid projectId, Guid clientId, bool isDevelopment)
     {
         var projectInfo = await _dbContext.GetRepository<ProjectInfoEntity>()
             .Get(p => p.Id == projectId)
@@ -90,7 +93,7 @@ internal class ProjectService : IProjectService
             throw new InvalidOperationException($"Для проекта с идентификатором {projectId} не найден файл");
 
         var projectString = await File.ReadAllTextAsync(fileName);
-        var projectModel = projectString.Deserialize<ProjectModel>() ?? throw new InvalidOperationException($"Ошибка десериализации проекта с идентификатором {projectId}");
+        var projectModel = projectString.Deserialize<ProjectViewModel>() ?? throw new InvalidOperationException($"Ошибка десериализации проекта с идентификатором {projectId}");
 
         _sessionService.CreateSession(clientId, projectModel.ProjectId, isDevelopment);
         _projectsCache.AddProject(projectModel, isDevelopment);
@@ -117,7 +120,7 @@ internal class ProjectService : IProjectService
                 FileGuid = Guid.NewGuid(),
                 CreatedDate = DateTime.UtcNow,
                 ModificationDate = DateTime.UtcNow,
-                Name = projectModel.ProjectName
+                Name = projectModel!.ProjectName!
             };
 
             _dbContext.GetRepository<ProjectInfoEntity>().Insert(projectInfo);
@@ -129,7 +132,7 @@ internal class ProjectService : IProjectService
         if (File.Exists(fileName))
             File.Delete(fileName);
 
-        await File.WriteAllTextAsync(Path.Combine(GetFileName(projectInfo.FileGuid)), projectModel.Serialize());
+        await File.WriteAllTextAsync(Path.Combine(GetFileName(projectInfo.FileGuid)), projectModel!.Serialize());
     }
 
     public async Task DeleteProject(Guid projectId)
@@ -152,12 +155,13 @@ internal class ProjectService : IProjectService
 
 internal static class ProjectFactory
 {
-    public static ProjectModel InitProject(string name)
+    public static ProjectViewModel InitProject(string name)
     {
-        return new ProjectModel
+        return new ProjectViewModel
         {
             ProjectId = Guid.NewGuid(),
-            ProjectName = name
+            ProjectName = name,
+            Sheets = new List<SheetViewModel>()
         };
     }
 }

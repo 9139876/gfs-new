@@ -1,29 +1,29 @@
-using GFS.ChartService.BL.Models.ProjectModel;
+using GFS.ChartService.BL.Models.ProjectViewModel;
 
 namespace GFS.ChartService.BL.Services.Project;
 
 public interface IProjectsCache
 {
-    void AddProject(ProjectModel projectModel, bool isDevelopment);
+    void AddProject(ProjectViewModel projectModel, bool isDevelopment);
 
     void UnloadProject(Guid projectId);
 
-    bool TryGetProject(Guid projectId, out ProjectModel projectModel);
+    bool TryGetProject(Guid projectId, out ProjectViewModel? projectModel);
 }
 
 internal class ProjectsCache : IProjectsCache
 {
     private readonly SemaphoreSlim _semaphore;
 
-    private readonly Dictionary<Guid, ProjectModel> _cache;
+    private readonly Dictionary<Guid, ProjectViewModel> _cache;
 
     public ProjectsCache()
     {
         _semaphore = new SemaphoreSlim(1);
-        _cache = new Dictionary<Guid, ProjectModel>();
+        _cache = new Dictionary<Guid, ProjectViewModel>();
     }
 
-    public void AddProject(ProjectModel projectModel, bool isDevelopment)
+    public void AddProject(ProjectViewModel projectModel, bool isDevelopment)
     {
         ExecuteWithSemaphore(() =>
         {
@@ -50,7 +50,7 @@ internal class ProjectsCache : IProjectsCache
         });
     }
 
-    public bool TryGetProject(Guid projectId, out ProjectModel projectModel)
+    public bool TryGetProject(Guid projectId, out ProjectViewModel? projectModel)
     {
         try
         {
