@@ -13,5 +13,7 @@ public class SheetViewModel
 
     public TickerLayerDataViewModel TickerLayerData { get; init; }
     
-    public GridLayerDataViewModel GridLayerData { get; init; } 
+    public GridLayerDataViewModel GridLayerData { get; init; }
+    
+    public PfLayerDataViewModel PfLayerData { get; init; }
 }

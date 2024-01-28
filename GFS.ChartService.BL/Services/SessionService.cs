@@ -8,7 +8,7 @@ namespace GFS.ChartService.BL.Services;
 
 public interface ISessionService
 {
-    void CreateSession(Guid clientId, Guid projectId);
+    void CreateSession(Guid clientId, Guid projectId, bool isDevelopment);
 
     void CloseSession(Guid clientId);
 
@@ -40,15 +40,23 @@ internal class SessionService : ISessionService
         _semaphore = new SemaphoreSlim(1);
     }
 
-    public void CreateSession(Guid clientId, Guid projectId)
+    public void CreateSession(Guid clientId, Guid projectId, bool isDevelopment)
     {
         ExecuteWithSemaphore(() =>
         {
+            Action onClientIdExist = isDevelopment
+                ? () => _cache.Remove(clientId)
+                : () => throw new InvalidOperationException($"Ошибка создания сессии - у клиента {clientId} есть незакрытый проект");
+
+            Action onProjectIdExist = isDevelopment
+                ? () => _cache.Remove(_cache.Single(x => x.Value.Data == projectId).Key)
+                : throw new InvalidOperationException($"Ошибка создания сессии - проект {projectId} занят другим клиентом");
+
             if (_cache.ContainsKey(clientId))
-                throw new InvalidOperationException($"Ошибка создания сессии - у клиента {clientId} есть незакрытый проект");
+                onClientIdExist.Invoke();
 
             if (_cache.Values.Any(v => v.Data == projectId))
-                throw new InvalidOperationException($"Ошибка создания сессии - проект {projectId} занят другим клиентом");
+                onProjectIdExist.Invoke();
 
             _cache.Add(clientId, new DataWithLastAccess<Guid>(projectId));
         });

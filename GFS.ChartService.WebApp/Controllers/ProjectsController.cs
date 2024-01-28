@@ -18,21 +18,24 @@ public class ProjectsController : BaseControllerWithClientIdentifier
     private readonly IProjectService _projectService;
     private readonly ISessionService _sessionService;
     private readonly IMapper _mapper;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
     public ProjectsController(
         IProjectService projectService,
         ISessionService sessionService,
-        IMapper mapper)
+        IMapper mapper,
+        IWebHostEnvironment webHostEnvironment)
     {
         _projectService = projectService;
         _sessionService = sessionService;
         _mapper = mapper;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     [HttpPost(nameof(CreateProject))]
     public async Task<ProjectViewModel> CreateProject([FromBody] CreateProjectRequest request)
     {
-        var project = await _projectService.CreateProject(request, GetClientId());
+        var project = await _projectService.CreateProject(request, GetClientId(), _webHostEnvironment.IsDevelopment());
         return _mapper.Map<ProjectViewModel>(project);
     }
 
@@ -72,7 +75,7 @@ public class ProjectsController : BaseControllerWithClientIdentifier
     [HttpGet(nameof(LoadProject))]
     public async Task<ProjectViewModel> LoadProject(Guid projectId)
     {
-        return _mapper.Map<ProjectViewModel>(await _projectService.LoadProject(projectId, GetClientId()));
+        return _mapper.Map<ProjectViewModel>(await _projectService.LoadProject(projectId, GetClientId(), _webHostEnvironment.IsDevelopment()));
     }
 
     [HttpPost(nameof(CloseProject))]

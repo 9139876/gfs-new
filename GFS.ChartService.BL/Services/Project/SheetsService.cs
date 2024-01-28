@@ -58,7 +58,8 @@ internal class SheetsService : ISheetsService
             Size = sheetSize,
             TrackerData = trackerData,
             GridLayerData = new GridLayerDataViewModel(),
-            TickerLayerData = tickerData
+            TickerLayerData = tickerData,
+            PfLayerData = new PfLayerDataViewModel()
         };
 
         return result;

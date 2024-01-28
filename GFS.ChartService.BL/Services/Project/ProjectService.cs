@@ -13,11 +13,11 @@ namespace GFS.ChartService.BL.Services.Project;
 
 public interface IProjectService
 {
-    Task<ProjectModel> CreateProject(CreateProjectRequest request, Guid clientId);
+    Task<ProjectModel> CreateProject(CreateProjectRequest request, Guid clientId, bool isDevelopment);
 
     Task<List<ProjectInfoViewModel>> GetExistingProjects();
 
-    Task<ProjectModel> LoadProject(Guid projectId, Guid clientId);
+    Task<ProjectModel> LoadProject(Guid projectId, Guid clientId, bool isDevelopment);
     Task SaveProject(Guid clientId);
     Task DeleteProject(Guid projectId);
 }
@@ -48,7 +48,7 @@ internal class ProjectService : IProjectService
             .ThrowIfTrue(new InvalidOperationException("Не указан путь к хранилищу проектов"));
     }
 
-    public async Task<ProjectModel> CreateProject(CreateProjectRequest request, Guid clientId)
+    public async Task<ProjectModel> CreateProject(CreateProjectRequest request, Guid clientId, bool isDevelopment)
     {
         if (string.IsNullOrWhiteSpace(request.ProjectName))
             throw new InvalidOperationException("Имя проекта не может быть пустым");
@@ -61,8 +61,8 @@ internal class ProjectService : IProjectService
 
         var project = ProjectFactory.InitProject(request.ProjectName);
 
-        _sessionService.CreateSession(clientId, project.ProjectId);
-        _projectsCache.AddProject(project);
+        _sessionService.CreateSession(clientId, project.ProjectId, isDevelopment);
+        _projectsCache.AddProject(project, isDevelopment);
 
         return project;
     }
@@ -76,7 +76,7 @@ internal class ProjectService : IProjectService
         return _mapper.Map<List<ProjectInfoViewModel>>(entities);
     }
 
-    public async Task<ProjectModel> LoadProject(Guid projectId, Guid clientId)
+    public async Task<ProjectModel> LoadProject(Guid projectId, Guid clientId, bool isDevelopment)
     {
         var projectInfo = await _dbContext.GetRepository<ProjectInfoEntity>()
             .Get(p => p.Id == projectId)
@@ -92,8 +92,8 @@ internal class ProjectService : IProjectService
         var projectString = await File.ReadAllTextAsync(fileName);
         var projectModel = projectString.Deserialize<ProjectModel>() ?? throw new InvalidOperationException($"Ошибка десериализации проекта с идентификатором {projectId}");
 
-        _sessionService.CreateSession(clientId, projectModel.ProjectId);
-        _projectsCache.AddProject(projectModel);
+        _sessionService.CreateSession(clientId, projectModel.ProjectId, isDevelopment);
+        _projectsCache.AddProject(projectModel, isDevelopment);
 
         return projectModel;
     }

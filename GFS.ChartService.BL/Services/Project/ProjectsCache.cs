@@ -4,7 +4,7 @@ namespace GFS.ChartService.BL.Services.Project;
 
 public interface IProjectsCache
 {
-    void AddProject(ProjectModel projectModel);
+    void AddProject(ProjectModel projectModel, bool isDevelopment);
 
     void UnloadProject(Guid projectId);
 
@@ -23,12 +23,17 @@ internal class ProjectsCache : IProjectsCache
         _cache = new Dictionary<Guid, ProjectModel>();
     }
 
-    public void AddProject(ProjectModel projectModel)
+    public void AddProject(ProjectModel projectModel, bool isDevelopment)
     {
         ExecuteWithSemaphore(() =>
         {
             if (_cache.ContainsKey(projectModel.ProjectId))
+            {
+                if (isDevelopment)
+                    return;
+
                 throw new InvalidOperationException($"Проект с идентификатором {projectModel.ProjectId} уже в загружен в оперативное хранилище");
+            }
 
             _cache.Add(projectModel.ProjectId, projectModel);
         });
