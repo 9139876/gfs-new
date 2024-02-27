@@ -30,6 +30,10 @@ public class AddTasksSelectAssetsPage: ConsolePage
                 items = apiResponse
                     .OrderBy(item => item.MarketType)
                     .ToDictionary(item => $"{item.MarketType} - {item.Ticker} - {item.Name}", item => item.AssetId);
+
+                if (!items.Any())
+                    throw new InvalidOperationException("Не найдено ни одного инструмента");
+
             }, "Получение данных о об инструментах...")) return;
 
         var itemNames = AnsiConsole.Prompt(

@@ -150,8 +150,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         using var httpClient = _httpClientFactory.CreateClient();
 
         var token = _configuration.GetSection("TinkoffApiToken").Value ?? throw new InvalidOperationException("Tinkoff api key not specified in environment variables");
-        httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var tinkoffResponse = await httpClient.SendAsync(BuildRequestGetQuotesBatchFromArchive(request.Asset, request.BatchBeginningDate));
 

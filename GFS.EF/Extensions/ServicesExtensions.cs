@@ -39,9 +39,4 @@ namespace GFS.EF.Extensions
             //await Seeding<TDbContext, TSeeder>(context);
         }
     }
-
-    // internal class Migration
-    // {
-    //     
-    // }
 }
