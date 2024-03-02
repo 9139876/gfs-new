@@ -6,13 +6,17 @@ using GFS.QuotesService.DAL.Entities;
 
 namespace GFS.QuotesService.BL.Models;
 
-/// <summary>
-/// Модель запроса получения партии котировок
-/// </summary>
-public class GetQuotesBatchRequestModel
+public class GetQuotesRequestModel
 {
     public AssetEntity Asset { get; init; }
     public TimeFrameEnum TimeFrame { get; init; }
+}
+
+/// <summary>
+/// Модель запроса получения партии котировок
+/// </summary>
+public class GetQuotesBatchRequestModel : GetQuotesRequestModel
+{
     public TimeDirectionEnum TimeDirection { get; init; }
     public DateTime BatchBeginningDate { get; set; }
 }

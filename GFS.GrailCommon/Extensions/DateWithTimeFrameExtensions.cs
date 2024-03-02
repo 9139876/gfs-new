@@ -171,5 +171,41 @@ namespace GFS.GrailCommon.Extensions
 
             return new DateTime(min.Ticks + (max.Ticks - min.Ticks) / 2);
         }
+
+        /// <summary>
+        /// Возвращает наименьшую из дат
+        /// </summary>
+        /// <param name="dates">Даты</param>
+        /// <exception cref="ArgumentException">Если не передано ни одной даты</exception>
+        public static DateTime GetMinDate(params DateTime[] dates)
+        {
+            if (!dates.Any())
+                throw new ArgumentException("В метод не передано ни одной даты", nameof(dates));
+            var result = dates[0];
+
+            foreach (var date in dates.Skip(1))
+                if (date < result)
+                    result = date;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Возвращает наибольшую из дат
+        /// </summary>
+        /// <param name="dates">Даты</param>
+        /// <exception cref="ArgumentException">Если не передано ни одной даты</exception>
+        public static DateTime GetMaxDate(params DateTime[] dates)
+        {
+            if (!dates.Any())
+                throw new ArgumentException("В метод не передано ни одной даты", nameof(dates));
+            var result = dates[0];
+
+            foreach (var date in dates.Skip(1))
+                if (date > result)
+                    result = date;
+
+            return result;
+        }
     }
 }

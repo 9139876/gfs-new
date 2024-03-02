@@ -17,7 +17,7 @@ internal class BcsExpressAdapter : QuotesProviderAbstractAdapter, IBcsExpressAda
         throw new NotImplementedYetException();
     }
 
-    public override TimeFrameEnum[] NativeSupportedTimeFrames => new[] { TimeFrameEnum.min1, TimeFrameEnum.H1, TimeFrameEnum.D1 };
+    public override ICollection<TimeFrameEnum> NativeSupportedTimeFrames => new[] { TimeFrameEnum.min1, TimeFrameEnum.H1, TimeFrameEnum.D1 };
 
     public override QuotesProviderTypeEnum ProviderType => QuotesProviderTypeEnum.BcsExpress;
 }

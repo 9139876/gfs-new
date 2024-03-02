@@ -29,7 +29,8 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
     private readonly InvestApiClient _apiClient;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IMapper _mapper;
-    private readonly IConfiguration _configuration;
+    private readonly string _historyDataBaseUri;
+    private readonly string _token;
 
     public TinkoffAdapter(
         InvestApiClient apiClient,
@@ -40,7 +41,12 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         _apiClient = apiClient;
         _httpClientFactory = httpClientFactory;
         _mapper = mapper;
-        _configuration = configuration;
+
+        _historyDataBaseUri = configuration.GetSection("TinkoffApi:UriHistoryData").Value
+                              ?? throw new InvalidOperationException("TinkoffApi.UriHistoryData not specified in configuration");
+
+        _token = configuration.GetSection("TinkoffApiToken").Value
+                 ?? throw new InvalidOperationException("Tinkoff api key not specified in environment variables");
     }
 
     public override async Task<List<InitialModel>> GetInitialData()
@@ -80,6 +86,18 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         return result;
     }
 
+    public override async Task<DateTime> GetFirstQuoteDate(GetQuotesRequestModel request)
+    {
+        var apiResponse = await _apiClient.Instruments.GetInstrumentByAsync(new InstrumentRequest { IdType = InstrumentIdType.Figi, Id = request.Asset.FIGI });
+
+        return request.TimeFrame switch
+        {
+            TimeFrameEnum.min1 or TimeFrameEnum.H1 => apiResponse.Instrument.First1MinCandleDate.ToDateTime(),
+            TimeFrameEnum.D1 => apiResponse.Instrument.First1DayCandleDate.ToDateTime(),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
     protected override async Task<GetQuotesBatchResponseModel> GetQuotesBatchInternal(GetQuotesBatchRequestModel request)
     {
         if (request.TimeFrame == TimeFrameEnum.min1)
@@ -109,7 +127,8 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         };
     }
 
-    public override TimeFrameEnum[] NativeSupportedTimeFrames => new[] { TimeFrameEnum.min1, TimeFrameEnum.H1, TimeFrameEnum.D1 };
+    // public override ICollection<TimeFrameEnum> NativeSupportedTimeFrames => new[] { TimeFrameEnum.min1, TimeFrameEnum.H1, TimeFrameEnum.D1 };
+    public override ICollection<TimeFrameEnum> NativeSupportedTimeFrames => new[] { TimeFrameEnum.D1 };
 
     public override QuotesProviderTypeEnum ProviderType => QuotesProviderTypeEnum.Tinkoff;
 
@@ -149,15 +168,15 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 
         using var httpClient = _httpClientFactory.CreateClient();
 
-        var token = _configuration.GetSection("TinkoffApiToken").Value ?? throw new InvalidOperationException("Tinkoff api key not specified in environment variables");
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
 
         var tinkoffResponse = await httpClient.SendAsync(BuildRequestGetQuotesBatchFromArchive(request.Asset, request.BatchBeginningDate));
 
         if (!tinkoffResponse.IsSuccessStatusCode)
         {
             //Достал, пришлось захардкодить - это ошибка что год неправильный (просто за этот год котировок нет) 
-            if (tinkoffResponse.StatusCode == HttpStatusCode.NotFound || (tinkoffResponse.Headers.TryGetValues("code", out var tinkoffCodes) && tinkoffCodes.FirstOrDefault() == "30086"))
+            if (tinkoffResponse.StatusCode == HttpStatusCode.NotFound ||
+                (tinkoffResponse.Headers.TryGetValues("code", out var tinkoffCodes) && tinkoffCodes.FirstOrDefault() == "30086"))
                 return new GetQuotesBatchResponseModel
                 {
                     Quotes = new List<QuoteModel>(),
@@ -208,10 +227,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 
     private HttpRequestMessage BuildRequestGetQuotesBatchFromArchive(AssetEntity asset, DateTime batchEndDate)
     {
-        var baseUri = _configuration.GetSection("TinkoffApi:UriHistoryData").Value ??
-                      throw new InvalidOperationException("TinkoffApi.UriHistoryData not specified in configuration");
-
-        var builder = new UriBuilder(baseUri);
+        var builder = new UriBuilder(_historyDataBaseUri);
 
         var query = HttpUtility.ParseQueryString(builder.Query);
         query["figi"] = asset.FIGI;
@@ -219,9 +235,11 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 
         builder.Query = query.ToString();
 
-        var httpRequest = new HttpRequestMessage();
-        httpRequest.Method = HttpMethod.Get;
-        httpRequest.RequestUri = builder.Uri;
+        var httpRequest = new HttpRequestMessage
+        {
+            Method = HttpMethod.Get,
+            RequestUri = builder.Uri
+        };
 
         return httpRequest;
     }

@@ -17,7 +17,7 @@ internal class FinamAdapter : QuotesProviderAbstractAdapter, IFinamAdapter
         throw new NotImplementedYetException();
     }
 
-    public override TimeFrameEnum[] NativeSupportedTimeFrames => throw new NotImplementedYetException();
+    public override ICollection<TimeFrameEnum> NativeSupportedTimeFrames => throw new NotImplementedYetException();
 
     public override QuotesProviderTypeEnum ProviderType => QuotesProviderTypeEnum.Finam;
 }

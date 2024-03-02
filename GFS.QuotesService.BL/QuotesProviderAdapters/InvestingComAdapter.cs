@@ -17,7 +17,7 @@ internal class InvestingComAdapter : QuotesProviderAbstractAdapter, IInvestingCo
         throw new NotImplementedYetException();
     }
 
-    public override TimeFrameEnum[] NativeSupportedTimeFrames => new[]
+    public override ICollection<TimeFrameEnum> NativeSupportedTimeFrames => new[]
     {
         TimeFrameEnum.H1,
         TimeFrameEnum.D1,
