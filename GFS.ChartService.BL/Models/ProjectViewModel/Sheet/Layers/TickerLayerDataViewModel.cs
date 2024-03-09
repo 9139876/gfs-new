@@ -23,7 +23,7 @@ public class CandleInCells
 public class TickerLayerProperties
 {
     public bool IsVisible { get; init; } = true;
-    public string Color { get; init; } = "Red";
+    public string Color { get; init; } = "White";
     public CandleType CandleType { get; init; } = CandleType.Gann;
 }
 

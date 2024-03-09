@@ -8,9 +8,9 @@ public class GridLayerDataViewModel
 public class GridLayerProperties
 {
     public bool IsVisible { get; init; } = true;
-    public string PremierLinesColor { get; init; } = "Black";
-    public string SecondLinesColor { get; init; } = "DarkGray";
-    public string ThirdLinesColor { get; init; } = "LightGray";
+    public string PremierLinesColor { get; init; } = "DarkGreen";
+    public string SecondLinesColor { get; init; } = "DarkOliveGreen";
+    public string ThirdLinesColor { get; init; } = "DarkOliveGreen";
     public int SecondLinesEvery { get; init; } = 5;
     public int PremierLinesEvery { get; init; } = 10;
 }

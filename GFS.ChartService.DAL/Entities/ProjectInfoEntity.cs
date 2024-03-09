@@ -15,6 +15,8 @@ public class ProjectInfoEntity : GuidKeyEntity
     public DateTime CreatedDate { get; init; }
 
     public DateTime ModificationDate { get; init; }
+
+    public void SetId(Guid id) => Id = id;
 }
 
 public class ProjectEntityConfiguration : IEntityTypeConfiguration<ProjectInfoEntity>

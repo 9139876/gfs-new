@@ -63,7 +63,9 @@ internal class SheetsService : ISheetsService
             TrackerData = trackerData,
             GridLayerData = new GridLayerDataViewModel(),
             TickerLayerData = tickerData,
-            PfLayerData = new PfLayerDataViewModel()
+            PfLayerData = new PfLayerDataViewModel(),
+            PointerLayerData = new PointerLayerDataViewModel(),
+            ForecastLayerData = new ForecastLayerDataViewModel()
         };
 
         UpdateInProject(clientId, project => project.Sheets.Add(sheetModel));

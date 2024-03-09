@@ -123,6 +123,8 @@ internal class ProjectService : IProjectService
                 Name = projectModel!.ProjectName!
             };
 
+            projectInfo.SetId(projectModel.ProjectId);
+            
             _dbContext.GetRepository<ProjectInfoEntity>().Insert(projectInfo);
             await _dbContext.SaveChangesAsync();
         }
