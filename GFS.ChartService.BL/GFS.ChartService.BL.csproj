@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\GFS.AnalysisSystem.Library\GFS.AnalysisSystem.Library.csproj" />
       <ProjectReference Include="..\GFS.Api.Client\GFS.Api.Client.csproj" />
       <ProjectReference Include="..\GFS.ChartService.DAL\GFS.ChartService.DAL.csproj" />
       <ProjectReference Include="..\GFS.QuotesService.Api\GFS.QuotesService.Api.csproj" />
