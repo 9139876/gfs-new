@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Drawing;
 using GFS.AnalysisSystem.Library.Calculation.Abstraction;
 using GFS.AnalysisSystem.Library.Calculation.Models;
 using GFS.Common.Extensions;
@@ -19,15 +21,36 @@ public static class ForecastCalculator
 
     public static ForecastCalculationResult Calculate(IEnumerable<string> methodsIds, CalculationContext context)
     {
-        return CombineForecastCalculationResults(methodsIds
+        var methods = methodsIds
             .Select(id => Methods.SingleOrDefault(m => m.Identifier == id))
-            .Where(ftm => ftm != null)
-            .Select(ftm => ftm!.Calculate(context)));
+            .Where(ftm => ftm != null);
+
+        var bag = new ConcurrentBag<ForecastCalculationResult>();
+
+        Parallel.ForEach(methods, method => bag.Add(method!.Calculate(context)));
+
+        return CombineForecastCalculationResults(bag);
     }
 
     private static ForecastCalculationResult CombineForecastCalculationResults(IEnumerable<ForecastCalculationResult> results)
     {
-        throw new NotImplementedException();
+        var dict = new Dictionary<Point, ForecastCalculationResultItem>();
+
+        foreach (var methodResult in results)
+        {
+            foreach (var item in methodResult.GetItems)
+            {
+                if (!dict.ContainsKey(item.Position))
+                    dict.Add(item.Position, new ForecastCalculationResultItem(item.Position));
+
+                dict[item.Position].AddDescriptionList(item.Descriptions);
+            }
+        }
+
+        var result = new ForecastCalculationResult();
+        result.AddForecastCalculationResultItemList(dict.Values);
+
+        return result;
     }
 
     private static IForecastTreeMethod[] GetMethods()
@@ -73,7 +96,7 @@ public static class ForecastCalculator
     private static ForecastTreeRoot BuildForecastTree()
     {
         var root = new ForecastTreeRoot();
-        
+
         foreach (var group in Groups)
         {
             group.Children.AddRange(Methods

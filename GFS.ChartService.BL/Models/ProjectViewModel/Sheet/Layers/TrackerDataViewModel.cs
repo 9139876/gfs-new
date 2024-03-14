@@ -1,3 +1,5 @@
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+#pragma warning disable CS8618
 namespace GFS.ChartService.BL.Models.ProjectViewModel.Sheet.Layers;
 
 public class TrackerDataViewModel
