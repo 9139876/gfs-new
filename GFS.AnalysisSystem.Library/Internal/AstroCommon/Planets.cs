@@ -3,7 +3,7 @@ using GFS.Common.Attributes;
 
 namespace GFS.AnalysisSystem.Library.Internal.AstroCommon
 {
-    internal class Planet
+    public class Planet
     {
         public Planet(PlanetType planetType, bool helio)
         {
@@ -53,8 +53,6 @@ namespace GFS.AnalysisSystem.Library.Internal.AstroCommon
         {
             private const bool IS_HELIO = true;
 
-            public static Planet Sun => new (PlanetType.Sun, IS_HELIO);
-            public static Planet Moon => new (PlanetType.Moon, IS_HELIO);
             public static Planet Mercury => new (PlanetType.Mercury, IS_HELIO);
             public static Planet Venus => new (PlanetType.Venus, IS_HELIO);
             public static Planet Mars => new (PlanetType.Mars, IS_HELIO);

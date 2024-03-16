@@ -22,18 +22,29 @@ public abstract class Angle : ForecastTreeMethod<AnglesGroup>
             {
                 position = new Point(position.X + TimeStep, position.Y + PriceStep * Direction);
 
+                for (var i = -context.ForecastSpread; i <= context.ForecastSpread; i++)
+                {
+                    var positionWithSpread = new Point(position.X, position.Y + i);
+
+                    if (context.InSheet(positionWithSpread))
+                    {
+                        //todo point price and time
+                        result.AddForecastCalculationResultItem(new ForecastCalculationResultItem(
+                            position: positionWithSpread,
+                            descriptions: $"{(Direction > 0 ? "Восходящий" : "Нисходящий")} Угол {PriceStep}х{TimeStep} от [{point.X};{point.Y}]")
+                        );
+                    }
+                }
+
                 if (!context.InSheet(position))
                     break;
-
-                //todo point price and time
-                result.AddForecastCalculationResultItem(new ForecastCalculationResultItem(position, $"Угол {PriceStep}х{TimeStep} от [{point.X};{point.Y}]"));
             }
         }
 
         return result;
     }
 
-    public override string Name => $"Угол {PriceStep}х{TimeStep} {(Direction > 0 ? "Восходящий" : "Нисходящий")}";
+    public override string Name => $"{(Direction > 0 ? "Восходящий" : "Нисходящий")} Угол {PriceStep}х{TimeStep}";
 }
 
 public class Angle1X1Up : Angle

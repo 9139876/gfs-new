@@ -41,7 +41,7 @@ public static class ForecastCalculator
             foreach (var item in methodResult.GetItems)
             {
                 if (!dict.ContainsKey(item.Position))
-                    dict.Add(item.Position, new ForecastCalculationResultItem(item.Position));
+                    dict.Add(item.Position, new ForecastCalculationResultItem(position: item.Position));
 
                 dict[item.Position].AddDescriptionList(item.Descriptions);
             }
