@@ -5,7 +5,7 @@ namespace GFS.AnalysisSystem.Library.Calculation.Methods.Astro.PlanetPosition;
 
 public static class PlanetPositionCommon
 {
-    public static ForecastCalculationResult Calculate(CalculationContext context, Planet planet)
+    public static ForecastCalculationResult Calculate(CalculationContext context, Planet planet, HarmonicTypeEnum harmonicType)
     {
         // var position = EphemCalculation.CalcPlanetLongitude(DateTime.Now, planet);
         

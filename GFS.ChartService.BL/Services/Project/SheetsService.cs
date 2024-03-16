@@ -95,9 +95,12 @@ internal class SheetsService : ISheetsService
 
     private static TrackerDataViewModel GetTrackerData(Size sheetSize, decimal kPrice, IReadOnlyCollection<QuoteModel> quotes, TimeFrameEnum timeFrame)
     {
+        var priceValues = GetTrackerPriceValues(sheetSize.Height, kPrice).ToArray();
+
         var trackerData = new TrackerDataViewModel
         {
-            PriceValues = GetTrackerPriceValues(sheetSize.Height, kPrice).ToArray(),
+            PriceValuesDecimal = priceValues,
+            PriceValues = priceValues.Select(pv => pv.ToString(CultureInfo.InvariantCulture)).ToArray(),
             TimeValues = GetTrackerTimeValues(sheetSize.Width, quotes, timeFrame).ToArray()
         };
 
@@ -122,14 +125,14 @@ internal class SheetsService : ISheetsService
         }
     }
 
-    private static IEnumerable<string> GetTrackerPriceValues(int height, decimal kPrice)
+    private static IEnumerable<decimal> GetTrackerPriceValues(int height, decimal kPrice)
     {
         decimal current = 0;
 
         for (var i = 0; i < height; i++)
         {
             var roundedCurrent = Math.Round(current * (decimal)Math.Pow(10, 5)) / (decimal)Math.Pow(10, 5);
-            yield return roundedCurrent.ToString(CultureInfo.InvariantCulture);
+            yield return roundedCurrent;
 
             current += 1 / kPrice;
         }

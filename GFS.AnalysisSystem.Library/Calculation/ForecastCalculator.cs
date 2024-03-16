@@ -8,8 +8,8 @@ namespace GFS.AnalysisSystem.Library.Calculation;
 
 public static class ForecastCalculator
 {
-    internal static readonly IForecastTreeMethod[] Methods;
-    internal static readonly IForecastTreeGroup[] Groups;
+    private static readonly IForecastTreeMethod[] Methods;
+    private static readonly IForecastTreeGroup[] Groups;
     public static readonly ForecastTreeRoot ForecastTree;
 
     static ForecastCalculator()

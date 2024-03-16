@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Globalization;
 using GFS.AnalysisSystem.Library.Calculation.Abstraction;
 using GFS.AnalysisSystem.Library.Calculation.Models;
 
@@ -17,6 +18,8 @@ public abstract class Angle : ForecastTreeMethod<AnglesGroup>
         foreach (var point in context.PointsFrom)
         {
             var position = point;
+            var priceTimePosition = context.GetPriceTimePosition(point);
+            var positionText = $"{priceTimePosition.Price.ToString(CultureInfo.InvariantCulture)} {priceTimePosition.Date}";
 
             while (true)
             {
@@ -28,10 +31,9 @@ public abstract class Angle : ForecastTreeMethod<AnglesGroup>
 
                     if (context.InSheet(positionWithSpread))
                     {
-                        //todo point price and time
                         result.AddForecastCalculationResultItem(new ForecastCalculationResultItem(
                             position: positionWithSpread,
-                            descriptions: $"{(Direction > 0 ? "Восходящий" : "Нисходящий")} Угол {PriceStep}х{TimeStep} от [{point.X};{point.Y}]")
+                            descriptions: $"{(Direction > 0 ? "Восходящий" : "Нисходящий")} Угол {PriceStep}х{TimeStep} от {positionText}")
                         );
                     }
                 }

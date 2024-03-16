@@ -11,7 +11,7 @@ public class ForecastCalculationResultItem
     }
 
     public Point Position { get; }
-    public List<string> Descriptions { get; }
+    public List<string> Descriptions { get; } 
 
     public void AddDescription(string description) => Descriptions.Add(description);
 

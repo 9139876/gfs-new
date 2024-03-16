@@ -1,6 +1,7 @@
 using GFS.AnalysisSystem.Library.Calculation;
-using GFS.AnalysisSystem.Library.Calculation.Abstraction;
+using GFS.ChartService.BL.Models.Requests;
 using GFS.ChartService.BL.Models.Responses;
+using GFS.ChartService.BL.Services;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,35 +11,23 @@ namespace GFS.ChartService.WebApp.Controllers;
 [Route(nameof(ForecastController))]
 public class ForecastController : BaseControllerWithClientIdentifier
 {
+    private readonly IForecastService _forecastService;
+
+    public ForecastController(
+        IForecastService forecastService)
+    {
+        _forecastService = forecastService;
+    }
+
     [HttpGet(nameof(GetForecastMethodsTree))]
     public List<ForecastMethodsTreeViewModel> GetForecastMethodsTree()
     {
-        return GetForecastTree(ForecastCalculator.ForecastTree);
+        return _forecastService.GetForecastTree(ForecastCalculator.ForecastTree);
     }
 
-    private static List<ForecastMethodsTreeViewModel> GetForecastTree(IForecastTreeGroup forecastTreeGroup)
+    [HttpPost(nameof(CalculateForecast))]
+    public ForecastCalculationResultViewModel CalculateForecast([FromBody] CalculateForecastRequest request)
     {
-        var result = new List<ForecastMethodsTreeViewModel>();
-
-        foreach (var item in forecastTreeGroup.Children)
-        {
-            if (item is IForecastTreeGroup @group)
-                result.Add(new ForecastMethodsTreeViewModel
-                {
-                    Key = item.Identifier,
-                    Title = item.Name,
-                    Children = GetForecastTree(@group).ToArray()
-                });
-            else
-            {
-                result.Add(new ForecastMethodsTreeViewModel
-                {
-                    Key = item.Identifier,
-                    Title = item.Name
-                });
-            }
-        }
-
-        return result;
+        return _forecastService.CalculateForecast(request, GetClientId());
     }
 }

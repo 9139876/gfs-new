@@ -3,86 +3,86 @@ using GFS.AnalysisSystem.Library.Calculation.Models;
 using GFS.AnalysisSystem.Library.Internal.AstroCommon;
 using GFS.Common.Attributes;
 
-namespace GFS.AnalysisSystem.Library.Calculation.Methods.Astro.PlanetPosition.Geo;
+namespace GFS.AnalysisSystem.Library.Calculation.Methods.Astro.PlanetPosition.Geo.ExactPlanetPosition;
 
-public abstract class PlanetPositionGeo : ForecastTreeMethod<PlanetPositionGeoGroup>
+public abstract class PlanetPositionGeoExact : ForecastTreeMethod<PlanetPositionGeoExactGroup>
 {
     protected abstract Planet Planet { get; }
 
     public override ForecastCalculationResult Calculate(CalculationContext context)
     {
-        return PlanetPositionCommon.Calculate(context, Planet);
+        return PlanetPositionCommon.Calculate(context, Planet, HarmonicTypeEnum.Exact);
     }
 
     public override string Name => Description.GetDescription(Planet.PlanetType);
 }
 
-public class PlanetPositionGeoSun : PlanetPositionGeo
+public class PlanetPositionGeoExactSun : PlanetPositionGeoExact
 {
     protected override Planet Planet => Planets.Geo.Sun;
 }
 
-public class PlanetPositionGeoMoon : PlanetPositionGeo
+public class PlanetPositionGeoExactMoon : PlanetPositionGeoExact
 {
     protected override Planet Planet => Planets.Geo.Moon;
 }
 
-public class PlanetPositionGeoMercury : PlanetPositionGeo
+public class PlanetPositionGeoExactMercury : PlanetPositionGeoExact
 {
     protected override Planet Planet => Planets.Geo.Mercury;
 }
 
-public class PlanetPositionGeoVenus : PlanetPositionGeo
+public class PlanetPositionGeoExactVenus : PlanetPositionGeoExact
 {
     protected override Planet Planet => Planets.Geo.Venus;
 }
 
-public class PlanetPositionGeoMars : PlanetPositionGeo
+public class PlanetPositionGeoExactMars : PlanetPositionGeoExact
 {
     protected override Planet Planet => Planets.Geo.Mars;
 }
 
-public class PlanetPositionGeoJupiter : PlanetPositionGeo
+public class PlanetPositionGeoExactJupiter : PlanetPositionGeoExact
 {
     protected override Planet Planet => Planets.Geo.Jupiter;
 }
 
-public class PlanetPositionGeoSaturn : PlanetPositionGeo
+public class PlanetPositionGeoExactSaturn : PlanetPositionGeoExact
 {
     protected override Planet Planet => Planets.Geo.Saturn;
 }
 
-public class PlanetPositionGeoUranus : PlanetPositionGeo
+public class PlanetPositionGeoExactUranus : PlanetPositionGeoExact
 {
     protected override Planet Planet => Planets.Geo.Uranus;
 }
 
-public class PlanetPositionGeoNeptune : PlanetPositionGeo
+public class PlanetPositionGeoExactNeptune : PlanetPositionGeoExact
 {
     protected override Planet Planet => Planets.Geo.Neptune;
 }
 
-public class PlanetPositionGeoPluto : PlanetPositionGeo
+public class PlanetPositionGeoExactPluto : PlanetPositionGeoExact
 {
     protected override Planet Planet => Planets.Geo.Pluto;
 }
 
-public class PlanetPositionGeoAverageVoshUzel : PlanetPositionGeo
+public class PlanetPositionGeoExactAverageVoshUzel : PlanetPositionGeoExact
 {
     protected override Planet Planet => Planets.Geo.AverageVoshUzel;
 }
 
-public class PlanetPositionGeoTrueVoshUzel : PlanetPositionGeo
+public class PlanetPositionGeoExactTrueVoshUzel : PlanetPositionGeoExact
 {
     protected override Planet Planet => Planets.Geo.TrueVoshUzel;
 }
 
-public class PlanetPositionGeoAverageApogeeMoon : PlanetPositionGeo
+public class PlanetPositionGeoExactAverageApogeeMoon : PlanetPositionGeoExact
 {
     protected override Planet Planet => Planets.Geo.AverageApogeeMoon;
 }
 
-public class PlanetPositionGeoTrueApogeeMoon : PlanetPositionGeo
+public class PlanetPositionGeoExactTrueApogeeMoon : PlanetPositionGeoExact
 {
     protected override Planet Planet => Planets.Geo.TrueApogeeMoon;
 }

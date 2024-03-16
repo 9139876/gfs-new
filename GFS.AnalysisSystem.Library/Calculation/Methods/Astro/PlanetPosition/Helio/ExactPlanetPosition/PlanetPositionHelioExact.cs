@@ -3,61 +3,61 @@ using GFS.AnalysisSystem.Library.Calculation.Models;
 using GFS.AnalysisSystem.Library.Internal.AstroCommon;
 using GFS.Common.Attributes;
 
-namespace GFS.AnalysisSystem.Library.Calculation.Methods.Astro.PlanetPosition.Helio;
+namespace GFS.AnalysisSystem.Library.Calculation.Methods.Astro.PlanetPosition.Helio.ExactPlanetPosition;
 
-public abstract class PlanetPositionHelio : ForecastTreeMethod<PlanetPositionHelioGroup>
+public abstract class PlanetPositionHelioExact : ForecastTreeMethod<PlanetPositionHelioExactGroup>
 {
     protected abstract Planet Planet { get; }
 
     public override ForecastCalculationResult Calculate(CalculationContext context)
     {
-        return PlanetPositionCommon.Calculate(context, Planet);
+        return PlanetPositionCommon.Calculate(context, Planet, HarmonicTypeEnum.Exact);
     }
 
     public override string Name => Description.GetDescription(Planet.PlanetType);
 }
 
-public class PlanetPositionHelioMercury : PlanetPositionHelio
+public class PlanetPositionHelioExactMercury : PlanetPositionHelioExact
 {
     protected override Planet Planet => Planets.Helio.Mercury;
 }
 
-public class PlanetPositionHelioVenus : PlanetPositionHelio
+public class PlanetPositionHelioExactVenus : PlanetPositionHelioExact
 {
     protected override Planet Planet => Planets.Helio.Venus;
 }
 
-public class PlanetPositionHelioMars : PlanetPositionHelio
+public class PlanetPositionHelioExactMars : PlanetPositionHelioExact
 {
     protected override Planet Planet => Planets.Helio.Mars;
 }
 
-public class PlanetPositionHelioJupiter : PlanetPositionHelio
+public class PlanetPositionHelioExactJupiter : PlanetPositionHelioExact
 {
     protected override Planet Planet => Planets.Helio.Jupiter;
 }
 
-public class PlanetPositionHelioSaturn : PlanetPositionHelio
+public class PlanetPositionHelioExactSaturn : PlanetPositionHelioExact
 {
     protected override Planet Planet => Planets.Helio.Saturn;
 }
 
-public class PlanetPositionHelioUranus : PlanetPositionHelio
+public class PlanetPositionHelioExactUranus : PlanetPositionHelioExact
 {
     protected override Planet Planet => Planets.Helio.Uranus;
 }
 
-public class PlanetPositionHelioNeptune : PlanetPositionHelio
+public class PlanetPositionHelioExactNeptune : PlanetPositionHelioExact
 {
     protected override Planet Planet => Planets.Helio.Neptune;
 }
 
-public class PlanetPositionHelioPluto : PlanetPositionHelio
+public class PlanetPositionHelioExactPluto : PlanetPositionHelioExact
 {
     protected override Planet Planet => Planets.Helio.Pluto;
 }
 
-public class PlanetPositionHelioEarth : PlanetPositionHelio
+public class PlanetPositionHelioExactEarth : PlanetPositionHelioExact
 {
     protected override Planet Planet => Planets.Helio.Earth;
 }
