@@ -61,9 +61,8 @@ namespace GFS.GrailCommon.Extensions
         /// <summary>
         /// Приведение даты к единому формату - усреднение незначащих разрядов
         /// </summary>
-        /// <param name="date"></param>
-        /// <param name="timeFrame"></param>
-        /// <returns></returns>
+        /// <param name="date"> Дата </param>
+        /// <param name="timeFrame"> Таймфрейм </param>
         public static DateTime CorrectDateByTf(this DateTime date, TimeFrameEnum timeFrame)
         {
             int year = date.Year,
@@ -206,6 +205,22 @@ namespace GFS.GrailCommon.Extensions
                     result = date;
 
             return result;
+        }
+
+        /// <summary>
+        /// Получение строки даты в зависимости от таймфрейма
+        /// </summary>
+        /// <param name="date"> Дата </param>
+        /// <param name="timeFrame"> Таймфрейм </param>
+        public static string GetDateStringByTimeFrame(this DateTime date, TimeFrameEnum timeFrame)
+        {
+            return timeFrame switch
+            {
+                TimeFrameEnum.tick or TimeFrameEnum.min1 or TimeFrameEnum.min4 or TimeFrameEnum.H1 => date.ToString("dd.MM.yyyy hh:mm"),
+                TimeFrameEnum.D1 or TimeFrameEnum.W1 or TimeFrameEnum.M1 or TimeFrameEnum.Seasonly => date.ToString("dd.MM.yyyy"),
+                TimeFrameEnum.Y1 => date.Year.ToString(),
+                _ => throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame, null)
+            };
         }
     }
 }

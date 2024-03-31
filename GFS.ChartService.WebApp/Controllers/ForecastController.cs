@@ -1,4 +1,5 @@
 using GFS.AnalysisSystem.Library.Calculation;
+using GFS.ChartService.BL.Models.ProjectViewModel.Sheet.Layers;
 using GFS.ChartService.BL.Models.Requests;
 using GFS.ChartService.BL.Models.Responses;
 using GFS.ChartService.BL.Services;
@@ -26,7 +27,7 @@ public class ForecastController : BaseControllerWithClientIdentifier
     }
 
     [HttpPost(nameof(CalculateForecast))]
-    public ForecastCalculationResultViewModel CalculateForecast([FromBody] CalculateForecastRequest request)
+    public List<ForecastPoint> CalculateForecast([FromBody] CalculateForecastRequest request)
     {
         return _forecastService.CalculateForecast(request, GetClientId());
     }

@@ -7,6 +7,7 @@ public static class PlanetPositionCommon
 {
     public static ForecastCalculationResult Calculate(CalculationContext context, Planet planet, HarmonicTypeEnum harmonicType)
     {
+        //.GetDateStringByTimeFrame(context.TimeFrame)
         // var position = EphemCalculation.CalcPlanetLongitude(DateTime.Now, planet);
         
         throw new NotImplementedException();

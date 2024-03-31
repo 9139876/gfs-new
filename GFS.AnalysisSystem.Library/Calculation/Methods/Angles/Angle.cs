@@ -2,6 +2,7 @@ using System.Drawing;
 using System.Globalization;
 using GFS.AnalysisSystem.Library.Calculation.Abstraction;
 using GFS.AnalysisSystem.Library.Calculation.Models;
+using GFS.GrailCommon.Extensions;
 
 namespace GFS.AnalysisSystem.Library.Calculation.Methods.Angles;
 
@@ -19,28 +20,49 @@ public abstract class Angle : ForecastTreeMethod<AnglesGroup>
         {
             var position = point;
             var priceTimePosition = context.GetPriceTimePosition(point);
-            var positionText = $"{priceTimePosition.Price.ToString(CultureInfo.InvariantCulture)} {priceTimePosition.Date}";
+            var positionText = $"{priceTimePosition.Price.ToString(CultureInfo.InvariantCulture)} {priceTimePosition.Date.GetDateStringByTimeFrame(context.TimeFrame)}";
+            var results = new List<ForecastCalculationResultItem>();
 
             while (true)
             {
-                position = new Point(position.X + TimeStep, position.Y + PriceStep * Direction);
-
-                for (var i = -context.ForecastSpread; i <= context.ForecastSpread; i++)
+                for (var ts = 1; ts <= TimeStep; ts++)
                 {
-                    var positionWithSpread = new Point(position.X, position.Y + i);
-
-                    if (context.InSheet(positionWithSpread))
+                    for (var ps = 1; ps <= PriceStep; ps++)
                     {
-                        result.AddForecastCalculationResultItem(new ForecastCalculationResultItem(
-                            position: positionWithSpread,
-                            descriptions: $"{(Direction > 0 ? "Восходящий" : "Нисходящий")} Угол {PriceStep}х{TimeStep} от {positionText}")
-                        );
+                        var stepPosition = new Point(position.X + ts, position.Y + ps * Direction);
+
+                        for (var i = -context.ForecastSpread; i <= context.ForecastSpread; i++)
+                        {
+                            var positionWithSpread = new Point(stepPosition.X, stepPosition.Y + i);
+
+                            if (context.InSheet(positionWithSpread))
+                            {
+                                results.Add(new ForecastCalculationResultItem(
+                                    position: positionWithSpread,
+                                    descriptions: $"{(Direction > 0 ? "Восходящий" : "Нисходящий")} Угол {PriceStep}х{TimeStep} от {positionText}")
+                                );
+                            }
+
+                            positionWithSpread = new Point(stepPosition.X + i, stepPosition.Y);
+
+                            if (context.InSheet(positionWithSpread))
+                            {
+                                results.Add(new ForecastCalculationResultItem(
+                                    position: positionWithSpread,
+                                    descriptions: $"{(Direction > 0 ? "Восходящий" : "Нисходящий")} Угол {PriceStep}х{TimeStep} от {positionText}")
+                                );
+                            }
+                        }
                     }
                 }
+
+                position = new Point(position.X + TimeStep, position.Y + PriceStep * Direction);
 
                 if (!context.InSheet(position))
                     break;
             }
+            
+            result.AddForecastCalculationResultItemList(results.Distinct(new ComparerForecastCalculationResultItemByPosition()));
         }
 
         return result;

@@ -1,11 +1,14 @@
 using System.Drawing;
 using GFS.ChartService.BL.Models.ProjectViewModel.Sheet.Layers;
+using GFS.GrailCommon.Enums;
 
 namespace GFS.ChartService.BL.Models.ProjectViewModel.Sheet;
 
 public class SheetViewModel
 {
     public string Name { get; init; }
+
+    public TimeFrameEnum TimeFrame { get; init; }
 
     // public SheetInfoExtViewModel SheetMetaInfo { get; init; }
 

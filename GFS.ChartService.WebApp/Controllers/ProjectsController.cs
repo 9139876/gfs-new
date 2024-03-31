@@ -45,20 +45,20 @@ public class ProjectsController : BaseControllerWithClientIdentifier
         return await _projectService.GetExistingProjects();
     }
 
-    // [HttpGet(nameof(GetProjectExtInfo))]
-    // public async Task<ProjectInfoExtViewModel> GetProjectExtInfo(Guid projectId)
-    // {
-    //     var fakeResult = new ProjectInfoExtViewModel
-    //     {
-    //         SheetsInfos = new List<SheetInfoExtViewModel>
-    //         {
-    //             new("Лукойл", Description.GetDescription(TimeFrameEnum.D1), new DateTime(1999, 01, 01), new DateTime(2023, 01, 01)),
-    //             new("Аэрофлот", Description.GetDescription(TimeFrameEnum.D1), new DateTime(1999, 01, 01), new DateTime(2023, 01, 01))
-    //         }
-    //     };
-    //
-    //     return await Task.FromResult(fakeResult);
-    // }
+    [HttpGet(nameof(GetProjectExtInfo))]
+    public async Task<ProjectInfoExtViewModel> GetProjectExtInfo(Guid projectId)
+    {
+        var fakeResult = new ProjectInfoExtViewModel
+        {
+            SheetsInfos = new List<SheetInfoExtViewModel>
+            {
+                new("Лукойл", Description.GetDescription(TimeFrameEnum.D1), new DateTime(1999, 01, 01), new DateTime(2023, 01, 01)),
+                new("Аэрофлот", Description.GetDescription(TimeFrameEnum.D1), new DateTime(1999, 01, 01), new DateTime(2023, 01, 01))
+            }
+        };
+    
+        return await Task.FromResult(fakeResult);
+    }
 
     [HttpPost(nameof(RefreshAccess))]
     public void RefreshAccess()

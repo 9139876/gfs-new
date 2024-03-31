@@ -1,11 +1,16 @@
 using System.Drawing;
-using System.Globalization;
+using GFS.GrailCommon.Enums;
 using GFS.GrailCommon.Models;
 
 namespace GFS.AnalysisSystem.Library.Calculation.Models
 {
     public class CalculationContext
     {
+        /// <summary>
+        /// Таймфрейм листа
+        /// </summary>
+        public TimeFrameEnum TimeFrame{ get; init; }
+        
         /// <summary>
         /// Размер листа в клеточках
         /// </summary>

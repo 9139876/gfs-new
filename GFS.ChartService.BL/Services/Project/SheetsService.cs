@@ -59,6 +59,7 @@ internal class SheetsService : ISheetsService
         var sheetModel = new SheetViewModel
         {
             Name = request.Name,
+            TimeFrame = request.TimeFrame,
             Size = sheetSize,
             TrackerData = trackerData,
             GridLayerData = new GridLayerDataViewModel(),

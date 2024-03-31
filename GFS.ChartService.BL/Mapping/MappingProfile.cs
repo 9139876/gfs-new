@@ -22,8 +22,5 @@ public class MappingProfile : Profile
         CreateMap<ForecastCalculationResultItem, ForecastPoint>()
             .ForMember(dest => dest.Point, opt => opt.MapFrom(src => src.Position))
             .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Descriptions.Select(d => new ForecastItem { Description = d })));
-
-        CreateMap<ForecastCalculationResult, ForecastCalculationResultViewModel>()
-            .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.GetItems));
     }
 }
