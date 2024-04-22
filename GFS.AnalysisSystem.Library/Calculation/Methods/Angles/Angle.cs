@@ -12,63 +12,67 @@ public abstract class Angle : ForecastTreeMethod<AnglesGroup>
     protected abstract byte PriceStep { get; }
     protected abstract byte TimeStep { get; }
 
+    public override string Name => $"{(Direction > 0 ? "Восходящий" : "Нисходящий")} Угол {PriceStep}х{TimeStep}";
+
+    private string Description { get; set; } = string.Empty;
+    private bool IsPriceFaster { get; set; }
+
     public override ForecastCalculationResult Calculate(CalculationContext context)
     {
         var result = new ForecastCalculationResult();
 
+        IsPriceFaster = PriceStep > TimeStep;
+
+        var fasterStep = IsPriceFaster ? PriceStep : TimeStep;
+
         foreach (var point in context.PointsFrom)
         {
             var position = point;
+
             var priceTimePosition = context.GetPriceTimePosition(point);
-            var positionText = $"{priceTimePosition.Price.ToString(CultureInfo.InvariantCulture)} {priceTimePosition.Date.GetDateStringByTimeFrame(context.TimeFrame)}";
-            var results = new List<ForecastCalculationResultItem>();
+            var startPointText = $"{priceTimePosition.Price.ToString(CultureInfo.InvariantCulture)} {priceTimePosition.Date.GetDateStringByTimeFrame(context.TimeFrame)}";
+            Description = $"{(Direction > 0 ? "Восходящий" : "Нисходящий")} Угол {PriceStep}х{TimeStep} от {startPointText}";
 
             while (true)
             {
-                for (var ts = 1; ts <= TimeStep; ts++)
+                if (IsPriceFaster)
+                    position.X += 1;
+                else
+                    position.Y += Direction;
+
+                for (var i = 0; i <= fasterStep; i++)
                 {
-                    for (var ps = 1; ps <= PriceStep; ps++)
-                    {
-                        var stepPosition = new Point(position.X + ts, position.Y + ps * Direction);
-
-                        for (var i = -context.ForecastSpread; i <= context.ForecastSpread; i++)
-                        {
-                            var positionWithSpread = new Point(stepPosition.X, stepPosition.Y + i);
-
-                            if (context.InSheet(positionWithSpread))
-                            {
-                                results.Add(new ForecastCalculationResultItem(
-                                    position: positionWithSpread,
-                                    descriptions: $"{(Direction > 0 ? "Восходящий" : "Нисходящий")} Угол {PriceStep}х{TimeStep} от {positionText}")
-                                );
-                            }
-
-                            positionWithSpread = new Point(stepPosition.X + i, stepPosition.Y);
-
-                            if (context.InSheet(positionWithSpread))
-                            {
-                                results.Add(new ForecastCalculationResultItem(
-                                    position: positionWithSpread,
-                                    descriptions: $"{(Direction > 0 ? "Восходящий" : "Нисходящий")} Угол {PriceStep}х{TimeStep} от {positionText}")
-                                );
-                            }
-                        }
-                    }
+                    if (IsPriceFaster)
+                        position.Y += Direction;
+                    else
+                        position.X += 1;
+                            
+                    AddSpread(position, context, result);
                 }
-
-                position = new Point(position.X + TimeStep, position.Y + PriceStep * Direction);
 
                 if (!context.InSheet(position))
                     break;
             }
-            
-            result.AddForecastCalculationResultItemList(results.Distinct(new ComparerForecastCalculationResultItemByPosition()));
         }
 
         return result;
     }
 
-    public override string Name => $"{(Direction > 0 ? "Восходящий" : "Нисходящий")} Угол {PriceStep}х{TimeStep}";
+    private void AddSpread(Point position, CalculationContext context, ForecastCalculationResult result)
+    {
+        for (var i = -context.ForecastSpread; i <= context.ForecastSpread; i++)
+        {
+            var positionWithSpread = IsPriceFaster
+                ? new Point(position.X + i, position.Y)
+                : new Point(position.X, position.Y + i);
+
+            if (context.InSheet(positionWithSpread))
+                result.AddForecastCalculationResultItem(new ForecastCalculationResultItem(
+                    position: positionWithSpread,
+                    descriptions: Description
+                ));
+        }
+    }
 }
 
 public class Angle1X1Up : Angle
