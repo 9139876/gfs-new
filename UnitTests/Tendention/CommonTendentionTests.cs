@@ -111,7 +111,7 @@ public class CommonTendentionTests
         Assert.True(isCorrect);
         Assert.Equal(PriceMoveDirectionTypeEnum.Down, nextDirection);
 
-        var newPoint = new PriceTimePoint { Date = TendentionTestsData.CorrectTendentionFourPoints[0].Date, Price = decimal.MaxValue };
+        var newPoint = new  PriceTimePointInCells { X = TendentionTestsData.CorrectTendentionFourPoints[0].X, Y = int.MaxValue };
         tendention.AddPoint(newPoint);
 
         isCorrect = tendention.TryGetNextDirection(out nextDirection);
@@ -144,7 +144,7 @@ public class CommonTendentionTests
         Assert.NotEmpty(points);
         Assert.Equal(3, points.Count);
 
-        tendention.RemovePoint(TendentionTestsData.CorrectTendentionFourPoints[2].Date);
+        tendention.RemovePoint(TendentionTestsData.CorrectTendentionFourPoints[2].X);
         
         isCorrect = tendention.TryGetPoints(out points);
 

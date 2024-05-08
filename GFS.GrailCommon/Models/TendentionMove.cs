@@ -11,25 +11,25 @@ public class TendentionMove
     public TendentionPoint End { get; }
 
     /// <summary> Величина движения по цене </summary>
-    public decimal PriceMove => End.Point.Price - Begin.Point.Price;
+    public decimal PriceMove => End.Point.Y - Begin.Point.Y;
 
     /// <summary> Величина движения по времени </summary>
-    public TimeSpan TimeMove => End.Point.Date - Begin.Point.Date;
+    public int TimeMove => End.Point.X - Begin.Point.X;
     
     public TendentionMove(TendentionPoint point1, TendentionPoint point2)
     {
-        if (point1.Point.Date == point2.Point.Date)
+        if (point1.Point.X == point2.Point.X)
             throw new InvalidOperationException($"Невозможно создать {nameof(TendentionMove)} - даты обеих точек одинаковые");
 
-        var sortedPoints = new[] { point1, point2 }.OrderBy(p => p.Point.Date).ToArray();
+        var sortedPoints = new[] { point1, point2 }.OrderBy(p => p.Point.X).ToArray();
 
         Begin = sortedPoints.First();
         End = sortedPoints.Last();
 
         MoveDirectionType = true switch
         {
-            true when End.Point.Price > Begin.Point.Price => PriceMoveDirectionTypeEnum.Up,
-            true when End.Point.Price < Begin.Point.Price => PriceMoveDirectionTypeEnum.Down,
+            true when End.Point.Y > Begin.Point.Y => PriceMoveDirectionTypeEnum.Up,
+            true when End.Point.Y < Begin.Point.Y => PriceMoveDirectionTypeEnum.Down,
             _ => PriceMoveDirectionTypeEnum.Flat
         };
     }

@@ -5,6 +5,7 @@ using GFS.ChartService.BL.Models.ProjectViewModel.Sheet;
 using GFS.ChartService.BL.Models.ProjectViewModel.Sheet.Layers;
 using GFS.ChartService.BL.Models.Responses;
 using GFS.ChartService.DAL.Entities;
+using GFS.GrailCommon.Models;
 
 namespace GFS.ChartService.BL.Mapping;
 
@@ -16,7 +17,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.Name));
 
         //forecast
-        CreateMap<Point, SheetPointInCell>()
+        CreateMap<Point, PriceTimePointInCells>()
             .ReverseMap();
 
         CreateMap<ForecastCalculationResultItem, ForecastPoint>()

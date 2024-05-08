@@ -1,3 +1,5 @@
+using GFS.GrailCommon.Models;
+
 namespace GFS.ChartService.BL.Models.ProjectViewModel.Sheet.Layers;
 
 public class ForecastLayerDataViewModel
@@ -7,7 +9,7 @@ public class ForecastLayerDataViewModel
 
 public class ForecastPoint
 {
-    public SheetPointInCell? Point { get; init; }
+    public PriceTimePointInCells? Point { get; init; }
     public List<ForecastItem> Items { get; init; } = new();
 }
 

@@ -10,12 +10,12 @@ namespace GFS.GrailCommon.Models
     public class TendentionPoint
     {
         /// <summary> Позиция в координатах цена время </summary>
-        public PriceTimePoint Point { get; }
+        public PriceTimePointInCells Point { get; }
 
         /// <summary> Тип точки тенденции </summary>
         public TendentionPointTypeEnum TendentionPointType { get; private set; }
 
-        public TendentionPoint(PriceTimePoint point)
+        public TendentionPoint(PriceTimePointInCells point)
         {
             Point = point;
             TendentionPointType = TendentionPointTypeEnum.Unknown;
@@ -48,7 +48,7 @@ namespace GFS.GrailCommon.Models
 
         public override string ToString()
         {
-            return $"{Description.GetDescription(TendentionPointType)} Дата:{Point.Date} Цена:{Point.Price}";
+            return $"{Description.GetDescription(TendentionPointType)} Дата:{Point.X} Цена:{Point.Y}";
         }
 
         /// <summary>
@@ -59,9 +59,9 @@ namespace GFS.GrailCommon.Models
         /// <returns></returns>
         public string GetString(bool time, int fractionalPart)
         {
-            var date = time ? Point.Date.ToString("g") : Point.Date.ToString("d");
+            var date = time ? Point.X.ToString("g") : Point.X.ToString("d");
 
-            var price = Point.Price.ToString($"F{fractionalPart}");
+            var price = Point.Y.ToString($"F{fractionalPart}");
 
             return $"{Description.GetDescription(TendentionPointType)} {date} - {price}";
         }
@@ -75,7 +75,7 @@ namespace GFS.GrailCommon.Models
             if (ReferenceEquals(null, y)) return 1;
             if (ReferenceEquals(null, x)) return -1;
 
-            return x.Point.Date.CompareTo(y.Point.Date);
+            return x.Point.X.CompareTo(y.Point.X);
         }
     }
 }

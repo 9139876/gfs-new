@@ -1,3 +1,5 @@
+using GFS.GrailCommon.Models;
+
 namespace GFS.ChartService.BL.Models.ProjectViewModel.Sheet.Layers;
 
 public class PfLayerDataViewModel
@@ -14,10 +16,10 @@ public class PfLayerProperties
     public string PointsColor { get; init; } = "blue";
 
     public int LinesWight { get; init; } = 1;
-    public int PointsSize { get; init; } = 1;
+    public int PointsSize { get; init; } = 3;
 }
 
-public class PointForceViewModel : SheetPointInCell
+public class PointForceViewModel : PriceTimePointInCells
 {
     public Guid Index { get; init; }
     public bool IsCorrect { get; init; }

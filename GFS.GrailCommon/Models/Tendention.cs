@@ -25,9 +25,9 @@ public class Tendention
         }
     }
 
-    public void AddPoint(PriceTimePoint point)
+    public void AddPoint(PriceTimePointInCells point)
     {
-        var existingPoint = _points.SingleOrDefault(p => p.Point.Date == point.Date);
+        var existingPoint = _points.SingleOrDefault(p => p.Point.X == point.X);
 
         if (existingPoint is not null)
             _points.Remove(existingPoint);
@@ -38,9 +38,9 @@ public class Tendention
         RecalculateTendention();
     }
 
-    public bool RemovePoint(DateTime date)
+    public bool RemovePoint(int date)
     {
-        var existingPoint = _points.SingleOrDefault(p => p.Point.Date == date);
+        var existingPoint = _points.SingleOrDefault(p => p.Point.X == date);
 
         if (existingPoint is null)
             return false;

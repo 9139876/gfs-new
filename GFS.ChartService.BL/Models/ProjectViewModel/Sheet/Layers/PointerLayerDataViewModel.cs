@@ -1,10 +1,12 @@
+using GFS.GrailCommon.Models;
+
 namespace GFS.ChartService.BL.Models.ProjectViewModel.Sheet.Layers;
 
 public class PointerLayerDataViewModel
 {
     public PointerLayerProperties Properties { get; init; } = new();
-    public SheetPointInCell? TargetPoint { get; init; }
-    public List<SheetPointInCell> SourcePoints { get; init; } = new();
+    public PriceTimePointInCells? TargetPoint { get; init; }
+    public List<PriceTimePointInCells> SourcePoints { get; init; } = new();
 }
 
 public class PointerLayerProperties

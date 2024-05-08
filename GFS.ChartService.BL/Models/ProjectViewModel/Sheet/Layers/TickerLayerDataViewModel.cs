@@ -1,3 +1,5 @@
+using GFS.GrailCommon.Models;
+
 namespace GFS.ChartService.BL.Models.ProjectViewModel.Sheet.Layers;
 
 public class TickerLayerDataViewModel
@@ -5,19 +7,6 @@ public class TickerLayerDataViewModel
     public List<CandleInCells> Candles { get; init; } = new();
 
     public TickerLayerProperties Properties { get; init; } = new();
-}
-
-public class CandleInCells
-{
-    public int Date { get; init; }
-
-    public int Open { get; init; }
-
-    public int High { get; init; }
-
-    public int Low { get; init; }
-
-    public int Close { get; init; }
 }
 
 public class TickerLayerProperties
