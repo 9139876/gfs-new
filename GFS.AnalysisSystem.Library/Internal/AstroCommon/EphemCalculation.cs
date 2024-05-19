@@ -1,3 +1,4 @@
+using GFS.AnalysisSystem.Library.Calculation.Methods.Astro;
 using GFS.AnalysisSystem.Library.Internal.AstroCommon.Enums;
 using GFS.AnalysisSystem.Library.Internal.AstroCommon.Models;
 using SwissEphNet;
@@ -28,6 +29,18 @@ namespace GFS.AnalysisSystem.Library.Internal.AstroCommon
 
         public static AstroCalculationResult CalcPlanetParameters(DateTime date, Planet planet)
             => CalcPlanetParametersInternal(date, planet.Helio, planet.PlanetType);
+
+        public static double GetHarmonicLongitude(double longitude, HarmonicTypeEnum harmonicType)
+        {
+            var harmonicLongitude = longitude + (int)harmonicType;
+
+            while (harmonicLongitude > 360)
+            {
+                harmonicLongitude -= 360;
+            }
+
+            return harmonicLongitude;
+        }
 
         private static double JulianDay(DateTime dateTimeUtc)
         {

@@ -47,7 +47,7 @@ public abstract class Angle : ForecastTreeMethod<AnglesGroup>
                     else
                         position.X += 1;
                             
-                    AddSpread(position, context, result);
+                    AddWithSpread(position, context, result);
                 }
 
                 if (!context.InSheet(position))
@@ -58,7 +58,7 @@ public abstract class Angle : ForecastTreeMethod<AnglesGroup>
         return result;
     }
 
-    private void AddSpread(Point position, CalculationContext context, ForecastCalculationResult result)
+    private void AddWithSpread(Point position, CalculationContext context, ForecastCalculationResult result)
     {
         for (var i = -context.ForecastSpread; i <= context.ForecastSpread; i++)
         {

@@ -7,7 +7,7 @@ public class Tendention
     private readonly List<TendentionPoint> _points = new();
     private readonly List<TendentionMove> _moves = new();
     private bool _isCorrect;
-    private PriceMoveDirectionTypeEnum _nextDirection = PriceMoveDirectionTypeEnum.Flat;
+    private PriceMoveDirectionTypeEnum _nextDirection = PriceMoveDirectionTypeEnum.Unknown;
 
     public bool IsCorrect
     {
@@ -17,7 +17,7 @@ public class Tendention
             if (value == false)
             {
                 _points.ForEach(p => p.SetPointType(TendentionPointTypeEnum.Unknown));
-                _nextDirection = PriceMoveDirectionTypeEnum.Flat;
+                _nextDirection = PriceMoveDirectionTypeEnum.Unknown;
                 _moves.Clear();
             }
 
@@ -68,6 +68,14 @@ public class Tendention
         return _isCorrect;
     }
 
+    public void Clear()
+    {
+        _points.Clear();
+        _moves.Clear();
+        _nextDirection = PriceMoveDirectionTypeEnum.Unknown;
+        _isCorrect = false;
+    }
+
     private void RecalculateTendention()
     {
         if (_points.Count < 2)
@@ -81,7 +89,7 @@ public class Tendention
         for (var i = 0; i < _points.Count - 1; i++)
             _moves.Add(new TendentionMove(_points[i], _points[i + 1]));
 
-        if (_moves.Any(m => m.MoveDirectionType == PriceMoveDirectionTypeEnum.Flat))
+        if (_moves.Any(m => m.MoveDirectionType == PriceMoveDirectionTypeEnum.Unknown))
         {
             IsCorrect = false;
             return;

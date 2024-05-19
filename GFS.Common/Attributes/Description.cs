@@ -11,19 +11,12 @@ public class Description : Attribute
 
     public static string GetDescription(Enum @enum)
     {
-        var type = @enum.GetType();
-
-        var memInfo = type.GetMember(@enum.ToString());
-
-        if (memInfo.Length > 0)
-        {
-            var attrs = memInfo[0].GetCustomAttributes(typeof(Description), false);
-
-            if (attrs.Length > 0)
-                return ((Description)attrs[0])._text;
-        }
-
-        return @enum.ToString();
+        var memInfo = @enum.GetType().GetMember(@enum.ToString());
+        var attrs = memInfo?.FirstOrDefault()?.GetCustomAttributes(typeof(Description), false);
+        
+        return attrs?.Any() == true
+            ? ((Description)attrs[0])._text
+            :@enum.ToString();
     }
 
     public static string[] GetAllDescriptions<T>() where T : Enum

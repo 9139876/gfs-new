@@ -30,7 +30,7 @@ public class TendentionMove
         {
             true when End.Point.Y > Begin.Point.Y => PriceMoveDirectionTypeEnum.Up,
             true when End.Point.Y < Begin.Point.Y => PriceMoveDirectionTypeEnum.Down,
-            _ => PriceMoveDirectionTypeEnum.Flat
+            _ => PriceMoveDirectionTypeEnum.Unknown
         };
     }
 }

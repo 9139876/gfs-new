@@ -177,7 +177,7 @@ public static class TendentionBuilder
             }
         }
 
-        result = (0, PriceMoveDirectionTypeEnum.Flat);
+        result = (0, PriceMoveDirectionTypeEnum.Unknown);
         return false;
     }
 

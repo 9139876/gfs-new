@@ -1,6 +1,7 @@
 using GFS.AnalysisSystem.Library.Tendention;
 using GFS.AnalysisSystem.Library.Tendention.Models;
 using GFS.AnalysisSystem.Library.Tendention.Models.BuildTendentionContexts;
+using GFS.AnalysisSystem.Library.Tendention.TendentionBuilders;
 using GFS.ChartService.BL.Models.ProjectViewModel.Sheet.Layers;
 using GFS.ChartService.BL.Models.Requests;
 using GFS.ChartService.BL.Services.Project;
@@ -36,8 +37,10 @@ internal class CalculationService : ICalculationService
         var currentSheet = projectModel!.Sheets.SingleOrDefault(s => s.Name == request.SheetName)
                            ?? throw new InvalidOperationException("Текущий лист не найден в проекте");
 
-        var tendention = TendentionBuilder.Build(
-            new BuildTendentionRequest<BuildThreePointsTendentionContext>(currentSheet.TickerLayerData.Candles, new BuildThreePointsTendentionContext()));
+        var tendention = new ThreePointsTendentionBuilder(new BuildThreePointsTendentionContext(), currentSheet.TickerLayerData.Candles).BuildThreePointsTendention();
+        
+        // var tendention = TendentionBuilder.Build(
+        //     new BuildTendentionRequest<BuildThreePointsTendentionContext>(currentSheet.TickerLayerData.Candles, new BuildThreePointsTendentionContext()));
 
         if (!tendention.TryGetPoints(out var points))
             throw new InvalidOperationException("Почему-то не удалось построить тенденцию :(");
