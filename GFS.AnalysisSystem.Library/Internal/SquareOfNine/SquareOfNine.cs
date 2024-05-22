@@ -7,7 +7,7 @@ public static class SquareOfNine
     static SquareOfNine()
     {
         Wheels = new List<SquareOfNineWheel>();
-        
+
         while (Wheels.LastOrDefault()?.LastCellNumber >= ushort.MaxValue == false)
             Wheels.Add(new SquareOfNineWheel((Wheels.LastOrDefault()?.Number ?? 0) + 1));
     }
