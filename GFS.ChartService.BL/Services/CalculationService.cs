@@ -1,5 +1,3 @@
-using GFS.AnalysisSystem.Library.Tendention;
-using GFS.AnalysisSystem.Library.Tendention.Models;
 using GFS.AnalysisSystem.Library.Tendention.Models.BuildTendentionContexts;
 using GFS.AnalysisSystem.Library.Tendention.TendentionBuilders;
 using GFS.ChartService.BL.Models.ProjectViewModel.Sheet.Layers;
@@ -37,14 +35,18 @@ internal class CalculationService : ICalculationService
         var currentSheet = projectModel!.Sheets.SingleOrDefault(s => s.Name == request.SheetName)
                            ?? throw new InvalidOperationException("Текущий лист не найден в проекте");
 
-        var tendention = new ThreePointsTendentionBuilder(new BuildThreePointsTendentionContext(), currentSheet.TickerLayerData.Candles).BuildThreePointsTendention();
+        var tendention = new OutstandingOfNeighborsTendentionBuilder(new BuildOutstandingOfNeighborsTendentionContext {ByNeighborsType = ByNeighborsType.ByThreeEach}, currentSheet.TickerLayerData.Candles).BuildTendention();
+        
+        // var tendention = new ThreePointsTendentionBuilder(new BuildThreePointsTendentionContext(), currentSheet.TickerLayerData.Candles).BuildTendention();
         
         // var tendention = TendentionBuilder.Build(
         //     new BuildTendentionRequest<BuildThreePointsTendentionContext>(currentSheet.TickerLayerData.Candles, new BuildThreePointsTendentionContext()));
 
         if (!tendention.TryGetPoints(out var points))
-            throw new InvalidOperationException("Почему-то не удалось построить тенденцию :(");
+            throw new InvalidOperationException("Построить-то тенденцию удалось, да она некорректная вышла :(");
 
+        // var points = tendention.GetPointsAnyway();
+        
         return points.Select(p => new PointForceViewModel
             {
                 Index = Guid.NewGuid(),

@@ -1,4 +1,5 @@
 using GFS.AnalysisSystem.Library.Tendention.Models.BuildTendentionContexts;
+using GFS.Common.Extensions;
 using GFS.GrailCommon.Models;
 
 namespace GFS.AnalysisSystem.Library.Tendention.TendentionBuilders;
@@ -11,13 +12,15 @@ public abstract class FromCandlesTendentionBuilder<TContext>
 
     protected FromCandlesTendentionBuilder(TContext context, IList<CandleInCells> candles)
     {
+        context.RequiredNotNull();
+        candles.RequiredNotNull();
         ValidateQuotes(candles);
         
         Context = context;
         Candles = candles;
     }
     
-    public abstract GrailCommon.Models.Tendention BuildThreePointsTendention();
+    public abstract GrailCommon.Models.Tendention BuildTendention();
     
     private static void ValidateQuotes(IEnumerable<CandleInCells> candles)
     {

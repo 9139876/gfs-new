@@ -68,6 +68,11 @@ public class Tendention
         return _isCorrect;
     }
 
+    public List<TendentionPoint> GetPointsAnyway()
+    {
+        return _points.ToList();
+    }
+    
     public void Clear()
     {
         _points.Clear();

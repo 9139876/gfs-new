@@ -15,7 +15,7 @@ public class ThreePointsTendentionBuilder : FromCandlesTendentionBuilder<BuildTh
         _tendention = new GrailCommon.Models.Tendention();
     }
 
-    public override GrailCommon.Models.Tendention BuildThreePointsTendention()
+    public override GrailCommon.Models.Tendention BuildTendention()
     {
         _tendention.Clear();
 
