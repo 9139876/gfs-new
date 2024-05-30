@@ -3,7 +3,7 @@ using GFS.WebApplication;
 
 namespace GFS.ATS.WebApp
 {
-    public class CustomConfigurationActions : CustomConfigurationActionsAbstract
+    public class WebCustomConfigurationActions : WebCustomConfigurationActionsAbstract
     {
         public override void ConfigureServiceCollection()
         {

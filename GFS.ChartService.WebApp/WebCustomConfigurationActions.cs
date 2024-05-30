@@ -12,7 +12,7 @@ using Serilog;
 
 namespace GFS.ChartService.WebApp;
 
-public class CustomConfigurationActions : CustomConfigurationActionsAbstract
+public class WebCustomConfigurationActions : WebCustomConfigurationActionsAbstract
 {
     public override Action<MvcOptions> ConfigureControllers => options =>
     {
@@ -40,7 +40,7 @@ public class CustomConfigurationActions : CustomConfigurationActionsAbstract
 
     public override void ConfigureMapper()
     {
-        ServiceCollection.AddAutoMapper(expr => expr.AddProfile(new MappingProfile()), typeof(CustomConfigurationActions));
+        ServiceCollection.AddAutoMapper(expr => expr.AddProfile(new MappingProfile()), typeof(WebCustomConfigurationActions));
     }
 
     protected override LoggerConfiguration CustomConfigureLoggerInternal(LoggerConfiguration lc)

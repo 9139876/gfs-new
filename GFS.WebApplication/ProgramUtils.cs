@@ -1,14 +1,16 @@
 using GFS.WebApplication.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Converters;
+using Serilog;
 
 namespace GFS.WebApplication
 {
     public static class ProgramUtils
     {
         public static async Task RunWebHost<TCustomConfigurationActions>(string[] args)
-            where TCustomConfigurationActions : CustomConfigurationActionsAbstract, new()
+            where TCustomConfigurationActions : WebCustomConfigurationActionsAbstract, new()
         {
             var builder = Microsoft.AspNetCore.Builder.WebApplication.CreateBuilder(args);
 
@@ -60,6 +62,20 @@ namespace GFS.WebApplication
             lifetime.ApplicationStopped.Register(customConfigurationActions.OnApplicationStopped);
 
             await app.RunAsync();
+        }
+
+        public static async Task RunConsoleApplication<TCustomConfigurationActions>(string[] args, Func<string[], IServiceProvider, Task> appMainTask)
+            where TCustomConfigurationActions : ConsoleCustomConfigurationActionsAbstract, new()
+        {
+            var customConfigurationActions = new TCustomConfigurationActions();
+
+            using var host = Host.CreateDefaultBuilder(args)
+                .ConfigureHostConfiguration(_ => { })
+                .ConfigureServices(customConfigurationActions.ConfigureServiceCollection)
+                .UseSerilog((_, lc) => { customConfigurationActions.CustomConfigureLogger(lc); })
+                .Build();
+
+            await appMainTask(args, host.Services);
         }
     }
 }

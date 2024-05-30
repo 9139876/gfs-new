@@ -1,6 +1,6 @@
 using GFS.WebApplication;
 
-namespace GFS.TradingStrategyTester.BackgroundWorker;
+namespace GFS.QuotesService.BackgroundWorker;
 
 public static class Program
 {

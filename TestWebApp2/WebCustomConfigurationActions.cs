@@ -3,7 +3,7 @@ using GFS.WebApplication;
 
 namespace TestWebApp2
 {
-    public class CustomConfigurationActions : CustomConfigurationActionsAbstract
+    public class WebCustomConfigurationActions : WebCustomConfigurationActionsAbstract
     {
         public override void ConfigureServiceCollection()
         {
