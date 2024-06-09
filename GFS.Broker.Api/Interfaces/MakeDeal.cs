@@ -8,7 +8,7 @@ namespace GFS.Broker.Api.Interfaces;
 [Route(nameof(MakeDeal))]
 public abstract class MakeDeal : ApiServiceWithRequestResponse<MakeDealRequest, MakeDealResponse>
 {
-    protected MakeDeal(ILogger logger) : base(logger)
+    protected MakeDeal(ILogger<MakeDeal> logger) : base(logger)
     {
     }
 }

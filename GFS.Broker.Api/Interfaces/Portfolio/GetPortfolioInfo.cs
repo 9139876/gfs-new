@@ -8,7 +8,7 @@ namespace GFS.Broker.Api.Interfaces.Portfolio
     [Route(nameof(GetPortfolioInfo))]
     public abstract class GetPortfolioInfo : ApiServiceWithRequestResponse<GetPortfolioInfoRequestDto, PortfolioInfoDto>
     {
-        protected GetPortfolioInfo(ILogger logger) : base(logger)
+        protected GetPortfolioInfo(ILogger<GetPortfolioInfo> logger) : base(logger)
         {
         }
     }

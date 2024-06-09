@@ -17,9 +17,11 @@ namespace GFS.WebApplication
             lc.Enrich.FromLogContext()
                 .MinimumLevel.Information()
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
-                .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Warning)
+                .MinimumLevel.Override("System.Net.Http.HttpClient", LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Infrastructure", LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database", LogEventLevel.Warning)
                 .Enrich.WithExceptionDetails()
-                // .WriteTo.Seq("http://192.168.1.100:5341")
+                .WriteTo.Seq("http://localhost:5341")
                 .WriteTo.Console()
                 .WriteTo.Debug();
 
@@ -50,6 +52,14 @@ namespace GFS.WebApplication
             ConfigureMapper(serviceCollection, ctx.Configuration);
         }
 
+        /// <summary>
+        /// Действия после конфигурации до запуска (миграции, seeds)
+        /// </summary>
+        public virtual Task ConfigureApplication(IServiceProvider serviceProvider)
+        {
+            return Task.CompletedTask;
+        }
+        
         protected abstract void ConfigureServiceCollectionInternal(IServiceCollection serviceCollection, IConfiguration configuration);
         
         protected virtual void ConfigureMapper(IServiceCollection serviceCollection, IConfiguration configuration)

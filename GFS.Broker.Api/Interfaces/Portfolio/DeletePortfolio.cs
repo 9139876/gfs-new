@@ -8,7 +8,7 @@ namespace GFS.Broker.Api.Interfaces.Portfolio
     [Route(nameof(DeletePortfolio))]
     public abstract class DeletePortfolio : ApiServiceWithRequest<DeletePortfolioRequestDto>
     {
-        protected DeletePortfolio(ILogger logger) : base(logger)
+        protected DeletePortfolio(ILogger<DeletePortfolio> logger) : base(logger)
         {
         }
     }

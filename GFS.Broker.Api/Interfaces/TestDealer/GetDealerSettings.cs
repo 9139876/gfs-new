@@ -8,7 +8,7 @@ namespace GFS.Broker.Api.Interfaces.TestDealer;
 [Route(nameof(GetDealerSettings))]
 public abstract class GetDealerSettings : ApiServiceWithResponse<DealerSettings>
 {
-    protected GetDealerSettings(ILogger logger) : base(logger)
+    protected GetDealerSettings(ILogger<GetDealerSettings> logger) : base(logger)
     {
     }
 }

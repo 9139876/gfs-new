@@ -9,10 +9,10 @@ public abstract class SimpleWorker<TTaskData>
     private readonly IServiceProvider _serviceProvider;
     protected ILogger<SimpleWorker<TTaskData>> Logger;
 
-    protected SimpleWorker(IServiceProvider serviceProvider)
+    protected SimpleWorker(IServiceProvider serviceProvider, ILogger<SimpleWorker<TTaskData>> logger)
     {
         _serviceProvider = serviceProvider;
-        Logger = _serviceProvider.GetRequiredService<ILogger<SimpleWorker<TTaskData>>>();
+        Logger = logger;
     }
 
     public async Task DoWork(TimeSpan? sleepInSeconds = null, CancellationToken? cancellationToken = null)
@@ -27,20 +27,20 @@ public abstract class SimpleWorker<TTaskData>
 
                 Logger.LogInformation("Получение данных для итерации");
                 var tasksData = await GetTasksData(scope.ServiceProvider);
-                Logger.LogInformation("Получено {count} элементов", tasksData.Count);
+                Logger.LogInformation("Получено {tasksCount} элементов", tasksData.Count);
 
                 while (tasksData.Any())
                 {
                     var taskDataItem = tasksData[0];
 
-                    Logger.LogInformation("Обработка {item}", taskDataItem.Serialize());
+                    Logger.LogInformation("Обработка задачи: {task}", taskDataItem.Serialize());
                     currentData = taskDataItem;
                     var (message, newTaskData) = await DoTaskAndReturnLoggingText(scope.ServiceProvider, taskDataItem);
 
                     if (newTaskData != null)
                     {
                         tasksData.Add(newTaskData);
-                        Logger.LogInformation("Добавлена новая задача в конец очереди - {newItem}", newTaskData.Serialize());
+                        Logger.LogInformation("Добавлена новая задача в конец очереди - {newTask}", newTaskData.Serialize());
                     }
 
                     tasksData.RemoveAt(0);

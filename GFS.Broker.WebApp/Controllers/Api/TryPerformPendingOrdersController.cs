@@ -9,7 +9,7 @@ public class TryPerformPendingOrdersController : TryPerformPendingOrders
     private readonly IDealService _dealService;
 
     public TryPerformPendingOrdersController(
-        ILogger logger,
+        ILogger<TryPerformPendingOrders> logger,
         IDealService dealService) : base(logger)
     {
         _dealService = dealService;

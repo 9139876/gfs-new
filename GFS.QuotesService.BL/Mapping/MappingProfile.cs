@@ -28,6 +28,9 @@ public class MappingProfile : Profile
         CreateMap<HistoricCandle, QuoteModel>()
             .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Time.ToDateTime()));
 
+        CreateMap<Quotation, decimal>()
+            .ConvertUsing(src => (decimal)src);
+
         CreateMap<QuoteModel, QuoteEntity>()
             .ReverseMap();
 

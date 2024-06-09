@@ -11,7 +11,7 @@ public class GetAssetsInfoController : GetAssetsInfo
     private readonly IMapper _mapper;
 
     public GetAssetsInfoController(
-        ILogger logger,
+        ILogger<GetAssetsInfo> logger,
         IGetDataService getDataService,
         IMapper mapper) : base(logger)
     {

@@ -30,7 +30,7 @@ namespace GFS.EF.Extensions
             var canConnect = await context!.Database.CanConnectAsync();
             canConnect.ThrowIfFalse(new ArgumentOutOfRangeException(nameof(context.Database), "Database connection"));
 
-            var logger = serviceProvider.GetRequiredService<ILogger>();
+            var logger = services.GetRequiredService<ILogger<DbContext>>();
             
             logger.Log(LogLevel.Information, "Starting migration...");
             await context.Database.MigrateAsync();

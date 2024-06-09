@@ -6,7 +6,7 @@ using GFS.WebApplication;
 
 namespace GFS.QuotesService.WebApp;
 
-public class WebCustomConfigurationActions : WebCustomConfigurationActionsAbstract
+public class CustomConfigurationActions : WebCustomConfigurationActionsAbstract
 {
     public override void ConfigureServiceCollection()
     {
@@ -17,6 +17,6 @@ public class WebCustomConfigurationActions : WebCustomConfigurationActionsAbstra
 
     public override void ConfigureMapper()
     {
-        ServiceCollection.AddAutoMapper(expr => expr.AddProfile(new MappingProfile()), typeof(WebCustomConfigurationActions));
+        ServiceCollection.AddAutoMapper(expr => expr.AddProfile(new MappingProfile()), typeof(CustomConfigurationActions));
     }
 }

@@ -8,9 +8,9 @@ namespace GFS.Api.Services
     [ApiController]
     public abstract class ApiServiceWithResponse<TResponsePayload>
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<ApiServiceWithResponse<TResponsePayload>> _logger;
 
-        protected ApiServiceWithResponse(ILogger logger)
+        protected ApiServiceWithResponse(ILogger<ApiServiceWithResponse<TResponsePayload>> logger)
         {
             _logger = logger;
         }

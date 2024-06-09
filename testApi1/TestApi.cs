@@ -7,7 +7,7 @@ namespace testApi1
     [Route(nameof(TestApi))]
     public abstract class TestApi : ApiServiceWithRequestResponse<string, string>
     {
-        protected TestApi(ILogger logger) : base(logger)
+        protected TestApi(ILogger<TestApi> logger) : base(logger)
         {
         }
     }
@@ -15,7 +15,7 @@ namespace testApi1
     [Route(nameof(TestApiWithoutRequest))]
     public abstract class TestApiWithoutRequest : ApiService
     {
-        protected TestApiWithoutRequest(ILogger logger) : base(logger)
+        protected TestApiWithoutRequest(ILogger<TestApiWithoutRequest> logger) : base(logger)
         {
         }
     }

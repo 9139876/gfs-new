@@ -8,7 +8,7 @@ namespace GFS.QuotesService.BackgroundWorker.Api.Interfaces;
 [Route(nameof(CancelTasks))]
 public abstract class CancelTasks : ApiServiceWithResponse<StandardResponse>
 {
-    protected CancelTasks(ILogger logger) : base(logger)
+    protected CancelTasks(ILogger<CancelTasks> logger) : base(logger)
     {
     }
 }

@@ -9,7 +9,7 @@ public class GetDealerSettingsController : GetDealerSettings
     private readonly ISettingsService _settingsService;
 
     public GetDealerSettingsController(
-        ILogger logger,
+        ILogger<GetDealerSettings> logger,
         ISettingsService settingsService) : base(logger)
     {
         _settingsService = settingsService;

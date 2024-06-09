@@ -12,7 +12,7 @@ public class AddTasksController : AddTasks
     private readonly ITasksStorage<QuotesServiceBkgWorkerTaskContext> _tasksStorage;
 
     public AddTasksController(
-        ILogger logger,
+        ILogger<AddTasks> logger,
         ITasksStorage<QuotesServiceBkgWorkerTaskContext> tasksStorage) : base(logger)
     {
         _tasksStorage = tasksStorage;

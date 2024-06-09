@@ -7,7 +7,7 @@ namespace TestWebApp1.Controllers.Api
     [ApiController]
     public class TestApiWithoutRequestController : TestApiWithoutRequest
     {
-        public TestApiWithoutRequestController(ILogger logger) : base(logger)
+        public TestApiWithoutRequestController(ILogger<TestApiWithoutRequest> logger) : base(logger)
         {
         }
     

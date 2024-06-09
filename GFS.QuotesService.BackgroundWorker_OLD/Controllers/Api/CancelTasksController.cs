@@ -10,7 +10,7 @@ public class CancelTasksController : CancelTasks
     private readonly ITasksStorage<QuotesServiceBkgWorkerTaskContext> _tasksStorage;
 
     public CancelTasksController(
-        ILogger logger,
+        ILogger<CancelTasks> logger,
         ITasksStorage<QuotesServiceBkgWorkerTaskContext> tasksStorage) : base(logger)
     {
         _tasksStorage = tasksStorage;

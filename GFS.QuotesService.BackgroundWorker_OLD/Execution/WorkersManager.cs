@@ -12,7 +12,7 @@ public static class WorkersManager
     public static void Init(
         IQuotesProviderService quotesProviderService,
         ITasksStorage<QuotesServiceBkgWorkerTaskContext> tasksStorage,
-        ILogger logger)
+        ILogger<TaskExecutor> logger)
     {
         foreach (QuotesProviderTypeEnum quotesProviderType in Enum.GetValues(typeof(QuotesProviderTypeEnum)))
         {

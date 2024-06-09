@@ -8,7 +8,7 @@ namespace GFS.Broker.Api.Interfaces.Portfolio;
 [Route(nameof(CreatePortfolio))]
 public abstract class CreatePortfolio : ApiServiceWithRequestResponse<CreatePortfolioRequestDto, PortfolioInfoDto>
 {
-    protected CreatePortfolio(ILogger logger) : base(logger)
+    protected CreatePortfolio(ILogger<CreatePortfolio> logger) : base(logger)
     {
     }
 }

@@ -9,7 +9,7 @@ namespace GFS.QuotesService.BackgroundWorker.Api.Interfaces;
 [Route(nameof(AddTasks))]
 public abstract class AddTasks : ApiServiceWithRequestResponse<AddTasksRequest, StandardResponse>
 {
-    protected AddTasks(ILogger logger) : base(logger)
+    protected AddTasks(ILogger<AddTasks> logger) : base(logger)
     {
     }
 }

@@ -8,7 +8,7 @@ namespace GFS.Broker.Api.Interfaces.Portfolio
     [Route(nameof(PortfolioDepositOperation))]
     public abstract class PortfolioDepositOperation : ApiServiceWithRequestResponse<PortfolioDepositOperationRequestDto, PortfolioOperationResponseDto>
     {
-        protected PortfolioDepositOperation(ILogger logger) : base(logger)
+        protected PortfolioDepositOperation(ILogger<PortfolioDepositOperation> logger) : base(logger)
         {
         }
     }

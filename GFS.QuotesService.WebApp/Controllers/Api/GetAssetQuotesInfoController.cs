@@ -9,7 +9,7 @@ public class GetAssetQuotesInfoController : GetAssetQuotesInfo
     private readonly IGetDataService _getDataService;
 
     public GetAssetQuotesInfoController(
-        ILogger logger,
+        ILogger<GetAssetQuotesInfo> logger,
         IGetDataService getDataService) : base(logger)
     {
         _getDataService = getDataService;

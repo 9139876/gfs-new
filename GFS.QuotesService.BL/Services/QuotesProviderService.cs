@@ -25,13 +25,13 @@ internal class QuotesProviderService : IQuotesProviderService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IMapper _mapper;
-    private readonly ILogger _logger;
+    private readonly ILogger<QuotesProviderService> _logger;
     private readonly IDbContext _dbContext;
 
     public QuotesProviderService(
         IServiceProvider serviceProvider,
         IMapper mapper,
-        ILogger logger,
+        ILogger<QuotesProviderService> logger,
         IDbContext dbContext)
     {
         _serviceProvider = serviceProvider;

@@ -48,7 +48,7 @@ public class WebCustomConfigurationActions : WebCustomConfigurationActionsAbstra
         var tasksStorage = rootServiceProvider.GetRequiredService<ITasksStorage<QuotesServiceBkgWorkerTaskContext>>();
 
         var quotesProviderService = scopedServiceProvider.GetRequiredService<IQuotesProviderService>();
-        var logger = scopedServiceProvider.GetRequiredService<ILogger>();
+        var logger = scopedServiceProvider.GetRequiredService<ILogger<TaskExecutor>>();
 
         WorkersManager.Init(quotesProviderService, tasksStorage, logger);
     }

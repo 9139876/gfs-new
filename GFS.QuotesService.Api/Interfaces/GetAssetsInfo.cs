@@ -8,7 +8,7 @@ namespace GFS.QuotesService.Api.Interfaces;
 [Route(nameof(GetAssetsInfo))]
 public abstract class GetAssetsInfo: ApiServiceWithRequestResponse<AssetsFilter, List<AssetsInfoDto>>
 {
-    protected GetAssetsInfo(ILogger logger) : base(logger)
+    protected GetAssetsInfo(ILogger<GetAssetsInfo> logger) : base(logger)
     {
     }
 }

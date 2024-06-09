@@ -6,9 +6,9 @@ namespace TestWebApp1.Controllers
     [Route("[controller]")]
     public class TestController : ControllerBase
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<TestController> _logger;
 
-        public TestController(ILogger logger)
+        public TestController(ILogger<TestController> logger)
         {
             _logger = logger;
         }

@@ -17,6 +17,8 @@ public static class ProgramUtils
                 .UseSerilog((_, lc) => { customConfigurationActions.CustomConfigureLogger(lc); })
                 .Build();
 
+            await customConfigurationActions.ConfigureApplication(host.Services);
+            
             await appMainTask(args, host.Services);
         }
     }

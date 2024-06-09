@@ -7,12 +7,12 @@ namespace GFS.TradingStrategyTester.BackgroundWorker.Execution;
 
 public class TaskExecutor : AbstractTaskExecutor<TradingStrategyTestingItemContext>
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<TaskExecutor> _logger;
     private readonly ITestTradeOrchestratorService _testTradeOrchestratorService;
 
     public TaskExecutor(
         ITasksStorage<TradingStrategyTestingItemContext> tasksStorage,
-        ILogger logger,
+        ILogger<TaskExecutor> logger,
         ITestTradeOrchestratorService testTradeOrchestratorService)
         : base(tasksStorage)
     {

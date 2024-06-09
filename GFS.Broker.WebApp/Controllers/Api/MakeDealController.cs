@@ -9,7 +9,7 @@ public class MakeDealController : MakeDeal
     private readonly IDealService _dealService;
 
     public MakeDealController(
-        ILogger logger,
+        ILogger<MakeDeal> logger,
         IDealService dealService) : base(logger)
     {
         _dealService = dealService;

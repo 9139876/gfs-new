@@ -8,7 +8,7 @@ namespace GFS.QuotesService.Api.Interfaces;
 [Route(nameof(GetQuotes))]
 public abstract class GetQuotes : ApiServiceWithRequestResponse<GetQuotesRequest, GetQuotesResponse>
 {
-    protected GetQuotes(ILogger logger) : base(logger)
+    protected GetQuotes(ILogger<GetQuotes> logger) : base(logger)
     {
     }
 }

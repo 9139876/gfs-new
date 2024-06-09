@@ -9,7 +9,7 @@ public class GetQuotesController : GetQuotes
     private readonly IGetDataService _getDataService;
 
     public GetQuotesController(
-        ILogger logger,
+        ILogger<GetQuotes> logger,
         IGetDataService getDataService) : base(logger)
     {
         _getDataService = getDataService;

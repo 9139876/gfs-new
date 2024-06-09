@@ -12,13 +12,13 @@ public class TaskExecutor : AbstractTaskExecutor<QuotesServiceBkgWorkerTaskConte
 {
     private readonly QuotesProviderTypeEnum _quotesProviderType;
     private readonly IQuotesProviderService _quotesProviderService;
-    private readonly ILogger _logger;
+    private readonly ILogger<TaskExecutor> _logger;
 
     public TaskExecutor(
         QuotesProviderTypeEnum quotesProviderType,
         IQuotesProviderService quotesProviderService,
         ITasksStorage<QuotesServiceBkgWorkerTaskContext> tasksStorage,
-        ILogger logger) : base(tasksStorage)
+        ILogger<TaskExecutor> logger) : base(tasksStorage)
     {
         _quotesProviderType = quotesProviderType;
         _quotesProviderService = quotesProviderService;

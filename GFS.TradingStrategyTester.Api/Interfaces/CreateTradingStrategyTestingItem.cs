@@ -8,7 +8,7 @@ namespace GFS.TradingStrategyTester.Api.Interfaces;
 [Route(nameof(CreateTradingStrategyTestingItem))]
 public abstract class CreateTradingStrategyTestingItem : ApiServiceWithRequestResponse<TradingStrategyTestingItemContext, Guid>
 {
-    protected CreateTradingStrategyTestingItem(ILogger logger) : base(logger)
+    protected CreateTradingStrategyTestingItem(ILogger<CreateTradingStrategyTestingItem> logger) : base(logger)
     {
     }
 }

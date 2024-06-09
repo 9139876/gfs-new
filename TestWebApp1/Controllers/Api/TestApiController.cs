@@ -4,7 +4,7 @@ namespace TestWebApp1.Controllers.Api
 {
     public class TestApiController : TestApi
     {
-        public TestApiController(ILogger logger) : base(logger)
+        public TestApiController(ILogger<TestApi> logger) : base(logger)
         {
         }
         

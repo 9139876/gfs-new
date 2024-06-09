@@ -9,7 +9,7 @@ namespace GFS.Broker.WebApp.Controllers.Api.Portfolio
         private readonly IPortfolioService _portfolioService;
 
         public DeletePortfolioController(
-            ILogger logger,
+            ILogger<DeletePortfolio> logger,
             IPortfolioService portfolioService) : base(logger)
         {
             _portfolioService = portfolioService;

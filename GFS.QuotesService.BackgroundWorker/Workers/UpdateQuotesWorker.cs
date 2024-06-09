@@ -11,6 +11,7 @@ using GFS.QuotesService.DAL;
 using GFS.QuotesService.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace GFS.QuotesService.BackgroundWorker.Workers;
 
@@ -20,7 +21,7 @@ internal class UpdateQuotes : SimpleWorker<UpdateQuotesTaskData>
     private readonly IMapper _mapper;
     private readonly IQuotesProviderService _quotesProviderService;
 
-    public UpdateQuotes(IServiceProvider serviceProvider) : base(serviceProvider)
+    public UpdateQuotes(IServiceProvider serviceProvider) : base(serviceProvider, serviceProvider.GetRequiredService<ILogger<UpdateQuotes>>())
     {
         _dbContext = serviceProvider.GetRequiredService<QuotesServiceDbContext>();
         _mapper = serviceProvider.GetRequiredService<IMapper>();
@@ -57,6 +58,8 @@ internal class UpdateQuotes : SimpleWorker<UpdateQuotesTaskData>
             var taskEntity = await _dbContext.GetRepository<UpdateQuotesTaskEntity>().SingleOrFailByIdAsync(taskDataItem.EntityId);
             taskEntity.LastQuoteDate = quotes.Last().Date;
             await _dbContext.SaveChangesAsync();
+            
+            transaction.Complete();
         }
 
         var newTask = quotesBatchResponse.IsLastBatch || !quotes.Any()
@@ -84,7 +87,7 @@ internal class UpdateQuotesTaskData : ILoggingSerializable
     public DateTime LastQuoteDate { get; init; }
 
     public string Serialize()
-        => $"Получение котировок для AssetId={AssetId} провайдер {QuotesProviderType} таймфрейм {Description.GetDescription(TimeFrame)} позже {LastQuoteDate}";
+        => $"Получение котировок для AssetId={AssetId} провайдер '{QuotesProviderType}' таймфрейм '{Description.GetDescription(TimeFrame)}' позднее {LastQuoteDate}";
 
     internal UpdateQuotesTaskData GetNewTask(DateTime lastQuoteDate)
     {
