@@ -4,7 +4,6 @@ using GFS.Common.Helpers;
 using GFS.EF.Extensions;
 using GFS.EF.Repository;
 using GFS.GrailCommon.Extensions;
-using GFS.QuotesService.BL.Enum;
 using GFS.QuotesService.BL.Extensions;
 using GFS.QuotesService.BL.Models;
 using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
@@ -19,6 +18,7 @@ public interface IQuotesProviderService
 {
     Task InitialAssets(QuotesProviderTypeEnum quotesProviderType, Action<string?> updateSubState);
     Task GetQuotesHistory(QuotesProviderTypeEnum quotesProviderType, Guid assetId, Action<string?> updateSubState);
+    Task<GetQuotesBatchResponseModel2> GetQuotesBatch(GetQuotesBatchRequestModel2 request);
 }
 
 internal class QuotesProviderService : IQuotesProviderService
@@ -76,6 +76,26 @@ internal class QuotesProviderService : IQuotesProviderService
         updateSubState("Готово");
     }
 
+    public async Task<GetQuotesBatchResponseModel2> GetQuotesBatch(GetQuotesBatchRequestModel2 request)
+    {
+        var adapter = _serviceProvider.GetQuotesProviderAdapter(request.QuotesProviderType);
+
+        var asset = await _dbContext.GetRepository<AssetEntity>()
+            .Get(asset => asset.Id == request.AssetId)
+            .SingleOrFailAsync();
+
+        var adapterRequest = new GetQuotesBatchRequestModel
+        {
+            Asset = asset,
+            TimeFrame = request.TimeFrame,
+            BatchBeginningDate = request.LastQuoteDate
+        };
+
+        var (quoteEntitiesBatch, isLastBatch, _) = await GetNextQuotesBatch(adapter, adapterRequest);
+
+        return new GetQuotesBatchResponseModel2 { Quotes = quoteEntitiesBatch, IsLastBatch = isLastBatch };
+    }
+
     public async Task GetQuotesHistory(QuotesProviderTypeEnum quotesProviderType, Guid assetId, Action<string?> updateSubState)
     {
         var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
@@ -97,7 +117,7 @@ internal class QuotesProviderService : IQuotesProviderService
         }));
 
         var quoteEntities = new List<QuoteEntity>();
-        
+
         try
         {
             foreach (var item in firstQuoteDates)
@@ -114,12 +134,11 @@ internal class QuotesProviderService : IQuotesProviderService
                     {
                         Asset = asset,
                         TimeFrame = item.TimeFrame,
-                        TimeDirection = TimeDirectionEnum.Forward,
                         BatchBeginningDate = date
                     };
 
                     var (quoteEntitiesBatch, isLastBatch, nextBatchBeginningDate) = await GetNextQuotesBatch(adapter, adapterRequest);
-                    
+
                     quoteEntities.AddRange(quoteEntitiesBatch);
 
                     mustGoOn = !isLastBatch;
@@ -137,7 +156,7 @@ internal class QuotesProviderService : IQuotesProviderService
         {
             await _dbContext.GetRepository<QuoteEntity>().BulkInsertRangeAsync(quoteEntities.Distinct(new QuoteEntityComparerByTfAndDate()).ToList());
             await _dbContext.BulkSaveChangesAsync();
-            
+
             updateSubState("Готово");
         }
     }
@@ -161,7 +180,7 @@ internal class QuotesProviderService : IQuotesProviderService
             quote.Validate();
         });
 
-        return (quoteEntities, batch.IsLastBatch, batch.NextBatchBeginningDate);
+        return (quoteEntities.ToList(), batch.IsLastBatch, batch.NextBatchBeginningDate);
     }
 
     #endregion

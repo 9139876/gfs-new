@@ -8,8 +8,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\GFS.BackgroundWorker\GFS.BackgroundWorker.csproj" />
       <ProjectReference Include="..\GFS.QuotesService.BL\GFS.QuotesService.BL.csproj" />
-      <ProjectReference Include="..\GFS.WebApplication\GFS.WebApplication.csproj" />
     </ItemGroup>
 
     <ItemGroup>

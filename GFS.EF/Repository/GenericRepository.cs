@@ -12,7 +12,7 @@ public interface IRepository<TEntity>
 {
     IQueryable<TEntity> Get(Expression<Func<TEntity, bool>>? predicate = null);
     IQueryable<TEntity> GetBySelectors(IEnumerable<Func<IQueryable<TEntity>, IQueryable<TEntity>>> selectors);
-    Task<TEntity> SingleOrFailById(Guid id);
+    Task<TEntity> SingleOrFailByIdAsync(Guid id);
     Task<TEntity?> TryGetById(Guid id);
     Task<bool> Exist(Expression<Func<TEntity, bool>>? predicate = null);
     Task<bool> Exist(Guid id);
@@ -61,7 +61,7 @@ public class GenericRepository<TEntity> : IRepository<TEntity>
     public IQueryable<TEntity> GetBySelectors(IEnumerable<Func<IQueryable<TEntity>, IQueryable<TEntity>>> selectors)
         => selectors.Aggregate(_dbSet.AsQueryable(), (total, next) => next(total));
 
-    public Task<TEntity> SingleOrFailById(Guid id)
+    public Task<TEntity> SingleOrFailByIdAsync(Guid id)
         => _dbSet.Where(e => e.Id == id).SingleOrFailAsync();
 
     public Task<TEntity?> TryGetById(Guid id)

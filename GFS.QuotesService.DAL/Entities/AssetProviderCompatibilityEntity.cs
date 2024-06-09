@@ -1,4 +1,5 @@
 using GFS.EF.Entities;
+using GFS.GrailCommon.Enums;
 using GFS.QuotesService.Common.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -13,12 +14,16 @@ public class AssetProviderCompatibilityEntity : GuidKeyEntity
     public Guid AssetId { get; set; }
 
     public QuotesProviderTypeEnum QuotesProviderType { get; set; }
+    
+    public TimeFrameEnum TimeFrame { get; set; }
 
     public bool IsCompatibility { get; set; }
 
     #region Navigation
 
     public AssetEntity? Asset { get; set; }
+
+    public List<UpdateQuotesTaskEntity> UpdateQuotesTasks { get; set; } = new();
 
     #endregion
 }

@@ -8,7 +8,6 @@ using GFS.GrailCommon.Enums;
 using GFS.GrailCommon.Extensions;
 using GFS.GrailCommon.Models;
 using GFS.QuotesService.Api.Enum;
-using GFS.QuotesService.BL.Enum;
 using GFS.QuotesService.BL.Models;
 using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
 using GFS.QuotesService.Common.Enum;
@@ -141,12 +140,8 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         {
             Figi = request.Asset.FIGI,
             Interval = TimeframeToCandleInterval(request.TimeFrame),
-            From = request.TimeDirection == TimeDirectionEnum.Forward
-                ? request.BatchBeginningDate.ToUniversalTime().ToTimestamp()
-                : GetBatchStartDate(request.BatchBeginningDate, request.TimeFrame).ToUniversalTime().ToTimestamp(),
-            To = request.TimeDirection == TimeDirectionEnum.Forward
-                ? GetBatchEndDate(request.BatchBeginningDate, request.TimeFrame).ToUniversalTime().ToTimestamp()
-                : request.BatchBeginningDate.ToUniversalTime().ToTimestamp()
+            From = request.BatchBeginningDate.ToUniversalTime().ToTimestamp(),
+            To =  GetBatchEndDate(request.BatchBeginningDate, request.TimeFrame).ToUniversalTime().ToTimestamp()
         };
 
         var apiResponse = await _apiClient.MarketData.GetCandlesAsync(candlesRequest);
@@ -155,9 +150,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         return new GetQuotesBatchResponseModel
         {
             Quotes = _mapper.Map<List<QuoteModel>>(apiResponse.Candles.ToList()),
-            NextBatchBeginningDate = request.TimeDirection == TimeDirectionEnum.Forward
-                ? candlesRequest.To.ToDateTime().AddDate(request.TimeFrame, 1)
-                : candlesRequest.From.ToDateTime().AddDate(request.TimeFrame, -1)
+            NextBatchBeginningDate =  candlesRequest.To.ToDateTime().AddDate(request.TimeFrame, 1)
         };
     }
 
@@ -219,9 +212,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         return new GetQuotesBatchResponseModel
         {
             Quotes = result,
-            NextBatchBeginningDate = request.TimeDirection == TimeDirectionEnum.Forward
-                ? request.BatchBeginningDate.AddYears(1)
-                : request.BatchBeginningDate.AddYears(-1)
+            NextBatchBeginningDate =  request.BatchBeginningDate.AddYears(1)
         };
     }
 
