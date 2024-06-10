@@ -49,7 +49,7 @@ public class TaskExecutor : AbstractTaskExecutor<QuotesServiceBkgWorkerTaskConte
 
     private void ExecuteInitialAssets(QuotesServiceBkgWorkerTaskContext ctx, Action<string?> updateState)
     {
-        _quotesProviderService.InitialAssets(ctx.QuotesProviderType, updateState).Wait();
+        _quotesProviderService.UpdateAssetsList(ctx.QuotesProviderType, updateState).Wait();
     }
 
     private void ExecuteGetHistoryQuotes(QuotesServiceBkgWorkerTaskContext ctx, Action<string?> updateState)

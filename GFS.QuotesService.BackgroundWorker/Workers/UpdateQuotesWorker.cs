@@ -12,21 +12,26 @@ using GFS.QuotesService.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace GFS.QuotesService.BackgroundWorker.Workers;
 
-internal class UpdateQuotes : SimpleWorker<UpdateQuotesTaskData>
+internal class UpdateQuotesWorker : SimpleWorker<UpdateQuotesTaskData>
 {
     private readonly IDbContext _dbContext;
     private readonly IMapper _mapper;
     private readonly IQuotesProviderService _quotesProviderService;
+    private readonly IOptions<WorkersSettings> _workersSettings;
 
-    public UpdateQuotes(IServiceProvider serviceProvider) : base(serviceProvider, serviceProvider.GetRequiredService<ILogger<UpdateQuotes>>())
+    public UpdateQuotesWorker(IServiceProvider serviceProvider) : base(serviceProvider, serviceProvider.GetRequiredService<ILogger<UpdateQuotesWorker>>())
     {
         _dbContext = serviceProvider.GetRequiredService<QuotesServiceDbContext>();
         _mapper = serviceProvider.GetRequiredService<IMapper>();
         _quotesProviderService = serviceProvider.GetRequiredService<IQuotesProviderService>();
+        _workersSettings = serviceProvider.GetRequiredService<IOptions<WorkersSettings>>();
     }
+
+    protected override TimeSpan SleepTime => TimeSpan.FromSeconds(_workersSettings.Value.UpdateQuotesSleepInSeconds);
 
     protected override async Task<List<UpdateQuotesTaskData>> GetTasksData(IServiceProvider serviceProvider)
     {
@@ -38,7 +43,7 @@ internal class UpdateQuotes : SimpleWorker<UpdateQuotesTaskData>
             .ToListAsync());
     }
 
-    protected override async Task<TaskExecutingResult<UpdateQuotesTaskData>> DoTaskAndReturnLoggingText(IServiceProvider serviceProvider, UpdateQuotesTaskData taskDataItem)
+    protected override async Task<TaskExecutingResult<UpdateQuotesTaskData>> DoTaskInternal(IServiceProvider serviceProvider, UpdateQuotesTaskData taskDataItem)
     {
         var quotesBatchResponse = await _quotesProviderService.GetQuotesBatch(_mapper.Map<GetQuotesBatchRequestModel2>(taskDataItem));
 
@@ -58,7 +63,7 @@ internal class UpdateQuotes : SimpleWorker<UpdateQuotesTaskData>
             var taskEntity = await _dbContext.GetRepository<UpdateQuotesTaskEntity>().SingleOrFailByIdAsync(taskDataItem.EntityId);
             taskEntity.LastQuoteDate = quotes.Last().Date;
             await _dbContext.SaveChangesAsync();
-            
+
             transaction.Complete();
         }
 

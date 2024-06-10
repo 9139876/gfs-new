@@ -1,12 +1,6 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using GFS.BackgroundWorker;
-using GFS.Common.Extensions;
 using GFS.QuotesService.BackgroundWorker.Workers;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace GFS.QuotesService.BackgroundWorker;
 
@@ -18,19 +12,12 @@ public static class Program
     }
 
     [SuppressMessage("ReSharper", "FunctionNeverReturns")]
-    private static Task AppMainTask(string[] args, IServiceProvider serviceProvider)
+    private static Task[] AppMainTask(string[] args, IServiceProvider serviceProvider)
     {
-        // var logger = serviceProvider.GetRequiredService<ILogger<CustomConfigurationActions>>();
-        // var config = serviceProvider.GetRequiredService<IConfiguration>();
-        //
-        // logger.LogInformation(config.Serialize());
-        //
-        // while (true)
-        // {
-        //     await Task.Delay(1000);
-        //     logger.LogInformation("I`am alive!");
-        // }
-
-        return new UpdateQuotes(serviceProvider).DoWork();
+        return new[]
+        {
+            new UpdateQuotesWorker(serviceProvider).DoWork(),
+            new UpdateAssetsListWorker(serviceProvider).DoWork()
+        };
     }
 }

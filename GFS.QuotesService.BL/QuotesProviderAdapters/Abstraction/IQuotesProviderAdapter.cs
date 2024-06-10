@@ -8,7 +8,7 @@ namespace GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
 
 public interface IQuotesProviderAdapter
 {
-    Task<List<InitialModel>> GetInitialData();
+    Task<List<AssetModel>> GetAssetsData();
 
     bool IsNativeSupportedTimeframe(TimeFrameEnum timeFrame);
 
@@ -29,7 +29,7 @@ public interface IQuotesProviderAdapter
 [IgnoreRegistration]
 internal abstract class QuotesProviderAbstractAdapter : IQuotesProviderAdapter
 {
-    public virtual Task<List<InitialModel>> GetInitialData()
+    public virtual Task<List<AssetModel>> GetAssetsData()
     {
         throw new NotImplementedYetException("У данного адаптера метод не реализован");
     }

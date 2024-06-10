@@ -7,23 +7,23 @@ using Tinkoff.InvestApi.V1;
 
 namespace GFS.QuotesService.BL.Mapping;
 
-public class MappingProfile : Profile
+public class QuotesMappingProfile : Profile
 {
-    public MappingProfile(Action<IProfileExpression>? configureExt = null)
+    public QuotesMappingProfile(Action<IProfileExpression>? configureExt = null)
     {
         CreateMap<Google.Protobuf.WellKnownTypes.Timestamp, DateTime>()
             .ConvertUsing(ts => ts.ToDateTime());
 
-        CreateMap<Share, InitialModel>()
+        CreateMap<Share, AssetModel>()
             .ForMember(dest => dest.IpoDate, opt => opt.MapFrom(src => src.IpoDate.ToDateTime()));
 
-        CreateMap<Currency, InitialModel>();
+        CreateMap<Currency, AssetModel>();
 
-        CreateMap<Etf, InitialModel>();
+        CreateMap<Etf, AssetModel>();
 
-        CreateMap<InitialModel, AssetEntity>();
+        CreateMap<AssetModel, AssetEntity>();
 
-        CreateMap<InitialModel, AssetInfoEntity>();
+        CreateMap<AssetModel, AssetInfoEntity>();
 
         CreateMap<HistoricCandle, QuoteModel>()
             .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Time.ToDateTime()));

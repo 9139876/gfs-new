@@ -11,7 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Tinkoff.InvestApi" Version="0.6.9" />
+      <PackageReference Include="Tinkoff.InvestApi" Version="0.6.13" />
     </ItemGroup>
 
 </Project>

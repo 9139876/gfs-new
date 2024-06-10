@@ -4,7 +4,7 @@ using GFS.QuotesService.Api.Enum;
 
 namespace GFS.QuotesService.BL.Models;
 
-public class InitialModel
+public class AssetModel
 {
     public MarketTypeEnum MarketType { get; set; }
     public AssetTypeEnum AssetType { get; set; }

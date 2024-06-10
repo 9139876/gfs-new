@@ -17,6 +17,6 @@ public class CustomConfigurationActions : WebCustomConfigurationActionsAbstract
 
     public override void ConfigureMapper()
     {
-        ServiceCollection.AddAutoMapper(expr => expr.AddProfile(new MappingProfile()), typeof(CustomConfigurationActions));
+        ServiceCollection.AddAutoMapper(expr => expr.AddProfile(new QuotesMappingProfile()), typeof(CustomConfigurationActions));
     }
 }

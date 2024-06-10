@@ -22,12 +22,15 @@ public class CustomConfigurationActions : ConsoleCustomConfigurationActionsAbstr
             .RegisterDbContext<QuotesServiceDbContext>(configuration.GetConnectionString("DefaultConnection"))
             .RegisterAssemblyServicesByMember<BL.PlaceboRegistration>()
             .RegistryTinkoffRemoteApi(configuration);
+
+        serviceCollection
+            .Configure<WorkersSettings>(configuration.GetSection("WorkersSettings"));
     }
 
     protected override void ConfigureMapper(IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.AddAutoMapper(expr => expr.AddProfile(new InternalMappingProfile()), typeof(CustomConfigurationActions));
-        serviceCollection.AddAutoMapper(expr => expr.AddProfile(new MappingProfile()), typeof(CustomConfigurationActions));
+        serviceCollection.AddAutoMapper(expr => expr.AddProfile(new QuotesMappingProfile()), typeof(CustomConfigurationActions));
     }
 
     public override async Task ConfigureApplication(IServiceProvider serviceProvider)
@@ -40,7 +43,7 @@ public class CustomConfigurationActions : ConsoleCustomConfigurationActionsAbstr
         return lc
             .Enrich.WithProperty("Application", "GFS.QuotesService.BackgroundWorker");
     }
-    
+
     private class InternalMappingProfile : Profile
     {
         public InternalMappingProfile()

@@ -13,6 +13,7 @@ using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
 using GFS.QuotesService.Common.Enum;
 using GFS.QuotesService.DAL.Entities;
 using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using Microsoft.Extensions.Configuration;
 using Tinkoff.InvestApi;
 using Tinkoff.InvestApi.V1;
@@ -48,13 +49,13 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
                  ?? throw new InvalidOperationException("Tinkoff api key not specified in environment variables");
     }
 
-    public override async Task<List<InitialModel>> GetInitialData()
+    public override async Task<List<AssetModel>> GetAssetsData()
     {
-        var result = new List<InitialModel>();
+        var result = new List<AssetModel>();
 
         var sharesResponse = await _apiClient.Instruments.SharesAsync();
         sharesResponse.RequiredNotNull();
-        var shares = _mapper.Map<List<InitialModel>>(sharesResponse.Instruments.Where(s => s != null).ToList());
+        var shares = _mapper.Map<List<AssetModel>>(sharesResponse.Instruments.Where(s => s != null).ToList());
         shares.ForEach(share =>
         {
             share.AssetType = AssetTypeEnum.Shares;
@@ -64,7 +65,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 
         var currenciesResponse = await _apiClient.Instruments.CurrenciesAsync(new InstrumentsRequest());
         currenciesResponse.RequiredNotNull();
-        var currencies = _mapper.Map<List<InitialModel>>(currenciesResponse.Instruments.Where(s => s != null).ToList());
+        var currencies = _mapper.Map<List<AssetModel>>(currenciesResponse.Instruments.Where(s => s != null).ToList());
         currencies.ForEach(currency =>
         {
             currency.AssetType = AssetTypeEnum.Currencies;
@@ -72,15 +73,16 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         });
         result.AddRange(currencies);
 
-        var etfsResponse = await _apiClient.Instruments.EtfsAsync();
-        etfsResponse.RequiredNotNull();
-        var etfs = _mapper.Map<List<InitialModel>>(etfsResponse.Instruments.Where(s => s != null).ToList());
-        etfs.ForEach(etf =>
-        {
-            etf.AssetType = AssetTypeEnum.Etfs;
-            etf.MarketType = GetMarketType(etf.Exchange);
-        });
-        result.AddRange(etfs);
+        // Вроде не нужно
+        // var etfsResponse = await _apiClient.Instruments.EtfsAsync();
+        // etfsResponse.RequiredNotNull();
+        // var etfs = _mapper.Map<List<AssetModel>>(etfsResponse.Instruments.Where(s => s != null).ToList());
+        // etfs.ForEach(etf =>
+        // {
+        //     etf.AssetType = AssetTypeEnum.Etfs;
+        //     etf.MarketType = GetMarketType(etf.Exchange);
+        // });
+        // result.AddRange(etfs);
 
         return result;
     }
@@ -141,7 +143,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
             Figi = request.Asset.FIGI,
             Interval = TimeframeToCandleInterval(request.TimeFrame),
             From = request.BatchBeginningDate.ToUniversalTime().ToTimestamp(),
-            To =  GetBatchEndDate(request.BatchBeginningDate, request.TimeFrame).ToUniversalTime().ToTimestamp()
+            To = GetBatchEndDate(request.BatchBeginningDate, request.TimeFrame).ToUniversalTime().ToTimestamp()
         };
 
         var apiResponse = await _apiClient.MarketData.GetCandlesAsync(candlesRequest);
@@ -150,7 +152,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         return new GetQuotesBatchResponseModel
         {
             Quotes = _mapper.Map<List<QuoteModel>>(apiResponse.Candles.ToList()),
-            NextBatchBeginningDate =  candlesRequest.To.ToDateTime().AddDate(request.TimeFrame, 1)
+            NextBatchBeginningDate = candlesRequest.To.ToDateTime().AddDate(request.TimeFrame, 1)
         };
     }
 
@@ -212,7 +214,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         return new GetQuotesBatchResponseModel
         {
             Quotes = result,
-            NextBatchBeginningDate =  request.BatchBeginningDate.AddYears(1)
+            NextBatchBeginningDate = request.BatchBeginningDate.AddYears(1)
         };
     }
 

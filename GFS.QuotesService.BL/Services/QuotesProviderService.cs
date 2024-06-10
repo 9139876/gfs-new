@@ -16,7 +16,7 @@ namespace GFS.QuotesService.BL.Services;
 
 public interface IQuotesProviderService
 {
-    Task InitialAssets(QuotesProviderTypeEnum quotesProviderType, Action<string?> updateSubState);
+    Task UpdateAssetsList(QuotesProviderTypeEnum quotesProviderType, Action<string?> updateSubState);
     Task GetQuotesHistory(QuotesProviderTypeEnum quotesProviderType, Guid assetId, Action<string?> updateSubState);
     Task<GetQuotesBatchResponseModel2> GetQuotesBatch(GetQuotesBatchRequestModel2 request);
 }
@@ -40,14 +40,14 @@ internal class QuotesProviderService : IQuotesProviderService
         _dbContext = dbContext;
     }
 
-    public async Task InitialAssets(QuotesProviderTypeEnum quotesProviderType, Action<string?> updateSubState)
+    public async Task UpdateAssetsList(QuotesProviderTypeEnum quotesProviderType, Action<string?> updateSubState)
     {
         using var transaction = SystemTransaction.Default();
 
         var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
 
         updateSubState("Получение данных");
-        var initialModels = await adapter.GetInitialData();
+        var initialModels = await adapter.GetAssetsData();
 
         var assets = initialModels.Select(im =>
         {

@@ -15,9 +15,9 @@ public abstract class SimpleWorker<TTaskData>
         Logger = logger;
     }
 
-    public async Task DoWork(TimeSpan? sleepInSeconds = null, CancellationToken? cancellationToken = null)
+    public async Task DoWork()
     {
-        while (cancellationToken?.IsCancellationRequested != true)
+        while (true)
         {
             TTaskData? currentData = null;
 
@@ -35,7 +35,7 @@ public abstract class SimpleWorker<TTaskData>
 
                     Logger.LogInformation("Обработка задачи: {task}", taskDataItem.Serialize());
                     currentData = taskDataItem;
-                    var (message, newTaskData) = await DoTaskAndReturnLoggingText(scope.ServiceProvider, taskDataItem);
+                    var (message, newTaskData) = await DoTaskInternal(scope.ServiceProvider, taskDataItem);
 
                     if (newTaskData != null)
                     {
@@ -47,22 +47,20 @@ public abstract class SimpleWorker<TTaskData>
                     Logger.LogInformation("Обработка завершена - {result}", message);
                 }
 
-                foreach (var taskDataItem in tasksData)
-                {
-                }
-
-                Thread.Sleep(sleepInSeconds ?? TimeSpan.FromMinutes(1));
+                Thread.Sleep(SleepTime);
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Ошибка при выполнении воркера {error} при выполнении '{data}'", ex.Message, currentData?.Serialize());
+                Logger.LogError(ex, "Ошибка воркера {error} при выполнении '{task}'", ex.Message, currentData?.Serialize());
             }
         }
     }
 
+    protected abstract TimeSpan SleepTime { get; }
+    
     protected abstract Task<List<TTaskData>> GetTasksData(IServiceProvider serviceProvider);
 
-    protected abstract Task<TaskExecutingResult<TTaskData>> DoTaskAndReturnLoggingText(IServiceProvider serviceProvider, TTaskData taskDataItem);
+    protected abstract Task<TaskExecutingResult<TTaskData>> DoTaskInternal(IServiceProvider serviceProvider, TTaskData taskDataItem);
 }
 
 public interface ILoggingSerializable
