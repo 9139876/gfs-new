@@ -1,15 +1,18 @@
-namespace GFS.AnalysisSystem.Library.Internal.SquareOfNine;
+namespace GFS.AnalysisSystem.Library.Internal.WheelCalculator;
 
-public static class SquareOfNine
+public static class WheelCalculator<TWheel>
+    where TWheel : class, IWheel, new()
 {
-    private static readonly List<SquareOfNineWheel> Wheels;
+    private static readonly List<TWheel> Wheels;
 
-    static SquareOfNine()
+    static WheelCalculator()
     {
-        Wheels = new List<SquareOfNineWheel>();
+        Wheels = new List<TWheel>();
 
-        while (Wheels.LastOrDefault()?.LastCellNumber >= ushort.MaxValue == false)
-            Wheels.Add(new SquareOfNineWheel((Wheels.LastOrDefault()?.Number ?? 0) + 1));
+        var emptyWheel = new TWheel();
+
+        while (Wheels.LastOrDefault()?.IsLastWheel() != true)
+            Wheels.Add((TWheel)emptyWheel.Create(Wheels.LastOrDefault()));
     }
 
     public static decimal GetNumberAngle(ushort number)
@@ -47,8 +50,8 @@ public static class SquareOfNine
         return bigNumberAngle - smallNumberAngle + (bigWheel.Number - smallWheel.Number + correction) * 360;
     }
 
-    private static SquareOfNineWheel GetNumberWheel(int number)
+    private static TWheel GetNumberWheel(int number)
     {
-        return Wheels.Single(wheel => wheel.FirstCellNumber <= number && wheel.LastCellNumber >= number);
+        return Wheels.Single(wheel => wheel.ContainNumber(number));
     }
 }

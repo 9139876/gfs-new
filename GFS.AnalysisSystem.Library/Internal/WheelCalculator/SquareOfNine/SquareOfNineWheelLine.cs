@@ -1,4 +1,4 @@
-namespace GFS.AnalysisSystem.Library.Internal.SquareOfNine;
+namespace GFS.AnalysisSystem.Library.Internal.WheelCalculator.SquareOfNine;
 
 public class SquareOfNineWheelLine
 {
