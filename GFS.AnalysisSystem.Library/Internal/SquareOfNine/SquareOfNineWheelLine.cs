@@ -45,8 +45,11 @@ public class SquareOfNineWheelLine
         double y = number - _middleCellNumber;
 
         var alpha = (decimal)(Math.Atan(y / x) * 360 / (2 * Math.PI));
+        var angle = _middleCellDegree + alpha;
 
-        return _middleCellDegree + alpha;
+        return angle >= 0
+            ? angle
+            : 360 + angle;
     }
 
     private int GetMiddleCellDegree()

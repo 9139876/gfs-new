@@ -24,11 +24,27 @@ public static class SquareOfNine
         => Math.Abs(GetNumberAngle(number1) - GetNumberAngle(number2));
 
     public static decimal GetFullDegreesBetweenNumbers(ushort number1, ushort number2)
-    {
-        var wheel1 = GetNumberWheel(number1);
-        var wheel2 = GetNumberWheel(number2);
+        => number1 == number2
+            ? 0
+            : GetFullDegreesBetweenNumbersInternal(Math.Min(number1, number2), Math.Max(number1, number2));
 
-        return Math.Abs(GetNumberAngle(number2) - GetNumberAngle(number1)) + Math.Abs(wheel2.Number - wheel1.Number) * 360;
+
+    private static decimal GetFullDegreesBetweenNumbersInternal(ushort smallNumber, ushort bigNumber)
+    {
+        var smallWheel = GetNumberWheel(smallNumber);
+        var bigWheel = GetNumberWheel(bigNumber);
+
+        if (smallWheel.Number == bigWheel.Number)
+            return GetDegreesBetweenNumbers(smallNumber, bigNumber);
+
+        var smallNumberAngle = GetNumberAngle(smallNumber);
+        var bigNumberAngle = GetNumberAngle(bigNumber);
+
+        var correction = bigNumberAngle > smallNumberAngle
+            ? -1
+            : 0;
+
+        return bigNumberAngle - smallNumberAngle + (bigWheel.Number - smallWheel.Number + correction) * 360;
     }
 
     private static SquareOfNineWheel GetNumberWheel(int number)

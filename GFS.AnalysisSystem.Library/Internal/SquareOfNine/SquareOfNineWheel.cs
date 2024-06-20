@@ -7,10 +7,8 @@ public class SquareOfNineWheel
 {
     internal readonly int Number;
     internal readonly int FirstCellNumber;
-
     internal readonly int LastCellNumber;
 
-    // internal readonly int _numberOfCells;
     private readonly SquareOfNineWheelLine[] _lines;
 
     public SquareOfNineWheel(int number)
@@ -19,7 +17,6 @@ public class SquareOfNineWheel
 
         FirstCellNumber = Number == 1 ? 1 : (int)Math.Pow((Number - 1) * 2 - 1, 2) + 1;
         LastCellNumber = (int)Math.Pow(Number * 2 - 1, 2);
-        // _numberOfCells = _lastCellNumber - _firstCellNumber + 1;
 
         var (cardinalNumbers, diagonalNumbers) = GetCrosses();
 

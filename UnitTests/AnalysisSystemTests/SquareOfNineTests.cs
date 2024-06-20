@@ -95,14 +95,14 @@ public class SquareOfNineTests
         Assert.Equal(360 + (decimal)Math.Round(Math.Atan((double)-9 / 8) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(360), 3));
         Assert.Equal(360 + (decimal)Math.Round(Math.Atan((double)-9 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(361), 3));
 
-        Assert.Equal((decimal)Math.Round(Math.Atan((double)-8 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(290), 3));
-        Assert.Equal((decimal)Math.Round(Math.Atan((double)-7 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(291), 3));
-        Assert.Equal((decimal)Math.Round(Math.Atan((double)-6 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(292), 3));
-        Assert.Equal((decimal)Math.Round(Math.Atan((double)-5 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(293), 3));
-        Assert.Equal((decimal)Math.Round(Math.Atan((double)-4 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(294), 3));
-        Assert.Equal((decimal)Math.Round(Math.Atan((double)-3 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(295), 3));
-        Assert.Equal((decimal)Math.Round(Math.Atan((double)-2 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(296), 3));
-        Assert.Equal((decimal)Math.Round(Math.Atan((double)-1 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(297), 3));
+        Assert.Equal(360 + (decimal)Math.Round(Math.Atan((double)-8 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(290), 3));
+        Assert.Equal(360 + (decimal)Math.Round(Math.Atan((double)-7 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(291), 3));
+        Assert.Equal(360 + (decimal)Math.Round(Math.Atan((double)-6 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(292), 3));
+        Assert.Equal(360 + (decimal)Math.Round(Math.Atan((double)-5 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(293), 3));
+        Assert.Equal(360 + (decimal)Math.Round(Math.Atan((double)-4 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(294), 3));
+        Assert.Equal(360 + (decimal)Math.Round(Math.Atan((double)-3 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(295), 3));
+        Assert.Equal(360 + (decimal)Math.Round(Math.Atan((double)-2 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(296), 3));
+        Assert.Equal(360 + (decimal)Math.Round(Math.Atan((double)-1 / 9) * 360 / (2 * Math.PI), 3), Math.Round(SquareOfNine.GetNumberAngle(297), 3));
     }
 
     [Fact]
@@ -112,6 +112,11 @@ public class SquareOfNineTests
         Assert.Equal(90, SquareOfNine.GetDegreesBetweenNumbers(86, 96));
         Assert.Equal(90, SquareOfNine.GetDegreesBetweenNumbers(96, 86));
         Assert.Equal(90, SquareOfNine.GetDegreesBetweenNumbers(91, 101));
+        Assert.Equal(0, SquareOfNine.GetDegreesBetweenNumbers(86, 176));
+        Assert.Equal(0, SquareOfNine.GetDegreesBetweenNumbers(176, 86));
+
+        Assert.Equal(0.744m, Math.Round(SquareOfNine.GetDegreesBetweenNumbers(5930, 5929), 3));
+        Assert.Equal(0.744m, Math.Round(SquareOfNine.GetDegreesBetweenNumbers(5929, 5930), 3));
     }
 
     [Fact]
@@ -123,5 +128,8 @@ public class SquareOfNineTests
         Assert.Equal(90, SquareOfNine.GetFullDegreesBetweenNumbers(91, 101));
         Assert.Equal(720, SquareOfNine.GetFullDegreesBetweenNumbers(86, 176));
         Assert.Equal(720, SquareOfNine.GetFullDegreesBetweenNumbers(176, 86));
+
+        Assert.Equal(0.744m, Math.Round(SquareOfNine.GetFullDegreesBetweenNumbers(5930, 5929), 3));
+        Assert.Equal(0.744m, Math.Round(SquareOfNine.GetFullDegreesBetweenNumbers(5929, 5930), 3));
     }
 }
