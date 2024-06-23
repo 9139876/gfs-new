@@ -1,60 +1,37 @@
 namespace GFS.AnalysisSystem.Library.Internal.WheelCalculator.SquareOfNine;
 
-public class SquareOfNineWheel : IWheel
+public class SquareOfNineWheel : AbstractWheel
 {
-    private int _firstCellNumber;
-    private int _lastCellNumber;
     private SquareOfNineWheelLine[]? _lines;
 
-    public int Number { get; private set; }
-    
-    public IWheel Create(IWheel? previous)
+    public SquareOfNineWheel(AbstractWheel? previous) : base(previous)
     {
-        var instance = new SquareOfNineWheel();
+        var (cardinalNumbers, diagonalNumbers) = GetCrosses();
 
-        instance.Number = (previous?.Number ?? 0) + 1;
-
-        instance._firstCellNumber = instance.Number == 1 ? 1 : (int)Math.Pow((instance.Number - 1) * 2 - 1, 2) + 1;
-        instance._lastCellNumber = (int)Math.Pow(instance.Number * 2 - 1, 2);
-
-        var (cardinalNumbers, diagonalNumbers) = instance.GetCrosses();
-
-        instance._lines = new SquareOfNineWheelLine[]
+        _lines = new SquareOfNineWheelLine[]
         {
-            new(1, _firstCellNumber, cardinalNumbers[0], diagonalNumbers[0], instance),
-            new(2, diagonalNumbers[0], cardinalNumbers[1], diagonalNumbers[1], instance),
-            new(3, diagonalNumbers[1], cardinalNumbers[2], diagonalNumbers[2], instance),
-            new(4, diagonalNumbers[2], cardinalNumbers[3], diagonalNumbers[3], instance),
+            new(1, (int)FirstCellNumber, cardinalNumbers[0], diagonalNumbers[0], this),
+            new(2, diagonalNumbers[0], cardinalNumbers[1], diagonalNumbers[1], this),
+            new(3, diagonalNumbers[1], cardinalNumbers[2], diagonalNumbers[2], this),
+            new(4, diagonalNumbers[2], cardinalNumbers[3], diagonalNumbers[3], this),
         };
-
-        return instance;
     }
 
-    public bool IsLastWheel()
-        => _lastCellNumber >= ushort.MaxValue;
-    
-    public bool ContainNumber(int number)
-    {
-        return number >= _firstCellNumber && number <= _lastCellNumber;
-    }
+    protected override decimal GetNumberAngleInternal(int number)
+        => number == 1 ? 0 : _lines!.First(line => line.ContainNumber(number)).GetNumberAngle(number);
 
-    public decimal GetNumberAngle(int number)
-    {
-        if (!ContainNumber(number))
-            throw new ArgumentOutOfRangeException(nameof(number), number.ToString());
-
-        return _lines!.First(line => line.ContainNumber(number)).GetNumberAngle(number);
-    }
+    protected override uint GetLastCellNumber(ushort number)
+        => (uint)Math.Pow(number * 2 - 1, 2);
 
     private (int[], int[]) GetCrosses()
     {
         var cardinalNumbers = new int[4];
         for (var i = 0; i < 4; i++)
-            cardinalNumbers[i] = _firstCellNumber + Number - 2 + 2 * (Number - 1) * i;
+            cardinalNumbers[i] = (int)FirstCellNumber + Number - 2 + 2 * (Number - 1) * i;
 
         var diagonalNumbers = new int[4];
         for (var i = 0; i < 4; i++)
-            diagonalNumbers[i] = _firstCellNumber + 2 * (Number - 1) - 1 + 2 * (Number - 1) * i;
+            diagonalNumbers[i] = (int)FirstCellNumber + 2 * (Number - 1) - 1 + 2 * (Number - 1) * i;
 
         return (cardinalNumbers, diagonalNumbers);
     }

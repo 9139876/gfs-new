@@ -1,7 +1,7 @@
 namespace GFS.AnalysisSystem.Library.Internal.WheelCalculator;
 
 public static class WheelCalculator<TWheel>
-    where TWheel : class, IWheel, new()
+    where TWheel : AbstractWheel
 {
     private static readonly List<TWheel> Wheels;
 
@@ -9,19 +9,13 @@ public static class WheelCalculator<TWheel>
     {
         Wheels = new List<TWheel>();
 
-        var emptyWheel = new TWheel();
-
         while (Wheels.LastOrDefault()?.IsLastWheel() != true)
-            Wheels.Add((TWheel)emptyWheel.Create(Wheels.LastOrDefault()));
+            Wheels.Add(Activator.CreateInstance(typeof(TWheel), Wheels.LastOrDefault()) as TWheel ??
+                       throw new InvalidOperationException($"Ошибка создания экземпляра {typeof(TWheel).Name}"));
     }
 
     public static decimal GetNumberAngle(ushort number)
-        => number switch
-        {
-            <= 0 => throw new ArgumentOutOfRangeException(nameof(number), number.ToString()),
-            1 => 0,
-            _ => GetNumberWheel(number).GetNumberAngle(number)
-        };
+        => GetNumberWheel(number).GetNumberAngle(number);
 
     public static decimal GetDegreesBetweenNumbers(ushort number1, ushort number2)
         => Math.Abs(GetNumberAngle(number1) - GetNumberAngle(number2));

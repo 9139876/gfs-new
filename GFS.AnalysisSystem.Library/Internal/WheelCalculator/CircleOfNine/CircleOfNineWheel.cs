@@ -1,40 +1,17 @@
 namespace GFS.AnalysisSystem.Library.Internal.WheelCalculator.CircleOfNine;
 
-public class CircleOfNineWheel : IWheel
+public class CircleOfNineWheel : AbstractWheel
 {
-    private int _firstCellNumber;
-    private int _lastCellNumber;
-    private decimal DegreeCellSize;
-    
-    public int Number { get; private set; }
-    
+    private readonly decimal _degreeCellSize;
 
-    public IWheel Create(IWheel? previous)
+    public CircleOfNineWheel(AbstractWheel? previous) : base(previous)
     {
-        var instance = new CircleOfNineWheel();
-
-        instance.Number = (previous?.Number ?? 0) + 1;
-
-        instance._firstCellNumber = instance.Number == 1 ? 1 : (int)Math.Pow((instance.Number - 1) * 2 - 1, 2) + 1;
-        instance._lastCellNumber = (int)Math.Pow(instance.Number * 2 - 1, 2);
-        instance.DegreeCellSize = (decimal)360 / (instance._lastCellNumber - instance._firstCellNumber + 1);
-
-        return instance;
+        _degreeCellSize = (decimal)360 / (LastCellNumber - FirstCellNumber + 1);
     }
 
-    public bool IsLastWheel()
-        => _lastCellNumber >= ushort.MaxValue;
-    
-    public decimal GetNumberAngle(int number)
-    {
-        if (!ContainNumber(number))
-            throw new ArgumentOutOfRangeException(nameof(number), number.ToString());
-        
-        return DegreeCellSize * (number - _firstCellNumber + 0.5m);
-    }
+    protected override decimal GetNumberAngleInternal(int number)
+        => number == 1 ? 0 : _degreeCellSize * (number - FirstCellNumber + 0.5m);
 
-    public bool ContainNumber(int number)
-    {
-        return number >= _firstCellNumber && number <= _lastCellNumber;
-    }
+    protected override uint GetLastCellNumber(ushort number)
+        => (uint)Math.Pow(number * 2 - 1, 2);
 }

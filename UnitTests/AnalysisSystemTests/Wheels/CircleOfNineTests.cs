@@ -2,7 +2,7 @@ using GFS.AnalysisSystem.Library.Internal.WheelCalculator;
 using GFS.AnalysisSystem.Library.Internal.WheelCalculator.CircleOfNine;
 using Xunit;
 
-namespace UnitTests.AnalysisSystemTests;
+namespace UnitTests.AnalysisSystemTests.Wheels;
 
 public class CircleOfNineTests
 {

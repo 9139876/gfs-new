@@ -3,7 +3,7 @@ using GFS.AnalysisSystem.Library.Internal.WheelCalculator;
 using GFS.AnalysisSystem.Library.Internal.WheelCalculator.SquareOfNine;
 using Xunit;
 
-namespace UnitTests.AnalysisSystemTests;
+namespace UnitTests.AnalysisSystemTests.Wheels;
 
 public class SquareOfNineTests
 {
