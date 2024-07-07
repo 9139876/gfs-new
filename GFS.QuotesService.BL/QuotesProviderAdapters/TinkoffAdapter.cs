@@ -9,18 +9,18 @@ using GFS.GrailCommon.Extensions;
 using GFS.GrailCommon.Models;
 using GFS.QuotesService.Api.Enum;
 using GFS.QuotesService.BL.Models;
+using GFS.QuotesService.BL.Models.Adapters;
 using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
 using GFS.QuotesService.Common.Enum;
 using GFS.QuotesService.DAL.Entities;
 using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
 using Microsoft.Extensions.Configuration;
 using Tinkoff.InvestApi;
 using Tinkoff.InvestApi.V1;
 
 namespace GFS.QuotesService.BL.QuotesProviderAdapters;
 
-public interface ITinkoffAdapter : IQuotesProviderAdapter
+internal interface ITinkoffAdapter : IQuotesProviderAdapter
 {
 }
 
@@ -87,11 +87,11 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         return result;
     }
 
-    public override async Task<DateTime> GetFirstQuoteDate(GetQuotesRequestModel request)
+    public override async Task<DateTime> GetFirstQuoteDate(GetFirstQuoteAdapterRequestModel adapterRequest)
     {
-        var apiResponse = await _apiClient.Instruments.GetInstrumentByAsync(new InstrumentRequest { IdType = InstrumentIdType.Figi, Id = request.Asset.FIGI });
+        var apiResponse = await _apiClient.Instruments.GetInstrumentByAsync(new InstrumentRequest { IdType = InstrumentIdType.Figi, Id = adapterRequest.Asset.FIGI });
 
-        return request.TimeFrame switch
+        return adapterRequest.TimeFrame switch
         {
             TimeFrameEnum.min1 or TimeFrameEnum.H1 => apiResponse.Instrument.First1MinCandleDate.ToDateTime(),
             TimeFrameEnum.D1 => apiResponse.Instrument.First1DayCandleDate.ToDateTime(),
@@ -99,7 +99,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         };
     }
 
-    protected override async Task<GetQuotesBatchResponseModel> GetQuotesBatchInternal(GetQuotesBatchRequestModel request)
+    protected override async Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatchInternal(GetQuotesBatchAdapterRequestModel request)
     {
         if (request.TimeFrame == TimeFrameEnum.min1)
             return await GetQuotesBatchFromArchive(request);
@@ -121,7 +121,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
             attempts--;
         }
 
-        return new GetQuotesBatchResponseModel
+        return new GetQuotesBatchAdapterResponseModel
         {
             Quotes = new List<QuoteModel>(),
             NextBatchBeginningDate = null
@@ -135,7 +135,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 
     #region private
 
-    private async Task<GetQuotesBatchResponseModel> GetQuotesBatchFromCandles(GetQuotesBatchRequestModel request)
+    private async Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatchFromCandles(GetQuotesBatchAdapterRequestModel request)
     {
         //Работает в UTC
         var candlesRequest = new GetCandlesRequest
@@ -149,14 +149,14 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         var apiResponse = await _apiClient.MarketData.GetCandlesAsync(candlesRequest);
         apiResponse.RequiredNotNull();
 
-        return new GetQuotesBatchResponseModel
+        return new GetQuotesBatchAdapterResponseModel
         {
             Quotes = _mapper.Map<List<QuoteModel>>(apiResponse.Candles.ToList()),
             NextBatchBeginningDate = candlesRequest.To.ToDateTime().AddDate(request.TimeFrame, 1)
         };
     }
 
-    private async Task<GetQuotesBatchResponseModel> GetQuotesBatchFromArchive(GetQuotesBatchRequestModel request)
+    private async Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatchFromArchive(GetQuotesBatchAdapterRequestModel request)
     {
         if (request.TimeFrame != TimeFrameEnum.min1)
             throw new NotSupportedException($"{nameof(request.TimeFrame)} is {request.TimeFrame}");
@@ -172,7 +172,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
             //Достал, пришлось захардкодить - это ошибка что год неправильный (просто за этот год котировок нет) 
             if (tinkoffResponse.StatusCode == HttpStatusCode.NotFound ||
                 (tinkoffResponse.Headers.TryGetValues("code", out var tinkoffCodes) && tinkoffCodes.FirstOrDefault() == "30086"))
-                return new GetQuotesBatchResponseModel
+                return new GetQuotesBatchAdapterResponseModel
                 {
                     Quotes = new List<QuoteModel>(),
                     NextBatchBeginningDate = null
@@ -211,7 +211,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
             }
         }
 
-        return new GetQuotesBatchResponseModel
+        return new GetQuotesBatchAdapterResponseModel
         {
             Quotes = result,
             NextBatchBeginningDate = request.BatchBeginningDate.AddYears(1)

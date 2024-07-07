@@ -45,7 +45,7 @@ internal class UpdateQuotesWorker : SimpleWorker<UpdateQuotesTaskData>
 
     protected override async Task<TaskExecutingResult<UpdateQuotesTaskData>> DoTaskInternal(IServiceProvider serviceProvider, UpdateQuotesTaskData taskDataItem)
     {
-        var quotesBatchResponse = await _quotesProviderService.GetQuotesBatch(_mapper.Map<GetQuotesBatchRequestModel2>(taskDataItem));
+        var quotesBatchResponse = await _quotesProviderService.GetQuotesBatch(_mapper.Map<GetQuotesBatchRequestModel>(taskDataItem));
 
         var quotes = quotesBatchResponse.Quotes
             .Where(qe => qe.Date > taskDataItem.LastQuoteDate)

@@ -7,7 +7,7 @@ public abstract class SimpleWorker<TTaskData>
     where TTaskData : class, ILoggingSerializable
 {
     private readonly IServiceProvider _serviceProvider;
-    protected ILogger<SimpleWorker<TTaskData>> Logger;
+    protected readonly ILogger<SimpleWorker<TTaskData>> Logger;
 
     protected SimpleWorker(IServiceProvider serviceProvider, ILogger<SimpleWorker<TTaskData>> logger)
     {

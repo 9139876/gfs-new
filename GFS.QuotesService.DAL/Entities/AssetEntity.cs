@@ -59,3 +59,20 @@ public class AssetEntityConfiguration : IEntityTypeConfiguration<AssetEntity>
         builder.HasIndex(e => e.FIGI).IsUnique();
     }
 }
+
+public class AssetEntityComparerByFifi : IEqualityComparer<AssetEntity>
+{
+    public bool Equals(AssetEntity? x, AssetEntity? y)
+    {
+        if (ReferenceEquals(x, y)) return true;
+        if (ReferenceEquals(x, null)) return false;
+        if (ReferenceEquals(y, null)) return false;
+        if (x.GetType() != y.GetType()) return false;
+        return x.FIGI == y.FIGI;
+    }
+
+    public int GetHashCode(AssetEntity obj)
+    {
+        return obj.FIGI.GetHashCode();
+    }
+}

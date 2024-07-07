@@ -6,9 +6,9 @@ using GFS.QuotesService.DAL.Entities;
 namespace GFS.QuotesService.BL.Models;
 
 /// <summary>
-/// Модель запроса на получение партии котировок
+/// Модель запроса самой первой котировки
 /// </summary>
-public class GetQuotesBatchRequestModel
+public class GetFirstQuoteRequestModel
 {
     /// <summary>
     /// Тип провайдера котировок
@@ -24,9 +24,4 @@ public class GetQuotesBatchRequestModel
     /// Таймфрейм
     /// </summary>
     public TimeFrameEnum TimeFrame { get; init; }
-    
-    /// <summary>
-    /// Дата последней загруженной котировки
-    /// </summary>
-    public DateTime LastQuoteDate { get; init; }
 }

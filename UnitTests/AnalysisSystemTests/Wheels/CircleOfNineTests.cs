@@ -25,5 +25,11 @@ public class CircleOfNineTests
         Assert.Equal(247.5m, WheelCalculator<CircleOfNineWheel>.GetNumberAngle(7));
         Assert.Equal(292.5m, WheelCalculator<CircleOfNineWheel>.GetNumberAngle(8));
         Assert.Equal(337.5m, WheelCalculator<CircleOfNineWheel>.GetNumberAngle(9));
+
+        //Непонятно как он вообще выглядит и чего от него хотеть
+        // for (var i = 0; i < 15; i++)
+        // {
+        //     Assert.Equal(36022.5m, WheelCalculator<CircleOfNineWheel>.GetNumberAngle((ushort)(10 + i)));
+        // }
     }
 }

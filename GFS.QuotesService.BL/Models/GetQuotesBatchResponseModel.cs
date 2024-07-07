@@ -1,24 +1,20 @@
-using GFS.GrailCommon.Models;
+using GFS.QuotesService.DAL.Entities;
+#pragma warning disable CS8618
 
 namespace GFS.QuotesService.BL.Models;
 
 /// <summary>
-/// Модель ответа адаптера котировок на запрос получения партии котировок
+/// Модель ответа на запрос получения партии котировок
 /// </summary>
 public class GetQuotesBatchResponseModel
 {
     /// <summary>
-    /// Котировки
+    /// Коллекция котировок
     /// </summary>
-    public List<QuoteModel> Quotes { get; init; } = new();
-
-    /// <summary>
-    /// Признак, что больше котировок нет
-    /// </summary>
-    public bool IsLastBatch => NextBatchBeginningDate == null;
+    public List<QuoteEntity> Quotes { get; init; }
     
     /// <summary>
-    /// Стартовая дата следующей партии
+    /// Признак, что это на данный момент последняя существующая партия котировок
     /// </summary>
-    public DateTime? NextBatchBeginningDate { get; init; }
+    public bool IsLastBatch { get; init; }
 }

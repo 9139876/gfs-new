@@ -1,5 +1,8 @@
 namespace GFS.QuotesService.Common.Enum;
 
+/// <summary>
+/// Тип провайдера котировок
+/// </summary>
 public enum QuotesProviderTypeEnum
 {
     Tinkoff = 1,

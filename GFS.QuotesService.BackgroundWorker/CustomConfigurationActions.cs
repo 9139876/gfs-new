@@ -54,7 +54,7 @@ public class CustomConfigurationActions : ConsoleCustomConfigurationActionsAbstr
                 .ForMember(dest => dest.AssetId, opt => opt.MapFrom(src => src.AssetByProvider!.AssetId))
                 .ForMember(dest => dest.TimeFrame, opt => opt.MapFrom(src => src.AssetByProvider!.TimeFrame));
 
-            CreateMap<UpdateQuotesTaskData, GetQuotesBatchRequestModel2>();
+            CreateMap<UpdateQuotesTaskData, GetQuotesBatchRequestModel>();
         }
     }
 }

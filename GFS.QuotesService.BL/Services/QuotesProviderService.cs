@@ -1,52 +1,57 @@
 using AutoMapper;
 using GFS.Common.Extensions;
 using GFS.Common.Helpers;
-using GFS.EF.Extensions;
-using GFS.EF.Repository;
 using GFS.GrailCommon.Extensions;
 using GFS.QuotesService.BL.Extensions;
 using GFS.QuotesService.BL.Models;
+using GFS.QuotesService.BL.Models.Adapters;
 using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
 using GFS.QuotesService.Common.Enum;
 using GFS.QuotesService.DAL.Entities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace GFS.QuotesService.BL.Services;
 
 public interface IQuotesProviderService
 {
-    Task UpdateAssetsList(QuotesProviderTypeEnum quotesProviderType, Action<string?> updateSubState);
-    Task GetQuotesHistory(QuotesProviderTypeEnum quotesProviderType, Guid assetId, Action<string?> updateSubState);
-    Task<GetQuotesBatchResponseModel2> GetQuotesBatch(GetQuotesBatchRequestModel2 request);
+    /// <summary>
+    /// Получение самой первой котировки
+    /// </summary>
+    Task<QuoteEntity> GetFirstQuote(GetFirstQuoteRequestModel request);
+    
+    /// <summary>
+    /// Получение списка активов
+    /// </summary>
+    Task<List<AssetEntity>> GetAssetsList(QuotesProviderTypeEnum quotesProviderType);
+    
+    /// <summary>
+    /// Получение партии котировок
+    /// </summary>
+    Task<GetQuotesBatchResponseModel> GetQuotesBatch(GetQuotesBatchRequestModel request);
 }
 
 internal class QuotesProviderService : IQuotesProviderService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IMapper _mapper;
-    private readonly ILogger<QuotesProviderService> _logger;
-    private readonly IDbContext _dbContext;
-
     public QuotesProviderService(
         IServiceProvider serviceProvider,
-        IMapper mapper,
-        ILogger<QuotesProviderService> logger,
-        IDbContext dbContext)
+        IMapper mapper)
     {
         _serviceProvider = serviceProvider;
         _mapper = mapper;
-        _logger = logger;
-        _dbContext = dbContext;
     }
 
-    public async Task UpdateAssetsList(QuotesProviderTypeEnum quotesProviderType, Action<string?> updateSubState)
+    public Task<QuoteEntity> GetFirstQuote(GetFirstQuoteRequestModel request)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<List<AssetEntity>> GetAssetsList(QuotesProviderTypeEnum quotesProviderType)
     {
         using var transaction = SystemTransaction.Default();
 
         var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
-
-        updateSubState("Получение данных");
+        
         var initialModels = await adapter.GetAssetsData();
 
         var assets = initialModels.Select(im =>
@@ -64,107 +69,29 @@ internal class QuotesProviderService : IQuotesProviderService
             return asset;
         }).ToList();
 
-        updateSubState("Данные получены, обработка");
-
-        var existingAssets = await _dbContext.GetRepository<AssetEntity>().Get().ToListAsync();
-        var newAssets = assets.Except(existingAssets).ToList();
-
-        updateSubState("Сохранение в БД");
-        _dbContext.GetRepository<AssetEntity>().InsertRange(newAssets);
-        await _dbContext.SaveChangesAsync();
-        transaction.Complete();
-        updateSubState("Готово");
+        return assets;
     }
 
-    public async Task<GetQuotesBatchResponseModel2> GetQuotesBatch(GetQuotesBatchRequestModel2 request)
+    public async Task<GetQuotesBatchResponseModel> GetQuotesBatch(GetQuotesBatchRequestModel request)
     {
         var adapter = _serviceProvider.GetQuotesProviderAdapter(request.QuotesProviderType);
 
-        var asset = await _dbContext.GetRepository<AssetEntity>()
-            .Get(asset => asset.Id == request.AssetId)
-            .SingleOrFailAsync();
-
-        var adapterRequest = new GetQuotesBatchRequestModel
+        var adapterRequest = new GetQuotesBatchAdapterRequestModel
         {
-            Asset = asset,
+            Asset = request.Asset,
             TimeFrame = request.TimeFrame,
-            BatchBeginningDate = request.LastQuoteDate
+            BatchBeginningDate = request.LastQuoteDate.AddDate(request.TimeFrame, 1)
         };
 
-        var (quoteEntitiesBatch, isLastBatch, _) = await GetNextQuotesBatch(adapter, adapterRequest);
+        var (quoteEntitiesBatch, isLastBatch) = await GetNextQuotesBatch(adapter, adapterRequest);
 
-        return new GetQuotesBatchResponseModel2 { Quotes = quoteEntitiesBatch, IsLastBatch = isLastBatch };
-    }
-
-    public async Task GetQuotesHistory(QuotesProviderTypeEnum quotesProviderType, Guid assetId, Action<string?> updateSubState)
-    {
-        var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
-
-        var asset = await _dbContext.GetRepository<AssetEntity>()
-            .Get(asset => asset.Id == assetId)
-            .SingleOrFailAsync();
-
-        var firstQuoteDates = await Task.WhenAll(adapter.NativeSupportedTimeFrames.Select(async tf => new
-        {
-            TimeFrame = tf,
-            LastDate = DateWithTimeFrameExtensions.GetMaxDate(
-                await _dbContext.GetRepository<QuoteEntity>()
-                    .Get(q => q.AssetId == assetId && q.QuotesProviderType == quotesProviderType)
-                    .Select(q => q.Date)
-                    .OrderBy(d => d)
-                    .LastOrDefaultAsync(),
-                await adapter.GetFirstQuoteDate(new GetQuotesRequestModel { Asset = asset, TimeFrame = tf }))
-        }));
-
-        var quoteEntities = new List<QuoteEntity>();
-
-        try
-        {
-            foreach (var item in firstQuoteDates)
-            {
-                updateSubState($"Получение данных {item.TimeFrame}");
-
-                var date = item.LastDate;
-
-                var mustGoOn = true;
-
-                while (mustGoOn)
-                {
-                    var adapterRequest = new GetQuotesBatchRequestModel
-                    {
-                        Asset = asset,
-                        TimeFrame = item.TimeFrame,
-                        BatchBeginningDate = date
-                    };
-
-                    var (quoteEntitiesBatch, isLastBatch, nextBatchBeginningDate) = await GetNextQuotesBatch(adapter, adapterRequest);
-
-                    quoteEntities.AddRange(quoteEntitiesBatch);
-
-                    mustGoOn = !isLastBatch;
-
-                    if (!isLastBatch)
-                        date = nextBatchBeginningDate!.Value;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ex.Message);
-        }
-        finally
-        {
-            await _dbContext.GetRepository<QuoteEntity>().BulkInsertRangeAsync(quoteEntities.Distinct(new QuoteEntityComparerByTfAndDate()).ToList());
-            await _dbContext.BulkSaveChangesAsync();
-
-            updateSubState("Готово");
-        }
+        return new GetQuotesBatchResponseModel { Quotes = quoteEntitiesBatch, IsLastBatch = isLastBatch};
     }
 
     #region private
 
-    private async Task<(List<QuoteEntity> quotes, bool isLastBatch, DateTime? nextBatchBeginningDate)> GetNextQuotesBatch(IQuotesProviderAdapter adapter,
-        GetQuotesBatchRequestModel adapterRequest)
+    private async Task<(List<QuoteEntity> quotes, bool)> GetNextQuotesBatch(IQuotesProviderAdapter adapter,
+        GetQuotesBatchAdapterRequestModel adapterRequest)
     {
         var batch = await adapter.GetQuotesBatch(adapterRequest);
         var quoteEntities = _mapper.Map<List<QuoteEntity>>(batch.Quotes);
@@ -180,7 +107,7 @@ internal class QuotesProviderService : IQuotesProviderService
             quote.Validate();
         });
 
-        return (quoteEntities.ToList(), batch.IsLastBatch, batch.NextBatchBeginningDate);
+        return (quoteEntities.ToList(), batch.IsLastBatch);
     }
 
     #endregion

@@ -1,18 +1,19 @@
 using GFS.Common.Exceptions;
 using GFS.GrailCommon.Enums;
 using GFS.QuotesService.BL.Models;
+using GFS.QuotesService.BL.Models.Adapters;
 using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
 using GFS.QuotesService.Common.Enum;
 
 namespace GFS.QuotesService.BL.QuotesProviderAdapters;
 
-public interface IFinamAdapter : IQuotesProviderAdapter
+internal interface IFinamAdapter : IQuotesProviderAdapter
 {
 }
 
 internal class FinamAdapter : QuotesProviderAbstractAdapter, IFinamAdapter
 {
-    protected override Task<GetQuotesBatchResponseModel> GetQuotesBatchInternal(GetQuotesBatchRequestModel request)
+    protected override Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatchInternal(GetQuotesBatchAdapterRequestModel request)
     {
         throw new NotImplementedYetException();
     }

@@ -2,28 +2,27 @@ using GFS.Common.Attributes;
 using GFS.Common.Exceptions;
 using GFS.GrailCommon.Enums;
 using GFS.QuotesService.BL.Models;
+using GFS.QuotesService.BL.Models.Adapters;
 using GFS.QuotesService.Common.Enum;
 
 namespace GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
 
-public interface IQuotesProviderAdapter
+internal interface IQuotesProviderAdapter
 {
     Task<List<AssetModel>> GetAssetsData();
-
-    bool IsNativeSupportedTimeframe(TimeFrameEnum timeFrame);
 
     ICollection<TimeFrameEnum> NativeSupportedTimeFrames { get; }
 
     QuotesProviderTypeEnum ProviderType { get; }
 
-    Task<DateTime> GetFirstQuoteDate(GetQuotesRequestModel request); 
+    Task<DateTime> GetFirstQuoteDate(GetFirstQuoteAdapterRequestModel adapterRequest); 
     
     /// <summary>
     /// Возвращает партию котировок и признак, есть ли еще что грузить, за указанную дату и ранее нее, идёт по истории во обратном направлении
     /// </summary>
     /// <param name="request">Модель запроса получения партии котировок</param>
     /// <returns></returns>
-    Task<GetQuotesBatchResponseModel> GetQuotesBatch(GetQuotesBatchRequestModel request);
+    Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatch(GetQuotesBatchAdapterRequestModel request);
 }
 
 [IgnoreRegistration]
@@ -34,15 +33,12 @@ internal abstract class QuotesProviderAbstractAdapter : IQuotesProviderAdapter
         throw new NotImplementedYetException("У данного адаптера метод не реализован");
     }
 
-    public bool IsNativeSupportedTimeframe(TimeFrameEnum timeFrame)
-        => NativeSupportedTimeFrames.Contains(timeFrame);
-
-    public virtual Task<DateTime> GetFirstQuoteDate(GetQuotesRequestModel request)
+    public virtual Task<DateTime> GetFirstQuoteDate(GetFirstQuoteAdapterRequestModel adapterRequest)
     {
         throw new NotImplementedYetException("У данного адаптера метод не реализован");
     }
 
-    public async Task<GetQuotesBatchResponseModel> GetQuotesBatch(GetQuotesBatchRequestModel request)
+    public async Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatch(GetQuotesBatchAdapterRequestModel request)
     {
         if (!IsNativeSupportedTimeframe(request.TimeFrame))
             throw new InvalidOperationException($"Timeframe {request.TimeFrame} is not supported {GetType().Name}");
@@ -50,7 +46,10 @@ internal abstract class QuotesProviderAbstractAdapter : IQuotesProviderAdapter
         return await GetQuotesBatchInternal(request);
     }
 
-    protected abstract Task<GetQuotesBatchResponseModel> GetQuotesBatchInternal(GetQuotesBatchRequestModel request);
+    private bool IsNativeSupportedTimeframe(TimeFrameEnum timeFrame)
+        => NativeSupportedTimeFrames.Contains(timeFrame);
+    
+    protected abstract Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatchInternal(GetQuotesBatchAdapterRequestModel request);
 
     public abstract ICollection<TimeFrameEnum> NativeSupportedTimeFrames { get; }
 
