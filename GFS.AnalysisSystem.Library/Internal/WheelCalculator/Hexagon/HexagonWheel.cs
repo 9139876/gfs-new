@@ -2,6 +2,7 @@ namespace GFS.AnalysisSystem.Library.Internal.WheelCalculator.Hexagon;
 
 public class HexagonWheel : AbstractWheel
 {
+    //ToDo It`s wrong - it`s not a circle!!!
     private readonly decimal _degreeCellSize;
 
     public HexagonWheel(AbstractWheel? previous) : base(previous)

@@ -15,6 +15,13 @@ public class SquareOfNineTests
     }
 
     [Fact]
+    public void OddSquares_Test()
+    {
+        for (var i = 1; i < 128; i++)
+            Assert.Equal(315, WheelCalculator<SquareOfNineWheel>.GetNumberAngle((ushort)Math.Pow(2 * i + 1, 2)));
+    }
+
+    [Fact]
     public void GetNumberAngle_Test()
     {
         Assert.Equal(0, WheelCalculator<SquareOfNineWheel>.GetNumberAngle(1));
