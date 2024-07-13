@@ -13,7 +13,7 @@ internal interface IFinamAdapter : IQuotesProviderAdapter
 
 internal class FinamAdapter : QuotesProviderAbstractAdapter, IFinamAdapter
 {
-    protected override Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatchInternal(GetQuotesBatchAdapterRequestModel request)
+    protected override Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatchInternal(GetQuotesDateBatchAdapterRequestModel request)
     {
         throw new NotImplementedYetException();
     }

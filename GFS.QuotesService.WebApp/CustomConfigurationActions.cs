@@ -1,6 +1,7 @@
+using GFS.Common.Extensions;
 using GFS.EF.Extensions;
+using GFS.QuotesService.BL.Extensions;
 using GFS.QuotesService.BL.Mapping;
-using GFS.QuotesService.BL.Services;
 using GFS.QuotesService.DAL;
 using GFS.WebApplication;
 
@@ -12,7 +13,8 @@ public class CustomConfigurationActions : WebCustomConfigurationActionsAbstract
     {
         ServiceCollection
             .RegisterDbContext<QuotesServiceDbContext>(Configuration.GetConnectionString("DefaultConnection"))
-            .AddScoped<IGetDataService, GetDataService>();
+            .RegisterAssemblyServicesByMember<BL.PlaceboRegistration>()
+            .RegistryTinkoffRemoteApi(Configuration);
     }
 
     public override void ConfigureMapper()

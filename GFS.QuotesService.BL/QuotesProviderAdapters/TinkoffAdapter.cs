@@ -18,6 +18,8 @@ using Microsoft.Extensions.Configuration;
 using Tinkoff.InvestApi;
 using Tinkoff.InvestApi.V1;
 
+#pragma warning disable CS0612
+
 namespace GFS.QuotesService.BL.QuotesProviderAdapters;
 
 internal interface ITinkoffAdapter : IQuotesProviderAdapter
@@ -87,19 +89,23 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         return result;
     }
 
-    public override async Task<DateTime> GetFirstQuoteDate(GetFirstQuoteAdapterRequestModel adapterRequest)
+    public override async Task<DateTime> GetFirstQuoteDate(GetFirstQuoteDateAdapterRequestModel dateAdapterRequest)
     {
-        var apiResponse = await _apiClient.Instruments.GetInstrumentByAsync(new InstrumentRequest { IdType = InstrumentIdType.Figi, Id = adapterRequest.Asset.FIGI });
+        var firstCandleDateApiResponse =
+            await _apiClient.Instruments.GetInstrumentByAsync(new InstrumentRequest { IdType = InstrumentIdType.Figi, Id = dateAdapterRequest.Asset.FIGI });
+        firstCandleDateApiResponse.RequiredNotNull();
 
-        return adapterRequest.TimeFrame switch
+        var firstQuoteDate = dateAdapterRequest.TimeFrame switch
         {
-            TimeFrameEnum.min1 or TimeFrameEnum.H1 => apiResponse.Instrument.First1MinCandleDate.ToDateTime(),
-            TimeFrameEnum.D1 => apiResponse.Instrument.First1DayCandleDate.ToDateTime(),
+            TimeFrameEnum.min1 or TimeFrameEnum.H1 => firstCandleDateApiResponse.Instrument.First1MinCandleDate.ToDateTime(),
+            TimeFrameEnum.D1 => firstCandleDateApiResponse.Instrument.First1DayCandleDate.ToDateTime(),
             _ => throw new ArgumentOutOfRangeException()
         };
+
+        return firstQuoteDate;
     }
 
-    protected override async Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatchInternal(GetQuotesBatchAdapterRequestModel request)
+    protected override async Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatchInternal(GetQuotesDateBatchAdapterRequestModel request)
     {
         if (request.TimeFrame == TimeFrameEnum.min1)
             return await GetQuotesBatchFromArchive(request);
@@ -135,7 +141,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 
     #region private
 
-    private async Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatchFromCandles(GetQuotesBatchAdapterRequestModel request)
+    private async Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatchFromCandles(GetQuotesDateBatchAdapterRequestModel request)
     {
         //Работает в UTC
         var candlesRequest = new GetCandlesRequest
@@ -156,7 +162,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         };
     }
 
-    private async Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatchFromArchive(GetQuotesBatchAdapterRequestModel request)
+    private async Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatchFromArchive(GetQuotesDateBatchAdapterRequestModel request)
     {
         if (request.TimeFrame != TimeFrameEnum.min1)
             throw new NotSupportedException($"{nameof(request.TimeFrame)} is {request.TimeFrame}");
@@ -256,15 +262,6 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
             TimeFrameEnum.min1 => CandleInterval._1Min,
             TimeFrameEnum.H1 => CandleInterval.Hour,
             TimeFrameEnum.D1 => CandleInterval.Day,
-            _ => throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame.ToString())
-        };
-
-    private static DateTime GetBatchStartDate(DateTime end, TimeFrameEnum timeFrame)
-        => timeFrame switch
-        {
-            TimeFrameEnum.min1 => end.AddDays(-1),
-            TimeFrameEnum.H1 => end.AddDays(-7),
-            TimeFrameEnum.D1 => end.AddDays(-365),
             _ => throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame.ToString())
         };
 

@@ -2,7 +2,6 @@ using AutoMapper;
 using GFS.BackgroundWorker.Workers;
 using GFS.Common.Attributes;
 using GFS.Common.Helpers;
-using GFS.EF.Repository;
 using GFS.GrailCommon.Enums;
 using GFS.QuotesService.BL.Models;
 using GFS.QuotesService.BL.Services;
@@ -18,16 +17,12 @@ namespace GFS.QuotesService.BackgroundWorker.Workers;
 
 internal class UpdateQuotesWorker : SimpleWorker<UpdateQuotesTaskData>
 {
-    private readonly IDbContext _dbContext;
     private readonly IMapper _mapper;
-    private readonly IQuotesProviderService _quotesProviderService;
     private readonly IOptions<WorkersSettings> _workersSettings;
 
     public UpdateQuotesWorker(IServiceProvider serviceProvider) : base(serviceProvider, serviceProvider.GetRequiredService<ILogger<UpdateQuotesWorker>>())
     {
-        _dbContext = serviceProvider.GetRequiredService<QuotesServiceDbContext>();
         _mapper = serviceProvider.GetRequiredService<IMapper>();
-        _quotesProviderService = serviceProvider.GetRequiredService<IQuotesProviderService>();
         _workersSettings = serviceProvider.GetRequiredService<IOptions<WorkersSettings>>();
     }
 
@@ -35,7 +30,9 @@ internal class UpdateQuotesWorker : SimpleWorker<UpdateQuotesTaskData>
 
     protected override async Task<List<UpdateQuotesTaskData>> GetTasksData(IServiceProvider serviceProvider)
     {
-        return _mapper.Map<List<UpdateQuotesTaskData>>(await _dbContext
+        var dbContext = serviceProvider.GetRequiredService<QuotesServiceDbContext>();
+        
+        return _mapper.Map<List<UpdateQuotesTaskData>>(await dbContext
             .GetRepository<UpdateQuotesTaskEntity>()
             .Get(task => task.IsActive)
             .Include(task => task.AssetByProvider)
@@ -45,7 +42,18 @@ internal class UpdateQuotesWorker : SimpleWorker<UpdateQuotesTaskData>
 
     protected override async Task<TaskExecutingResult<UpdateQuotesTaskData>> DoTaskInternal(IServiceProvider serviceProvider, UpdateQuotesTaskData taskDataItem)
     {
-        var quotesBatchResponse = await _quotesProviderService.GetQuotesBatch(_mapper.Map<GetQuotesBatchRequestModel>(taskDataItem));
+        var dbContext = serviceProvider.GetRequiredService<QuotesServiceDbContext>();
+        var quotesProviderService = serviceProvider.GetRequiredService<IQuotesProviderService>();
+        
+        var getQuotesBatchRequest = new GetQuotesBatchRequestModel
+        {
+            QuotesProviderType = taskDataItem.QuotesProviderType,
+            Asset = await dbContext.GetRepository<AssetEntity>().SingleOrFailByIdAsync(taskDataItem.AssetId),
+            TimeFrame = taskDataItem.TimeFrame,
+            LastQuoteDate = taskDataItem.LastQuoteDate
+        };
+
+        var quotesBatchResponse = await quotesProviderService.GetQuotesBatch(getQuotesBatchRequest);
 
         var quotes = quotesBatchResponse.Quotes
             .Where(qe => qe.Date > taskDataItem.LastQuoteDate)
@@ -57,12 +65,12 @@ internal class UpdateQuotesWorker : SimpleWorker<UpdateQuotesTaskData>
         {
             using var transaction = SystemTransaction.Default();
 
-            await _dbContext.GetRepository<QuoteEntity>().BulkInsertRangeAsync(quotes);
-            await _dbContext.BulkSaveChangesAsync();
+            await dbContext.GetRepository<QuoteEntity>().BulkInsertRangeAsync(quotes);
+            await dbContext.BulkSaveChangesAsync();
 
-            var taskEntity = await _dbContext.GetRepository<UpdateQuotesTaskEntity>().SingleOrFailByIdAsync(taskDataItem.EntityId);
+            var taskEntity = await dbContext.GetRepository<UpdateQuotesTaskEntity>().SingleOrFailByIdAsync(taskDataItem.EntityId);
             taskEntity.LastQuoteDate = quotes.Last().Date;
-            await _dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
 
             transaction.Complete();
         }

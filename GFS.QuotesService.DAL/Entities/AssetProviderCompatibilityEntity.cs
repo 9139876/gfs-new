@@ -17,8 +17,6 @@ public class AssetProviderCompatibilityEntity : GuidKeyEntity
     
     public TimeFrameEnum TimeFrame { get; set; }
 
-    public bool IsCompatibility { get; set; }
-
     #region Navigation
 
     public AssetEntity? Asset { get; set; }

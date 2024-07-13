@@ -8,7 +8,7 @@ namespace GFS.QuotesService.BL.Models.Adapters;
 /// <summary>
 /// Модель запроса адаптера котировок самой первой котировки
 /// </summary>
-internal class GetFirstQuoteAdapterRequestModel
+internal class GetFirstQuoteDateAdapterRequestModel
 {
     /// <summary>
     /// Актив

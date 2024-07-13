@@ -3,7 +3,7 @@ namespace GFS.QuotesService.BL.Models.Adapters;
 /// <summary>
 /// Модель запроса адаптера котировок на получение партии котировок
 /// </summary>
-internal class GetQuotesBatchAdapterRequestModel : GetFirstQuoteAdapterRequestModel
+internal class GetQuotesDateBatchAdapterRequestModel : GetFirstQuoteDateAdapterRequestModel
 {
     /// <summary>
     /// Дата первой котировки в партии

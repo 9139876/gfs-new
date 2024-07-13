@@ -1,5 +1,4 @@
 using GFS.BackgroundWorker.Workers;
-using GFS.EF.Repository;
 using GFS.QuotesService.BL.Services;
 using GFS.QuotesService.Common.Enum;
 using GFS.QuotesService.DAL;
@@ -13,14 +12,10 @@ namespace GFS.QuotesService.BackgroundWorker.Workers;
 
 internal class UpdateAssetsListWorker : SimpleWorker<UpdateAssetsListTaskData>
 {
-    private readonly IDbContext _dbContext;
-    private readonly IQuotesProviderService _quotesProviderService;
     private readonly IOptions<WorkersSettings> _workersSettings;
 
     public UpdateAssetsListWorker(IServiceProvider serviceProvider) : base(serviceProvider, serviceProvider.GetRequiredService<ILogger<UpdateAssetsListWorker>>())
     {
-        _dbContext = serviceProvider.GetRequiredService<QuotesServiceDbContext>();
-        _quotesProviderService = serviceProvider.GetRequiredService<IQuotesProviderService>();
         _workersSettings = serviceProvider.GetRequiredService<IOptions<WorkersSettings>>();
     }
 
@@ -33,13 +28,16 @@ internal class UpdateAssetsListWorker : SimpleWorker<UpdateAssetsListTaskData>
 
     protected override async Task<TaskExecutingResult<UpdateAssetsListTaskData>> DoTaskInternal(IServiceProvider serviceProvider, UpdateAssetsListTaskData taskDataItem)
     {
+        var dbContext = serviceProvider.GetRequiredService<QuotesServiceDbContext>();
+        var quotesProviderService = serviceProvider.GetRequiredService<IQuotesProviderService>();
+        
         var receivedAssets = new List<AssetEntity>();
 
         foreach (var quotesProviderType in ActiveQuotesProviders)
         {
             try
             {
-                var assets = await _quotesProviderService.GetAssetsList(quotesProviderType);
+                var assets = await quotesProviderService.GetAssetsList(quotesProviderType);
                 receivedAssets.AddRange(assets);
                 Logger.LogInformation("От провайдера {provider} получено {count} активов", quotesProviderType, assets.Count);
             }
@@ -54,7 +52,7 @@ internal class UpdateAssetsListWorker : SimpleWorker<UpdateAssetsListTaskData>
         if (!receivedAssets.Any())
             return result;
 
-        var existingAssets = await _dbContext.GetRepository<AssetEntity>().Get().ToListAsync();
+        var existingAssets = await dbContext.GetRepository<AssetEntity>().Get().ToListAsync();
         var newAssets = receivedAssets.Except(existingAssets, new AssetEntityComparerByFifi()).ToList();
 
         Logger.LogInformation("Всего получено новых активов - {count}", newAssets.Count);
@@ -62,8 +60,8 @@ internal class UpdateAssetsListWorker : SimpleWorker<UpdateAssetsListTaskData>
         if (!newAssets.Any())
             return result;
 
-        _dbContext.GetRepository<AssetEntity>().InsertRange(newAssets);
-        await _dbContext.SaveChangesAsync();
+        dbContext.GetRepository<AssetEntity>().InsertRange(newAssets);
+        await dbContext.SaveChangesAsync();
 
         Logger.LogInformation("Новые активы успешно сохранены в БД");
 

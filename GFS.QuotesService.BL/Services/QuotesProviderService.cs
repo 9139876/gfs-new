@@ -1,6 +1,5 @@
 using AutoMapper;
 using GFS.Common.Extensions;
-using GFS.Common.Helpers;
 using GFS.GrailCommon.Extensions;
 using GFS.QuotesService.BL.Extensions;
 using GFS.QuotesService.BL.Models;
@@ -16,13 +15,13 @@ public interface IQuotesProviderService
     /// <summary>
     /// Получение самой первой котировки
     /// </summary>
-    Task<QuoteEntity> GetFirstQuote(GetFirstQuoteRequestModel request);
-    
+    Task<DateTime> GetFirstQuoteDate(GetFirstQuoteRequestModel request);
+
     /// <summary>
     /// Получение списка активов
     /// </summary>
     Task<List<AssetEntity>> GetAssetsList(QuotesProviderTypeEnum quotesProviderType);
-    
+
     /// <summary>
     /// Получение партии котировок
     /// </summary>
@@ -33,6 +32,7 @@ internal class QuotesProviderService : IQuotesProviderService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IMapper _mapper;
+
     public QuotesProviderService(
         IServiceProvider serviceProvider,
         IMapper mapper)
@@ -41,17 +41,16 @@ internal class QuotesProviderService : IQuotesProviderService
         _mapper = mapper;
     }
 
-    public Task<QuoteEntity> GetFirstQuote(GetFirstQuoteRequestModel request)
+    public async Task<DateTime> GetFirstQuoteDate(GetFirstQuoteRequestModel request)
     {
-        throw new NotImplementedException();
+        var adapter = _serviceProvider.GetQuotesProviderAdapter(request.QuotesProviderType);
+        return await adapter.GetFirstQuoteDate(new GetFirstQuoteDateAdapterRequestModel { Asset = request.Asset, TimeFrame = request.TimeFrame });
     }
 
     public async Task<List<AssetEntity>> GetAssetsList(QuotesProviderTypeEnum quotesProviderType)
     {
-        using var transaction = SystemTransaction.Default();
-
         var adapter = _serviceProvider.GetQuotesProviderAdapter(quotesProviderType);
-        
+
         var initialModels = await adapter.GetAssetsData();
 
         var assets = initialModels.Select(im =>
@@ -59,12 +58,13 @@ internal class QuotesProviderService : IQuotesProviderService
             var asset = _mapper.Map<AssetEntity>(im);
             asset.AssetInfo = _mapper.Map<AssetInfoEntity>(im);
             asset.AssetInfo.AssetId = asset.Id;
-            asset.ProviderCompatibilities.Add(new AssetProviderCompatibilityEntity
-            {
-                AssetId = asset.Id,
-                QuotesProviderType = quotesProviderType,
-                IsCompatibility = true
-            });
+            asset.ProviderCompatibilities.AddRange(adapter.NativeSupportedTimeFrames.Select(tf =>
+                new AssetProviderCompatibilityEntity
+                {
+                    AssetId = asset.Id,
+                    QuotesProviderType = quotesProviderType,
+                    TimeFrame = tf
+                }));
 
             return asset;
         }).ToList();
@@ -76,7 +76,7 @@ internal class QuotesProviderService : IQuotesProviderService
     {
         var adapter = _serviceProvider.GetQuotesProviderAdapter(request.QuotesProviderType);
 
-        var adapterRequest = new GetQuotesBatchAdapterRequestModel
+        var adapterRequest = new GetQuotesDateBatchAdapterRequestModel
         {
             Asset = request.Asset,
             TimeFrame = request.TimeFrame,
@@ -85,13 +85,13 @@ internal class QuotesProviderService : IQuotesProviderService
 
         var (quoteEntitiesBatch, isLastBatch) = await GetNextQuotesBatch(adapter, adapterRequest);
 
-        return new GetQuotesBatchResponseModel { Quotes = quoteEntitiesBatch, IsLastBatch = isLastBatch};
+        return new GetQuotesBatchResponseModel { Quotes = quoteEntitiesBatch, IsLastBatch = isLastBatch };
     }
 
     #region private
 
     private async Task<(List<QuoteEntity> quotes, bool)> GetNextQuotesBatch(IQuotesProviderAdapter adapter,
-        GetQuotesBatchAdapterRequestModel adapterRequest)
+        GetQuotesDateBatchAdapterRequestModel adapterRequest)
     {
         var batch = await adapter.GetQuotesBatch(adapterRequest);
         var quoteEntities = _mapper.Map<List<QuoteEntity>>(batch.Quotes);

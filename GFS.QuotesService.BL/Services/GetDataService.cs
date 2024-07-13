@@ -17,7 +17,7 @@ public interface IGetDataService
     Task<GetQuotesResponse> GetQuotes(GetQuotesRequest request);
 }
 
-public class GetDataService : IGetDataService
+internal class GetDataService : IGetDataService
 {
     private readonly IDbContext _dbContext;
     private readonly IMapper _mapper;

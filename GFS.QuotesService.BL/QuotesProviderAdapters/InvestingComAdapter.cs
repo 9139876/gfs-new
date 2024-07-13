@@ -13,7 +13,7 @@ internal interface IInvestingComAdapter : IQuotesProviderAdapter
 
 internal class InvestingComAdapter : QuotesProviderAbstractAdapter, IInvestingComAdapter
 {
-    protected override Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatchInternal(GetQuotesBatchAdapterRequestModel request)
+    protected override Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatchInternal(GetQuotesDateBatchAdapterRequestModel request)
     {
         throw new NotImplementedYetException();
     }
