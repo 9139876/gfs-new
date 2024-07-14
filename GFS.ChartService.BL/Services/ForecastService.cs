@@ -7,6 +7,8 @@ using GFS.ChartService.BL.Models.ProjectViewModel.Sheet.Layers;
 using GFS.ChartService.BL.Models.Requests;
 using GFS.ChartService.BL.Models.Responses;
 using GFS.ChartService.BL.Services.Project;
+using GFS.Common.Extensions;
+using GFS.GrailCommon.Enums;
 
 namespace GFS.ChartService.BL.Services;
 
@@ -79,15 +81,31 @@ internal class ForecastService : IForecastService
         var currentSheet = projectModel!.Sheets.SingleOrDefault(s => s.Name == request.SheetName)
                            ?? throw new InvalidOperationException("Текущий лист не найден в проекте");
 
-        var context = new CalculationContext
-        {
-            TimeFrame = currentSheet.TimeFrame,
-            SheetSizeInCells = currentSheet.Size,
-            TimeValues = currentSheet.TrackerData.TimeValues,
-            PriceValues = currentSheet.TrackerData.PriceValuesDecimal,
-            ForecastSpread = request.ForecastSpread,
-            PointsFrom = _mapper.Map<Point[]>(request.SourcePoints.Concat(new[] { request.TargetPoint }).Where(p => p != null).ToArray())
-        };
+        // request.ForecastWindow.RequiredNotNull();
+
+        // var forecastWindow = new ForecastWindow(
+        //     x1: request.ForecastWindow.X1,
+        //     y1: request.ForecastWindow.Y1,
+        //     x2: request.ForecastWindow.X2,
+        //     y2: request.ForecastWindow.Y2,
+        //     sheetSize: currentSheet.Size);
+
+        //ToDo сделать нормально, когда фронт вернет
+        var forecastWindow = new ForecastWindow(
+            x1: 1,
+            y1: 1,
+            x2: currentSheet.Size.Width - 1,
+            y2: currentSheet.Size.Height - 1,
+            sheetSize: currentSheet.Size);
+
+        var context = new CalculationContext(
+            timeFrame: currentSheet.TimeFrame,
+            forecastWindow: forecastWindow,
+            sheetSizeInCells: currentSheet.Size,
+            timeValues: currentSheet.TrackerData.TimeValues,
+            priceValues: currentSheet.TrackerData.PriceValuesDecimal,
+            forecastSpread: request.ForecastSpread,
+            pointsFrom: _mapper.Map<Point[]>(request.SourcePoints.Concat(new[] { request.TargetPoint }).Where(p => p != null).ToArray()));
 
         return context;
     }

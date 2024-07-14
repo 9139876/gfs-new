@@ -21,10 +21,9 @@ public abstract class Angle : ForecastTreeMethod<AnglesGroup>
     {
         var result = new ForecastCalculationResult();
 
-        var fasterStep = IsPriceFaster ? PriceStep : TimeStep;
-
         foreach (var point in context.PointsFrom)
         {
+            var deathCircle = new Circle(point, 10); 
             var currentPosition = point;
 
             var priceTimePosition = context.GetPriceTimePosition(point);
@@ -35,15 +34,15 @@ public abstract class Angle : ForecastTreeMethod<AnglesGroup>
             {
                 var position = currentPosition;
                 
-                if (!context.InSheet(position))
+                if (!context.InForecastWindow(position))
                     break;
                 
                 for (var dx = 1; dx <= TimeStep; dx++)
                 {
-                    for (var dy = 1; Math.Abs(dy) <= PriceStep; dy += Direction)
+                    for (var dy = Direction; Math.Abs(dy) <= PriceStep; dy += Direction)
                     {
                         currentPosition = new Point(position.X + dx, position.Y + dy);
-                        AddWithSpread(currentPosition, context, result);
+                        AddWithSpread(currentPosition, context, deathCircle, result);
                     }
                 }
             }
@@ -52,7 +51,7 @@ public abstract class Angle : ForecastTreeMethod<AnglesGroup>
         return result;
     }
 
-    private void AddWithSpread(Point position, CalculationContext context, ForecastCalculationResult result)
+    private void AddWithSpread(Point position, CalculationContext context, Circle deathCircle, ForecastCalculationResult result)
     {
         for (var i = -context.ForecastSpread; i <= context.ForecastSpread; i++)
         {
@@ -60,7 +59,7 @@ public abstract class Angle : ForecastTreeMethod<AnglesGroup>
                 ? new Point(position.X + i, position.Y)
                 : new Point(position.X, position.Y + i);
 
-            if (context.InSheet(positionWithSpread))
+            if (context.InForecastWindow(positionWithSpread) && !deathCircle.InCircle(positionWithSpread))
                 result.AddForecastCalculationResultItem(new ForecastCalculationResultItem(
                     position: positionWithSpread,
                     descriptions: Description

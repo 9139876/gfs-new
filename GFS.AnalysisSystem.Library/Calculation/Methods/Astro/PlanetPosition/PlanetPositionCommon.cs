@@ -47,7 +47,7 @@ public static class PlanetPositionCommon
         {
             var positionWithSpread = new Point(position.X, position.Y + i);
 
-            if (context.InSheet(positionWithSpread))
+            if (context.InForecastWindow(positionWithSpread))
                 items.Add(positionWithSpread);
         }
 
