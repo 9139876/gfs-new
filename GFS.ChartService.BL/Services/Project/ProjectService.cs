@@ -23,6 +23,8 @@ public interface IProjectService
     Task SaveProject(Guid clientId);
 
     Task DeleteProject(Guid projectId);
+
+    void UpdateProjectsVisualStyles(UpdateProjectsVisualStylesRequest request, Guid clientId);
 }
 
 internal class ProjectService : IProjectService
@@ -149,6 +151,17 @@ internal class ProjectService : IProjectService
         File.Delete(GetFileName(projectInfo.FileGuid));
         _dbContext.GetRepository<ProjectInfoEntity>().Delete(projectInfo);
         await _dbContext.SaveChangesAsync();
+    }
+
+    public void UpdateProjectsVisualStyles(UpdateProjectsVisualStylesRequest request, Guid clientId)
+    {
+        if (!_sessionService.TryGetProject(clientId, out var projectId))
+            throw new InvalidOperationException("У клиента нет активного проекта");
+
+        if (!_projectsCache.TryGetProject(projectId, out var projectModel))
+            throw new InvalidOperationException("Проект не найден в кэше");
+
+        projectModel!.Sheets.Single().GridLayerData.Properties = request.GridLayerProperties;
     }
 
     private string GetFileName(Guid fileGuid)

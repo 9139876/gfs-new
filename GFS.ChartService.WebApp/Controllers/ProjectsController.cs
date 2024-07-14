@@ -83,4 +83,10 @@ public class ProjectsController : BaseControllerWithClientIdentifier
     {
         _sessionService.CloseSession(GetClientId());
     }
+
+    [HttpPost(nameof(UpdateProjectsVisualStyles))]
+    public void UpdateProjectsVisualStyles([FromBody] UpdateProjectsVisualStylesRequest request)
+    {
+        _projectService.UpdateProjectsVisualStyles(request, GetClientId());
+    }
 }

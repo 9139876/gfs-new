@@ -15,19 +15,17 @@ public abstract class Angle : ForecastTreeMethod<AnglesGroup>
     public override string Name => $"{(Direction > 0 ? "Восходящий" : "Нисходящий")} Угол {PriceStep}х{TimeStep}";
 
     private string Description { get; set; } = string.Empty;
-    private bool IsPriceFaster { get; set; }
+    private bool IsPriceFaster => PriceStep > TimeStep;
 
     public override ForecastCalculationResult Calculate(CalculationContext context)
     {
         var result = new ForecastCalculationResult();
 
-        IsPriceFaster = PriceStep > TimeStep;
-
         var fasterStep = IsPriceFaster ? PriceStep : TimeStep;
 
         foreach (var point in context.PointsFrom)
         {
-            var position = point;
+            var currentPosition = point;
 
             var priceTimePosition = context.GetPriceTimePosition(point);
             var startPointText = $"{priceTimePosition.Price.ToString(CultureInfo.InvariantCulture)} {priceTimePosition.Date.GetDateStringByTimeFrame(context.TimeFrame)}";
@@ -35,23 +33,19 @@ public abstract class Angle : ForecastTreeMethod<AnglesGroup>
 
             while (true)
             {
-                if (IsPriceFaster)
-                    position.X += 1;
-                else
-                    position.Y += Direction;
-
-                for (var i = 0; i <= fasterStep; i++)
-                {
-                    if (IsPriceFaster)
-                        position.Y += Direction;
-                    else
-                        position.X += 1;
-                            
-                    AddWithSpread(position, context, result);
-                }
-
+                var position = currentPosition;
+                
                 if (!context.InSheet(position))
                     break;
+                
+                for (var dx = 1; dx <= TimeStep; dx++)
+                {
+                    for (var dy = 1; Math.Abs(dy) <= PriceStep; dy += Direction)
+                    {
+                        currentPosition = new Point(position.X + dx, position.Y + dy);
+                        AddWithSpread(currentPosition, context, result);
+                    }
+                }
             }
         }
 

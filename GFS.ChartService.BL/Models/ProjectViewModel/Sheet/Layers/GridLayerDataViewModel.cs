@@ -2,7 +2,7 @@ namespace GFS.ChartService.BL.Models.ProjectViewModel.Sheet.Layers;
 
 public class GridLayerDataViewModel
 {
-    public GridLayerProperties Properties { get; init; } = new();
+    public GridLayerProperties Properties { get; set; } = new();
 }
 
 public class GridLayerProperties
