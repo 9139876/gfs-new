@@ -1,5 +1,6 @@
 using GFS.ChartService.BL.Models.ProjectViewModel.Sheet;
 using GFS.GrailCommon.Models;
+#pragma warning disable CS8618
 
 namespace GFS.ChartService.BL.Models.Requests;
 

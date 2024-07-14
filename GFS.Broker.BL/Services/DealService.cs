@@ -31,7 +31,7 @@ internal class TestDealService : IDealService
         _remoteApiClient = remoteApiClient;
     }
 
-    public async Task<MakeDealResponse> MakeDeal(MakeDealRequest request)
+    public Task<MakeDealResponse> MakeDeal(MakeDealRequest request)
     {
         throw new NotImplementedException();
 
@@ -65,7 +65,7 @@ internal class TestDealService : IDealService
         // };
     }
 
-    public async Task<TryPerformPendingOrdersResponse> TryPerformPendingOrders(TryPerformPendingOrdersRequest request)
+    public Task<TryPerformPendingOrdersResponse> TryPerformPendingOrders(TryPerformPendingOrdersRequest request)
     {
         throw new NotImplementedException();
 

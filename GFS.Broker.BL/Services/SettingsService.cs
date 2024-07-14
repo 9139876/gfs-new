@@ -4,7 +4,7 @@ using GFS.Broker.Api.Models.TestDealer;
 using GFS.Common.Attributes;
 using GFS.GrailCommon.Enums;
 using GFS.GrailCommon.Models;
-using GFS.QuotesService.Common.Enum;
+using GFS.QuotesService.Api.Enum;
 
 namespace GFS.Broker.BL.Services;
 

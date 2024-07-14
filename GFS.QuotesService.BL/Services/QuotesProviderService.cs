@@ -1,11 +1,11 @@
 using AutoMapper;
 using GFS.Common.Extensions;
 using GFS.GrailCommon.Extensions;
+using GFS.QuotesService.Api.Enum;
 using GFS.QuotesService.BL.Extensions;
 using GFS.QuotesService.BL.Models;
 using GFS.QuotesService.BL.Models.Adapters;
 using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
-using GFS.QuotesService.Common.Enum;
 using GFS.QuotesService.DAL.Entities;
 
 namespace GFS.QuotesService.BL.Services;

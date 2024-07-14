@@ -1,6 +1,7 @@
 using System.Drawing;
 using GFS.GrailCommon.Enums;
 using GFS.GrailCommon.Models;
+#pragma warning disable CS8618
 
 namespace GFS.AnalysisSystem.Library.Calculation.Models
 {

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using GFS.Common.Extensions;
 using GFS.Common.Interfaces;
 using GFS.GrailCommon.Enums;
-using GFS.QuotesService.Common.Enum;
+using GFS.QuotesService.Api.Enum;
 
 #pragma warning disable CS8618
 

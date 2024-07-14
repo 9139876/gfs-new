@@ -11,7 +11,6 @@ using GFS.QuotesService.Api.Enum;
 using GFS.QuotesService.BL.Models;
 using GFS.QuotesService.BL.Models.Adapters;
 using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
-using GFS.QuotesService.Common.Enum;
 using GFS.QuotesService.DAL.Entities;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Configuration;

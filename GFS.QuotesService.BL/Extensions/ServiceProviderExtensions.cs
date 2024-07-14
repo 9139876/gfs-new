@@ -1,6 +1,6 @@
+using GFS.QuotesService.Api.Enum;
 using GFS.QuotesService.BL.QuotesProviderAdapters;
 using GFS.QuotesService.BL.QuotesProviderAdapters.Abstraction;
-using GFS.QuotesService.Common.Enum;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GFS.QuotesService.BL.Extensions;

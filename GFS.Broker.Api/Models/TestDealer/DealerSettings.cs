@@ -1,6 +1,6 @@
 using GFS.Broker.Api.Enums.TestDealer;
 using GFS.GrailCommon.Enums;
-using GFS.QuotesService.Common.Enum;
+using GFS.QuotesService.Api.Enum;
 
 #pragma warning disable CS8618
 

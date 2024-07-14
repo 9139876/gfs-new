@@ -1,5 +1,5 @@
 using GFS.GrailCommon.Enums;
-using GFS.QuotesService.Common.Enum;
+using GFS.QuotesService.Api.Enum;
 
 namespace GFS.QuotesService.Api.Models;
 

@@ -9,7 +9,6 @@
     <ItemGroup>
       <ProjectReference Include="..\GFS.Api\GFS.Api.csproj" />
       <ProjectReference Include="..\GFS.GrailCommon\GFS.GrailCommon.csproj" />
-      <ProjectReference Include="..\GFS.QuotesService._Common\GFS.QuotesService._Common.csproj" />
     </ItemGroup>
 
 </Project>

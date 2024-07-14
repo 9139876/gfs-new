@@ -67,7 +67,7 @@ namespace GFS.Broker.BL.Services
             return _mapper.Map<List<PortfolioInfoDto>>(portfolios);
         }
 
-        public async Task<PortfolioInfoWithHistoryDto> GetPortfolioInfoWithHistory(GetPortfolioInfoRequestDto request)
+        public Task<PortfolioInfoWithHistoryDto> GetPortfolioInfoWithHistory(GetPortfolioInfoRequestDto request)
         {
             throw new NotImplementedException();
             

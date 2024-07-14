@@ -7,7 +7,7 @@ namespace GFS.ChartService.BL.Models.Requests;
 public class CreateSheetRequest
 {
     [Required]
-    public string Name { get; init; }
+    public string? Name { get; init; }
     
     [Required]
     public Guid AssetId { get; init; }

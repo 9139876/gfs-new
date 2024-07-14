@@ -1,6 +1,6 @@
 using GFS.BackgroundWorker.Workers;
+using GFS.QuotesService.Api.Enum;
 using GFS.QuotesService.BL.Services;
-using GFS.QuotesService.Common.Enum;
 using GFS.QuotesService.DAL;
 using GFS.QuotesService.DAL.Entities;
 using Microsoft.EntityFrameworkCore;

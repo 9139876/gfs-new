@@ -1,4 +1,4 @@
-namespace GFS.QuotesService.Common.Enum;
+namespace GFS.QuotesService.Api.Enum;
 
 /// <summary>
 /// Тип провайдера котировок

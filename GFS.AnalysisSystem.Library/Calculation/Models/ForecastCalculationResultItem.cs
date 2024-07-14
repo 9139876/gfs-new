@@ -20,7 +20,7 @@ public class ForecastCalculationResultItem
 
 internal class ComparerForecastCalculationResultItemByPosition : IEqualityComparer<ForecastCalculationResultItem>
 {
-    public bool Equals(ForecastCalculationResultItem x, ForecastCalculationResultItem y)
+    public bool Equals(ForecastCalculationResultItem? x, ForecastCalculationResultItem? y)
     {
         if (ReferenceEquals(x, y)) return true;
         if (ReferenceEquals(x, null)) return false;
