@@ -13,9 +13,9 @@ public static class PlanetPositionCommon
         var description = $"{Description.GetDescription(harmonicType)} {planet.Name}";
         var result = new ForecastCalculationResult();
 
-        for (var x = 0; x < context.SheetSizeInCells.Width; x++)
+        for (var x = context.ForecastWindow.Left; x < context.ForecastWindow.Right; x++)
         {
-            var date = context.TimeValues[x];
+            var date = context.CellTimeValues[x];
             var position = EphemCalculation.CalcPlanetLongitude(date, planet);
 
             if (!position.IsSuccess)
@@ -47,7 +47,7 @@ public static class PlanetPositionCommon
         {
             var positionWithSpread = new Point(position.X, position.Y + i);
 
-            if (context.InForecastWindow(positionWithSpread))
+            if (context.ForecastWindow.InWindow(positionWithSpread))
                 items.Add(positionWithSpread);
         }
 

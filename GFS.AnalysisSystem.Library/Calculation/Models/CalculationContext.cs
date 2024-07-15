@@ -1,6 +1,7 @@
 using System.Drawing;
 using GFS.GrailCommon.Enums;
 using GFS.GrailCommon.Models;
+
 #pragma warning disable CS8618
 
 namespace GFS.AnalysisSystem.Library.Calculation.Models
@@ -8,64 +9,64 @@ namespace GFS.AnalysisSystem.Library.Calculation.Models
     public class CalculationContext
     {
         public CalculationContext(
-            TimeFrameEnum timeFrame, 
-            ForecastWindow forecastWindow, 
-            Size sheetSizeInCells, 
-            DateTime[] timeValues,
-            decimal[] priceValues,
-            byte forecastSpread,
-            Point[] pointsFrom)
+            TimeFrameEnum timeFrame,
+            ForecastWindow forecastWindow,
+            DateTime[] cellTimeValues,
+            decimal[] cellPriceValues,
+            byte forecastSpread, 
+            Point[] sourcePoints,
+            Point targetPoint, 
+            CandleInCells[] candles)
         {
             TimeFrame = timeFrame;
             ForecastWindow = forecastWindow;
-            SheetSizeInCells = sheetSizeInCells;
-            TimeValues = timeValues;
-            PriceValues = priceValues;
+            CellTimeValues = cellTimeValues;
+            CellPriceValues = cellPriceValues;
             ForecastSpread = forecastSpread;
-            PointsFrom = pointsFrom;
+            SourcePoints = sourcePoints;
+            TargetPoint = targetPoint;
+            Candles = candles;
         }
-        
+
         /// <summary>
         /// Таймфрейм листа
         /// </summary>
-        public TimeFrameEnum TimeFrame{ get;  }
-     
+        public TimeFrameEnum TimeFrame { get; }
+
         /// <summary>
         /// Окно прогнозирования
         /// </summary>
-        public ForecastWindow ForecastWindow { get;  }
-        
-        /// <summary>
-        /// Размер листа в клеточках
-        /// </summary>
-        public Size SheetSizeInCells { get;  }
+        public ForecastWindow ForecastWindow { get; }
 
         /// <summary>
         /// Значения дат для клеточек
         /// </summary>
-        public DateTime[] TimeValues { get;  }
+        public DateTime[] CellTimeValues { get; }
 
         /// <summary>
         /// Значения цен для клеточек
         /// </summary>
-        public decimal[] PriceValues { get;  }
+        public decimal[] CellPriceValues { get; }
 
+        /// <summary>
+        /// Предыдущие котировки
+        /// </summary>
+        public CandleInCells[] Candles { get; }
+        
         /// <summary>
         /// Разброс прогноза 
         /// </summary>
-        public byte ForecastSpread { get;  }
+        public byte ForecastSpread { get; }
 
         /// <summary>
-        /// Коллекция точек,от которых делается прогноз 
+        /// Коллекция точек, которые указывают на целевую точку
         /// </summary>
-        public Point[] PointsFrom { get;  }
-
+        public Point[] SourcePoints { get; }
+        
         /// <summary>
-        /// Проверяет, попадает ли точка в окно прогнозирования
+        /// Целевая точка
         /// </summary>
-        /// <param name="pointInCells">Координаты точки в клеточках</param>
-        public bool InForecastWindow(Point pointInCells) 
-            => ForecastWindow.InWindow(pointInCells);
+        public Point TargetPoint{ get; }
 
         /// <summary>
         /// Возвращает позицию в координатах цена время
@@ -74,8 +75,28 @@ namespace GFS.AnalysisSystem.Library.Calculation.Models
         public PriceTimePoint GetPriceTimePosition(Point pointInCells)
             => new()
             {
-                Price = PriceValues[pointInCells.Y],
-                Date = TimeValues[pointInCells.X]
+                Price = CellPriceValues[pointInCells.Y],
+                Date = CellTimeValues[pointInCells.X]
             };
+
+        /// <summary>
+        /// Перевод значения цены в клеточки
+        /// </summary>
+        public int PriceToCell(decimal price)
+        {
+            var delta = decimal.MaxValue;
+
+            for (var i = 0; i < CellPriceValues.Length; i++)
+            {
+                var newDelta = Math.Abs(price - CellPriceValues[i]);
+
+                if (newDelta <= delta)
+                    delta = newDelta;
+                else
+                    return i;
+            }
+
+            return CellPriceValues.Length - 1;
+        }
     }
 }

@@ -21,9 +21,9 @@ public abstract class Angle : ForecastTreeMethod<AnglesGroup>
     {
         var result = new ForecastCalculationResult();
 
-        foreach (var point in context.PointsFrom)
+        foreach (var point in context.SourcePoints.Concat(new[] { context.TargetPoint }))
         {
-            var deathCircle = new Circle(point, 10); 
+            var deathCircle = new Circle(point, 10);
             var currentPosition = point;
 
             var priceTimePosition = context.GetPriceTimePosition(point);
@@ -33,10 +33,10 @@ public abstract class Angle : ForecastTreeMethod<AnglesGroup>
             while (true)
             {
                 var position = currentPosition;
-                
-                if (!context.InForecastWindow(position))
+
+                if (!context.ForecastWindow.InWindow(position))
                     break;
-                
+
                 for (var dx = 1; dx <= TimeStep; dx++)
                 {
                     for (var dy = Direction; Math.Abs(dy) <= PriceStep; dy += Direction)
@@ -59,7 +59,7 @@ public abstract class Angle : ForecastTreeMethod<AnglesGroup>
                 ? new Point(position.X + i, position.Y)
                 : new Point(position.X, position.Y + i);
 
-            if (context.InForecastWindow(positionWithSpread) && !deathCircle.InCircle(positionWithSpread))
+            if (context.ForecastWindow.InWindow(positionWithSpread) && !deathCircle.InCircle(positionWithSpread))
                 result.AddForecastCalculationResultItem(new ForecastCalculationResultItem(
                     position: positionWithSpread,
                     descriptions: Description

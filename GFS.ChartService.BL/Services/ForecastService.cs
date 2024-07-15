@@ -7,8 +7,6 @@ using GFS.ChartService.BL.Models.ProjectViewModel.Sheet.Layers;
 using GFS.ChartService.BL.Models.Requests;
 using GFS.ChartService.BL.Models.Responses;
 using GFS.ChartService.BL.Services.Project;
-using GFS.Common.Extensions;
-using GFS.GrailCommon.Enums;
 
 namespace GFS.ChartService.BL.Services;
 
@@ -101,11 +99,12 @@ internal class ForecastService : IForecastService
         var context = new CalculationContext(
             timeFrame: currentSheet.TimeFrame,
             forecastWindow: forecastWindow,
-            sheetSizeInCells: currentSheet.Size,
-            timeValues: currentSheet.TrackerData.TimeValues,
-            priceValues: currentSheet.TrackerData.PriceValuesDecimal,
+            cellTimeValues: currentSheet.TrackerData.TimeValues,
+            cellPriceValues: currentSheet.TrackerData.PriceValuesDecimal,
             forecastSpread: request.ForecastSpread,
-            pointsFrom: _mapper.Map<Point[]>(request.SourcePoints.Concat(new[] { request.TargetPoint }).Where(p => p != null).ToArray()));
+            sourcePoints: _mapper.Map<Point[]>(request.SourcePoints),
+            targetPoint : _mapper.Map<Point>(request.TargetPoint),
+            candles: projectModel.Sheets[0].TickerLayerData.Candles.Where(c=>c.Date <= request.TargetPoint!.X).ToArray());
 
         return context;
     }

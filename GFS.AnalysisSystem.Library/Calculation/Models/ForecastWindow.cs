@@ -30,4 +30,13 @@ public class ForecastWindow
     }
 
     public bool InWindow(Point point) => _rectangle.Contains(point);
+
+    public bool PriceCellInWindow(int priceCell) => priceCell >= _rectangle.Top && priceCell <= _rectangle.Bottom;
+
+    public bool TimeCellInWindow(int timeCell) => timeCell >= _rectangle.Left && timeCell <= _rectangle.Right;
+
+    public int Left => _rectangle.Left;
+    public int Right => _rectangle.Right;
+    public int Top => _rectangle.Bottom;
+    public int Bottom => _rectangle.Top;
 }
