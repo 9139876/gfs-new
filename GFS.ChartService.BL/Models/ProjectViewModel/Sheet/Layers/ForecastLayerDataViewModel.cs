@@ -21,4 +21,5 @@ public class ForecastItem
 public class ForecastLayerProperties
 {
     public bool IsVisible { get; init; } = true;
+    public byte MinHits { get; init; } = 1;
 }
