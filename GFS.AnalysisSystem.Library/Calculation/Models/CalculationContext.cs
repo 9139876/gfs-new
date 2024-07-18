@@ -1,5 +1,6 @@
 using System.Drawing;
 using GFS.GrailCommon.Enums;
+using GFS.GrailCommon.Extensions;
 using GFS.GrailCommon.Models;
 
 #pragma warning disable CS8618
@@ -97,6 +98,26 @@ namespace GFS.AnalysisSystem.Library.Calculation.Models
             }
 
             return CellPriceValues.Length - 1;
+        }
+        
+        /// <summary>
+        /// Перевод значения времени в клеточки
+        /// </summary>
+        public int DateToCell(DateTime date)
+        {
+            var delta = int.MaxValue;
+
+            for (var i = 0; i < CellTimeValues.Length; i++)
+            {
+                var newDelta =  DateWithTimeFrameExtensions.DatesDifferent(date, CellTimeValues[i], TimeFrameEnum.tick);
+
+                if (newDelta <= delta)
+                    delta = newDelta;
+                else
+                    return i;
+            }
+
+            return CellTimeValues.Length - 1;
         }
     }
 }
