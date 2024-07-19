@@ -44,22 +44,24 @@ public class AbsPricePointBalance : PointPlaceBalances
 
     private ForecastCalculationResult CalculateFromPoint(CalculationContext context, Point point)
     {
-        var result = new ForecastCalculationResult();
-        var priceTimePosition = context.GetPriceTimePosition(point);
-        var startPointText = $"{priceTimePosition.Price.ToString(CultureInfo.InvariantCulture)} {priceTimePosition.Date.GetDateStringByTimeFrame(context.TimeFrame)}";
-        var range = new CellsRange((ushort)Math.Max(context.ForecastWindow.Left - point.X, 5), (ushort)Math.Max(context.ForecastWindow.Right - point.X, 0));
+        throw new NotImplementedException();
 
-        var timeValues = TimeConverter.Convert(priceTimePosition.Price, context.TimeFrame, range);
-
-        foreach (var value in timeValues)
-        {
-            var timeValue = context.DateToCell(priceTimePosition.Date.AddDate(context.TimeFrame, value.Value));
-            var description = $"Баланс от {startPointText} - значение цены {priceTimePosition.Price.ToString(CultureInfo.InvariantCulture)} и {value.Description}";
-
-            AddTimeValueWithSpread(timeValue, description, context, result);
-        }
-
-        return result;
+        // var result = new ForecastCalculationResult();
+        // var priceTimePosition = context.GetPriceTimePosition(point);
+        // var startPointText = $"{priceTimePosition.Price.ToString(CultureInfo.InvariantCulture)} {priceTimePosition.Date.GetDateStringByTimeFrame(context.TimeFrame)}";
+        // var range = new TimeRange((ushort)Math.Max(context.ForecastWindow.Left - point.X, 5), (ushort)Math.Max(context.ForecastWindow.Right - point.X, 0));
+        //
+        // var timeValues = TimeConverter.Convert(priceTimePosition.Price, context.TimeFrame, range);
+        //
+        // foreach (var value in timeValues)
+        // {
+        //     var timeValue = context.DateToCell(priceTimePosition.Date.AddDate(context.TimeFrame, value.Value));
+        //     var description = $"Баланс от {startPointText} - значение цены {priceTimePosition.Price.ToString(CultureInfo.InvariantCulture)} и {value.Description}";
+        //
+        //     AddTimeValueWithSpread(timeValue, description, context, result);
+        // }
+        //
+        // return result;
     }
 
     public override string Name => "Баланс от абсолютного значения цены";

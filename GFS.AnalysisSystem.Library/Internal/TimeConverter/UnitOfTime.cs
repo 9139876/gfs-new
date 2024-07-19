@@ -4,24 +4,24 @@ namespace GFS.AnalysisSystem.Library.Internal.TimeConverter;
 
 internal enum UnitOfTime
 {
-    [Description("Календарная секунда")]
+    [Description("Календарные секунды")]
     CalendarSecond = 1,
 
-    [Description("Календарная минута")]
+    [Description("Календарные минуты")]
     CalendarMinute = 2,
 
-    [Description("Календарный час")]
+    [Description("Календарные часы")]
     CalendarHour = 3,
 
-    [Description("Календарный день")]
+    [Description("Календарные дни")]
     CalendarDay = 4,
 
-    [Description("Календарная неделя")]
+    [Description("Календарные недели")]
     CalendarWeek = 5,
 
-    [Description("Календарный месяц")]
+    [Description("Календарные месяцы")]
     CalendarMonth = 6,
 
-    [Description("Календарный год")]
+    [Description("Календарные годы")]
     CalendarYear = 7,
 }
