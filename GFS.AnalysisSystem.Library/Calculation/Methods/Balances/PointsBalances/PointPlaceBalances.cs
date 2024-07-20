@@ -1,16 +1,16 @@
 using System.Drawing;
-using System.Globalization;
 using GFS.AnalysisSystem.Library.Calculation.Abstraction;
 using GFS.AnalysisSystem.Library.Calculation.Models;
 using GFS.AnalysisSystem.Library.Internal.TimeConverter;
+using GFS.Common.Extensions;
 using GFS.GrailCommon.Extensions;
 
-namespace GFS.AnalysisSystem.Library.Calculation.Methods.Balances;
+namespace GFS.AnalysisSystem.Library.Calculation.Methods.Balances.PointsBalances;
 
 /// <summary>
 /// Балансы относительно места предыдущей точки
 /// </summary>
-public abstract class PointPlaceBalances : ForecastTreeMethod<BalancesGroup>
+public abstract class PointPlaceBalances : ForecastTreeMethod<PointsBalancesGroup>
 {
 }
 
@@ -25,7 +25,7 @@ public class AbsPricePointBalance : PointPlaceBalances
     {
         var result = new ForecastCalculationResult();
         var priceTimePosition = context.GetPriceTimePosition(point);
-        var startPointText = $"{priceTimePosition.Price.ToString(CultureInfo.InvariantCulture)} {priceTimePosition.Date.GetDateStringByTimeFrame(context.TimeFrame)}";
+        var startPointText = $"{priceTimePosition.Price.ToHumanReadableNumber()} {priceTimePosition.Date.GetDateStringByTimeFrame(context.TimeFrame)}";
         
         var rangeLeft = TimeConverter.GetTimeSpan(Math.Max(context.ForecastWindow.Left - point.X, 5), context.TimeFrame);
         var rangeRight = TimeConverter.GetTimeSpan(Math.Max(context.ForecastWindow.Right - point.X, 5), context.TimeFrame);
@@ -36,7 +36,7 @@ public class AbsPricePointBalance : PointPlaceBalances
         foreach (var value in timeValues)
         {
             var timeValue = context.DateToCell(priceTimePosition.Date.Add(value.Value));
-            var description = $"Баланс от {startPointText} - значение цены {priceTimePosition.Price.ToString(CultureInfo.InvariantCulture)} и {value.Description}";
+            var description = $"Баланс от {startPointText} - значение цены {priceTimePosition.Price.ToHumanReadableNumber()} и {value.Description}";
         
             context.AddTimeValueWithSpread(timeValue, description, result);
         }

@@ -1,4 +1,5 @@
 using GFS.Common.Attributes;
+using GFS.Common.Extensions;
 using GFS.GrailCommon.Enums;
 
 namespace GFS.AnalysisSystem.Library.Internal.TimeConverter;
@@ -8,7 +9,7 @@ namespace GFS.AnalysisSystem.Library.Internal.TimeConverter;
 /// </summary>
 internal static class TimeConverter
 {
-    public static ushort TimeSpanToUnitOfTimeByTimeFrame(TimeSpan timeSpan, TimeFrameEnum timeFrame)
+    internal static ushort TimeSpanToUnitOfTimeByTimeFrame(TimeSpan timeSpan, TimeFrameEnum timeFrame)
     {
         if (timeSpan.TotalMilliseconds < 0)
             throw new InvalidOperationException("Значение продолжительности по времени должно не должно быть отрицательным");
@@ -32,7 +33,7 @@ internal static class TimeConverter
             : ushort.MaxValue;
     }
 
-    public static TimeSpan GetTimeSpan(decimal value, TimeFrameEnum timeFrame)
+    internal static TimeSpan GetTimeSpan(decimal value, TimeFrameEnum timeFrame)
     {
         var (unitOfTime, correctValue) = timeFrame switch
         {
@@ -51,7 +52,7 @@ internal static class TimeConverter
         return GetTimeSpan(unitOfTime, correctValue);
     }
 
-    public static TimeConverterResultItem[] ConvertTimeSpan(TimeSpan timeSpan, TimeRange range)
+    internal static TimeConverterResultItem[] ConvertTimeSpan(TimeSpan timeSpan, TimeRange range)
     {
         if (range.IsZeroLength)
             return Array.Empty<TimeConverterResultItem>();
@@ -60,22 +61,13 @@ internal static class TimeConverter
         {
             < 0 => throw new InvalidOperationException("Значение продолжительности по времени должно иметь положительное значение"),
             < 5 => Array.Empty<TimeConverterResultItem>(),
-            _ => new[]
-                {
-                    (decimal)timeSpan.TotalSeconds,
-                    (decimal)timeSpan.TotalMinutes,
-                    (decimal)timeSpan.TotalMinutes / 60,
-                    (decimal)timeSpan.TotalMinutes / (60 * 24),
-                    (decimal)timeSpan.TotalMinutes / (60 * 24 * 7),
-                    (decimal)timeSpan.TotalMinutes / (60 * 24 * 30),
-                    (decimal)timeSpan.TotalMinutes / (60 * 24 * 365.25m),
-                }
-                .SelectMany(item => ConvertNumber(item, range))
+            _ => TimeSpanToUnitOfTimeValues(timeSpan)
+                .SelectMany(item => ConvertNumber(item.Value, range))
                 .ToArray()
         };
     }
 
-    public static TimeConverterResultItem[] ConvertNumber(decimal value, TimeRange range)
+    internal static TimeConverterResultItem[] ConvertNumber(decimal value, TimeRange range)
     {
         if (range.IsZeroLength)
             return Array.Empty<TimeConverterResultItem>();
@@ -83,6 +75,20 @@ internal static class TimeConverter
         return Enum.GetValues<UnitOfTime>()
             .SelectMany(unitOfTime => GetActualValuesByUnitOfTime(unitOfTime, value, range))
             .ToArray();
+    }
+
+    internal static UnitOfTimeValue[] TimeSpanToUnitOfTimeValues(TimeSpan timeSpan)
+    {
+        return new[]
+        {
+            new UnitOfTimeValue(UnitOfTime.CalendarSecond, (decimal)timeSpan.TotalSeconds),
+            new UnitOfTimeValue(UnitOfTime.CalendarMinute, (decimal)timeSpan.TotalMinutes),
+            new UnitOfTimeValue(UnitOfTime.CalendarHour, (decimal)timeSpan.TotalMinutes / 60),
+            new UnitOfTimeValue(UnitOfTime.CalendarDay, (decimal)timeSpan.TotalMinutes / (60 * 24)),
+            new UnitOfTimeValue(UnitOfTime.CalendarWeek, (decimal)timeSpan.TotalMinutes / (60 * 24 * 7)),
+            new UnitOfTimeValue(UnitOfTime.CalendarMonth, (decimal)timeSpan.TotalMinutes / (60 * 24 * 30)),
+            new UnitOfTimeValue(UnitOfTime.CalendarYear, (decimal)timeSpan.TotalMinutes / (60 * 24 * 365.25m))
+        };
     }
 
     internal static IEnumerable<TimeConverterResultItem> GetActualValuesByUnitOfTime(UnitOfTime unitOfTime, decimal value, TimeRange range)
@@ -103,7 +109,7 @@ internal static class TimeConverter
         while (item <= range.MaxValue)
         {
             if (item >= range.MinValue && item <= range.MaxValue)
-                result.Add(new TimeConverterResultItem(item, $"{Description.GetDescription(unitOfTime)}: {value:0.##################}"));
+                result.Add(new TimeConverterResultItem(item, $"{Description.GetDescription(unitOfTime)}: {value.ToHumanReadableNumber()}"));
 
             value *= 10;
             item = GetTimeSpan(unitOfTime, value);

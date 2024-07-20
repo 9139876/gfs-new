@@ -1,6 +1,7 @@
 using System.Drawing;
 using GFS.AnalysisSystem.Library.Calculation.Abstraction;
 using GFS.AnalysisSystem.Library.Calculation.Models;
+using GFS.Common.Extensions;
 
 namespace GFS.AnalysisSystem.Library.Calculation.Methods.PriceLevels;
 
@@ -21,7 +22,7 @@ public abstract class GlobalPriceRange : ForecastTreeMethod<PriceLevelsGroup>
             if (!context.ForecastWindow.PriceCellInWindow(priceCell))
                 continue;
 
-            var text = $"{i * 100:0.###}% глобального диапазона по цене";
+            var text = $"{(i * 100).ToHumanReadableNumber()}% глобального диапазона по цене";
 
             var point = new Point(context.ForecastWindow.Left, priceCell);
 
