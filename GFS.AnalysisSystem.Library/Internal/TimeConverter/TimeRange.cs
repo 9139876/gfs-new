@@ -13,4 +13,6 @@ public class TimeRange
 
     public TimeSpan MinValue { get; }
     public TimeSpan MaxValue { get; }
+
+    public bool IsZeroLength => MinValue == MaxValue;
 }

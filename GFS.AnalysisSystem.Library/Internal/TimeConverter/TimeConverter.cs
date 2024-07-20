@@ -8,8 +8,54 @@ namespace GFS.AnalysisSystem.Library.Internal.TimeConverter;
 /// </summary>
 internal static class TimeConverter
 {
+    public static ushort TimeSpanToUnitOfTimeByTimeFrame(TimeSpan timeSpan, TimeFrameEnum timeFrame)
+    {
+        if (timeSpan.TotalMilliseconds < 0)
+            throw new InvalidOperationException("Значение продолжительности по времени должно не должно быть отрицательным");
+
+        var value = timeFrame switch
+        {
+            TimeFrameEnum.tick => (decimal)timeSpan.TotalSeconds,
+            TimeFrameEnum.min1 => (decimal)timeSpan.TotalMinutes,
+            TimeFrameEnum.min4 => Math.Round((decimal)timeSpan.TotalMinutes / 4),
+            TimeFrameEnum.H1 => (decimal)timeSpan.TotalHours,
+            TimeFrameEnum.D1 => (decimal)timeSpan.TotalDays,
+            TimeFrameEnum.W1 => Math.Round((decimal)timeSpan.TotalDays / 7),
+            TimeFrameEnum.M1 => Math.Round((decimal)timeSpan.TotalDays / 30),
+            TimeFrameEnum.Seasonly => Math.Round((decimal)timeSpan.TotalDays / 90),
+            TimeFrameEnum.Y1 => Math.Round((decimal)timeSpan.TotalDays / 365.25m),
+            _ => throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame, null)
+        };
+
+        return value < ushort.MaxValue
+            ? (ushort)value
+            : ushort.MaxValue;
+    }
+
+    public static TimeSpan GetTimeSpan(decimal value, TimeFrameEnum timeFrame)
+    {
+        var (unitOfTime, correctValue) = timeFrame switch
+        {
+            TimeFrameEnum.tick => (UnitOfTime.CalendarSecond, value),
+            TimeFrameEnum.min1 => (UnitOfTime.CalendarMinute, value),
+            TimeFrameEnum.min4 => (UnitOfTime.CalendarSecond, value * 4),
+            TimeFrameEnum.H1 => (UnitOfTime.CalendarHour, value),
+            TimeFrameEnum.D1 => (UnitOfTime.CalendarDay, value),
+            TimeFrameEnum.W1 => (UnitOfTime.CalendarWeek, value),
+            TimeFrameEnum.M1 => (UnitOfTime.CalendarMonth, value),
+            TimeFrameEnum.Seasonly => (UnitOfTime.CalendarMonth, value * 3),
+            TimeFrameEnum.Y1 => (UnitOfTime.CalendarYear, value),
+            _ => throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame, null)
+        };
+
+        return GetTimeSpan(unitOfTime, correctValue);
+    }
+
     public static TimeConverterResultItem[] ConvertTimeSpan(TimeSpan timeSpan, TimeRange range)
     {
+        if (range.IsZeroLength)
+            return Array.Empty<TimeConverterResultItem>();
+
         return timeSpan.Minutes switch
         {
             < 0 => throw new InvalidOperationException("Значение продолжительности по времени должно иметь положительное значение"),
@@ -31,6 +77,9 @@ internal static class TimeConverter
 
     public static TimeConverterResultItem[] ConvertNumber(decimal value, TimeRange range)
     {
+        if (range.IsZeroLength)
+            return Array.Empty<TimeConverterResultItem>();
+
         return Enum.GetValues<UnitOfTime>()
             .SelectMany(unitOfTime => GetActualValuesByUnitOfTime(unitOfTime, value, range))
             .ToArray();
@@ -38,6 +87,9 @@ internal static class TimeConverter
 
     internal static IEnumerable<TimeConverterResultItem> GetActualValuesByUnitOfTime(UnitOfTime unitOfTime, decimal value, TimeRange range)
     {
+        if (range.IsZeroLength)
+            return Array.Empty<TimeConverterResultItem>();
+
         //Уходим вниз диапазона
         while (GetTimeSpan(unitOfTime, value) >= range.MinValue)
         {
@@ -87,29 +139,5 @@ internal static class TimeConverter
                     : new TimeSpan(0, 0, (int)seconds);
             }
         }
-    }
-
-    public static ushort TimeSpanToUnitOfTimeByTimeFrame(TimeSpan timeSpan, TimeFrameEnum timeFrame)
-    {
-        if (timeSpan.TotalMilliseconds < 0)
-            throw new InvalidOperationException("Значение продолжительности по времени должно не должно быть отрицательным");
-
-        var value = timeFrame switch
-        {
-            TimeFrameEnum.tick => (decimal)timeSpan.TotalSeconds,
-            TimeFrameEnum.min1 => (decimal)timeSpan.TotalMinutes,
-            TimeFrameEnum.min4 => Math.Round((decimal)timeSpan.TotalMinutes / 4),
-            TimeFrameEnum.H1 => (decimal)timeSpan.TotalHours,
-            TimeFrameEnum.D1 => (decimal)timeSpan.TotalDays,
-            TimeFrameEnum.W1 => Math.Round((decimal)timeSpan.TotalDays / 7),
-            TimeFrameEnum.M1 => Math.Round((decimal)timeSpan.TotalDays / 30),
-            TimeFrameEnum.Seasonly => Math.Round((decimal)timeSpan.TotalDays / 90),
-            TimeFrameEnum.Y1 => Math.Round((decimal)timeSpan.TotalDays / 365.25m),
-            _ => throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame, null)
-        };
-
-        return value < ushort.MaxValue
-            ? (ushort)value
-            : ushort.MaxValue;
     }
 }

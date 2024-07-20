@@ -21,7 +21,7 @@ public abstract class GlobalPriceRange : ForecastTreeMethod<PriceLevelsGroup>
             if (!context.ForecastWindow.PriceCellInWindow(priceCell))
                 continue;
 
-            var text = $"{i * 100}% глобального диапазона по цене";
+            var text = $"{i * 100:0.###}% глобального диапазона по цене";
 
             var point = new Point(context.ForecastWindow.Left, priceCell);
 

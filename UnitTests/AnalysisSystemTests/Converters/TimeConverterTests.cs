@@ -24,6 +24,14 @@ public class TimeConverterTests
     }
 
     [Fact]
+    public void ConvertNumber_Test()
+    {
+        var timeRange = new TimeRange(TimeSpan.FromDays(1), TimeSpan.FromDays(1));
+        
+        Assert.Empty(TimeConverter.ConvertNumber(10m, timeRange));
+    }
+
+    [Fact]
     public void ConvertTimeSpan_Test()
     {
         var timeRange = new TimeRange(TimeSpan.FromDays(1), TimeSpan.FromDays(100));
@@ -48,6 +56,8 @@ public class TimeConverterTests
         Assert.Throws<InvalidOperationException>(() => new TimeRange(TimeSpan.MinValue, TimeSpan.MaxValue));
         Assert.Throws<InvalidOperationException>(() => new TimeRange(TimeSpan.Zero, TimeSpan.MaxValue));
 
+        Assert.True(new TimeRange(TimeSpan.FromDays(1), TimeSpan.FromDays(1)).IsZeroLength);
+        
         var timeRange1 = new TimeRange(TimeSpan.FromDays(1), TimeSpan.MaxValue);
         Assert.True(timeRange1.MaxValue >= timeRange1.MinValue);
 

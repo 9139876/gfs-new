@@ -119,5 +119,27 @@ namespace GFS.AnalysisSystem.Library.Calculation.Models
 
             return CellTimeValues.Length - 1;
         }
+        
+        internal void AddTimeValueWithSpread(int timeInCells, string description, ForecastCalculationResult result)
+        {
+            for (var spread = -ForecastSpread; spread <= ForecastSpread; spread++)
+            {
+                for (var y = ForecastWindow.Bottom; y <= ForecastWindow.Top; y++)
+                {
+                    result.AddForecastCalculationResultItem(new ForecastCalculationResultItem(new Point(timeInCells + spread, y), description));
+                }
+            }
+        }
+        
+        internal  void AddPriceValueWithSpread(int priceInCells, string description, ForecastCalculationResult result)
+        {
+            for (var spread = -ForecastSpread; spread <= ForecastSpread; spread++)
+            {
+                for (var x = ForecastWindow.Left; x <= ForecastWindow.Right; x++)
+                {
+                    result.AddForecastCalculationResultItem(new ForecastCalculationResultItem(new Point(x, priceInCells + spread), description));
+                }
+            }
+        }
     }
 }
