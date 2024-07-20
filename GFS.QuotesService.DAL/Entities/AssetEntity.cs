@@ -2,6 +2,7 @@ using GFS.EF.Entities;
 using GFS.QuotesService.Api.Enum;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 #pragma warning disable CS8618
 
 namespace GFS.QuotesService.DAL.Entities;
@@ -28,6 +29,9 @@ public class AssetEntity : GuidKeyEntity
 
     /// <summary> International Securities Identification Number - Международный идентификационный код ценной бумаги </summary>
     public string? ISIN { get; init; }
+
+    /// <summary> Идентификатор эмитента для Финам </summary>
+    public string? FinamEmitentIdentifier { get; init; }
 
     #region Equals
 
