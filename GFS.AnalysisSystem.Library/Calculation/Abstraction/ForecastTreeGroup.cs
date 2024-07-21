@@ -5,6 +5,7 @@ public interface IForecastTreeGroup : IForecastTreeItem
     List<IForecastTreeItem> Children { get; }
 }
 
+// ReSharper disable once UnusedTypeParameter
 public abstract class ForecastTreeGroup<TParentGroup> : IForecastTreeGroup
     where TParentGroup : IForecastTreeGroup
 {

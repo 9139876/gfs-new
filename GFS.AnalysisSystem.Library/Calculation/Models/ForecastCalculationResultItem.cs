@@ -7,7 +7,7 @@ public class ForecastCalculationResultItem
     public ForecastCalculationResultItem(Point position, params string[] descriptions)
     {
         Position = position;
-        Descriptions = descriptions?.ToList() ?? new List<string>();
+        Descriptions = descriptions.ToList();
     }
 
     public Point Position { get; }

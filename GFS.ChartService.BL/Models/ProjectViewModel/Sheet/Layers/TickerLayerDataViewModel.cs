@@ -1,4 +1,5 @@
 using GFS.GrailCommon.Models;
+// ReSharper disable InconsistentNaming
 
 namespace GFS.ChartService.BL.Models.ProjectViewModel.Sheet.Layers;
 

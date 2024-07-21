@@ -15,9 +15,9 @@ public abstract class SimpleWorker<TTaskData>
         Logger = logger;
     }
 
-    public async Task DoWork()
+    public async Task DoWork(CancellationToken cancellationToken = default)
     {
-        while (true)
+        while (!cancellationToken.IsCancellationRequested)
         {
             TTaskData? currentData = null;
 

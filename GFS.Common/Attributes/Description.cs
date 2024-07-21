@@ -12,7 +12,7 @@ public class Description : Attribute
     public static string GetDescription(Enum @enum)
     {
         var memInfo = @enum.GetType().GetMember(@enum.ToString());
-        var attrs = memInfo?.FirstOrDefault()?.GetCustomAttributes(typeof(Description), false);
+        var attrs = memInfo.FirstOrDefault()?.GetCustomAttributes(typeof(Description), false);
         
         return attrs?.Any() == true
             ? ((Description)attrs[0])._text

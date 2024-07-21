@@ -24,6 +24,7 @@ public static class TendentionBuilder
         };
     }
 
+    // ReSharper disable once UnusedParameter.Local
     private static GrailCommon.Models.Tendention BuildThreePointsTendention(IList<CandleInCells> quotes, BuildThreePointsTendentionContext context)
     {
         var tendention = new GrailCommon.Models.Tendention();

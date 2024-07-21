@@ -52,15 +52,15 @@ internal class TestTradeOrchestratorService : ITestTradeOrchestratorService
         {
             updateState($"Текущая дата {currentDate.ToShortDateString()}, конечная дата {lastDate.ToShortDateString()}");
             
-            foreach (var assetId in settings.TradingStrategyTesterSettings.AssetsIds.Where(assetId => assetsData[assetId].QuotesDictionary.ContainsKey(currentDate)))
-            {
-                var quote = assetsData[assetId].QuotesDictionary[currentDate];
-                
-                //Отложенные ордера
-                //анализ
-                //Анализ прогнозов
-                //Совершение операций
-            }
+            // foreach (var assetId in settings.TradingStrategyTesterSettings.AssetsIds.Where(assetId => assetsData[assetId].QuotesDictionary.ContainsKey(currentDate)))
+            // {
+            //     var quote = assetsData[assetId].QuotesDictionary[currentDate];
+            //     
+            //     //Отложенные ордера
+            //     //анализ
+            //     //Анализ прогнозов
+            //     //Совершение операций
+            // }
 
             currentDate = currentDate.AddDate(settings.TradingStrategyTesterSettings.TimeFrame, 1);
         }
@@ -72,6 +72,7 @@ internal class TestTradeOrchestratorService : ITestTradeOrchestratorService
     {
 #pragma warning disable CS8618
 
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         public AssetsInfoDto AssetsInfo { get; init; }
         public Dictionary<DateTime, QuoteModel> QuotesDictionary { get; init; }
 

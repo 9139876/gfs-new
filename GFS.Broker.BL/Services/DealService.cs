@@ -1,5 +1,3 @@
-using AutoMapper;
-using GFS.Api.Client.Services;
 using GFS.Broker.Api.Models;
 using GFS.Broker.Api.Models.TestDealer;
 using GFS.Common.Exceptions;
@@ -14,22 +12,22 @@ public interface IDealService
 
 internal class TestDealService : IDealService
 {
-    private readonly IPortfolioService _portfolioService;
-    private readonly IMapper _mapper;
-    private readonly ISettingsService _settingsService;
-    private readonly IRemoteApiClient _remoteApiClient;
-
-    public TestDealService(
-        IPortfolioService portfolioService,
-        IMapper mapper,
-        ISettingsService settingsService,
-        IRemoteApiClient remoteApiClient)
-    {
-        _portfolioService = portfolioService;
-        _mapper = mapper;
-        _settingsService = settingsService;
-        _remoteApiClient = remoteApiClient;
-    }
+    // private readonly IPortfolioService _portfolioService;
+    // private readonly IMapper _mapper;
+    // private readonly ISettingsService _settingsService;
+    // private readonly IRemoteApiClient _remoteApiClient;
+    //
+    // public TestDealService(
+    //     IPortfolioService portfolioService,
+    //     IMapper mapper,
+    //     ISettingsService settingsService,
+    //     IRemoteApiClient remoteApiClient)
+    // {
+    //     _portfolioService = portfolioService;
+    //     _mapper = mapper;
+    //     _settingsService = settingsService;
+    //     _remoteApiClient = remoteApiClient;
+    // }
 
     public Task<MakeDealResponse> MakeDeal(MakeDealRequest request)
     {
