@@ -28,15 +28,15 @@ public class DecimalExtensionsTests
         Assert.Equal(2000.123456789m.ToHumanReadableNumber(), "2000");
         Assert.Equal(1000.123456789m.ToHumanReadableNumber(), "1000");
 
-        Assert.Equal(200.123456789m.ToHumanReadableNumber(), "200.12");
-        Assert.Equal(100.123456789m.ToHumanReadableNumber(), "100.12");
+        Assert.Equal(200.123456789m.ToHumanReadableNumber(), "200.1");
+        Assert.Equal(100.123456789m.ToHumanReadableNumber(), "100.1");
 
-        Assert.Equal(20.123456789m.ToHumanReadableNumber(), "20.1235");
-        Assert.Equal(10.123456789m.ToHumanReadableNumber(), "10.1235");
+        Assert.Equal(20.123456789m.ToHumanReadableNumber(), "20.12");
+        Assert.Equal(10.123456789m.ToHumanReadableNumber(), "10.12");
 
-        Assert.Equal(2.123456789m.ToHumanReadableNumber(), "2.123457");
-        Assert.Equal(1.123456789m.ToHumanReadableNumber(), "1.123457");
+        Assert.Equal(2.123456789m.ToHumanReadableNumber(), "2.123");
+        Assert.Equal(1.123456789m.ToHumanReadableNumber(), "1.123");
 
-        Assert.Equal(0.123456789m.ToHumanReadableNumber(), "0.12345679");
+        Assert.Equal(0.123456789m.ToHumanReadableNumber(), "0.123457");
     }
 }

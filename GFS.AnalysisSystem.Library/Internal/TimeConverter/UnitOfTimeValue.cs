@@ -10,8 +10,11 @@ internal class UnitOfTimeValue
         Value = value;
     }
 
-    public UnitOfTime UnitOfTime { get; init; }
-    public decimal Value { get; init; }
+    public UnitOfTime UnitOfTime { get; }
+
+    public decimal Value { get; }
+
+    public TimeSpan TimeSpanValue => TimeConverter.GetTimeSpan(UnitOfTime, Value);
 
     public string Description => $"{Common.Attributes.Description.GetDescription(UnitOfTime)}: {Value.ToHumanReadableNumber()}";
 }

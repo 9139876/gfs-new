@@ -1,5 +1,3 @@
-using GFS.Common.Attributes;
-using GFS.Common.Extensions;
 using GFS.GrailCommon.Enums;
 
 namespace GFS.AnalysisSystem.Library.Internal.TimeConverter;
@@ -9,6 +7,66 @@ namespace GFS.AnalysisSystem.Library.Internal.TimeConverter;
 /// </summary>
 internal static class TimeConverter
 {
+    public static TimeSpan GetTimeSpan(decimal value, TimeFrameEnum timeFrame)
+    {
+        var (unitOfTime, correctValue) = timeFrame switch
+        {
+            TimeFrameEnum.tick => (UnitOfTime.CalendarSecond, value),
+            TimeFrameEnum.min1 => (UnitOfTime.CalendarMinute, value),
+            TimeFrameEnum.min4 => (UnitOfTime.CalendarSecond, value * 4),
+            TimeFrameEnum.H1 => (UnitOfTime.CalendarHour, value),
+            TimeFrameEnum.D1 => (UnitOfTime.CalendarDay, value),
+            TimeFrameEnum.W1 => (UnitOfTime.CalendarWeek, value),
+            TimeFrameEnum.M1 => (UnitOfTime.CalendarMonth, value),
+            TimeFrameEnum.Seasonly => (UnitOfTime.CalendarMonth, value * 3),
+            TimeFrameEnum.Y1 => (UnitOfTime.CalendarYear, value),
+            _ => throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame, null)
+        };
+
+        return GetTimeSpan(unitOfTime, correctValue);
+    }
+
+    public static UnitOfTimeValue[] ConvertNumber(decimal value, TimeRange range)
+    {
+        if (range.IsZeroLength)
+            return Array.Empty<UnitOfTimeValue>();
+
+        return Enum.GetValues<UnitOfTime>()
+            .SelectMany(unitOfTime => GetActualValuesByUnitOfTime(unitOfTime, value, range))
+            .ToArray();
+    }
+
+    internal static (UnitOfTimeValue, UnitOfTimeValue)[] ConvertTimeSpan(TimeSpan timeSpan, TimeRange range)
+    {
+        if (range.IsZeroLength)
+            return Array.Empty<(UnitOfTimeValue, UnitOfTimeValue)>();
+
+        return timeSpan.TotalMinutes switch
+        {
+            < 0 => throw new InvalidOperationException("Значение продолжительности по времени должно иметь положительное значение"),
+            < 5 => Array.Empty<(UnitOfTimeValue, UnitOfTimeValue)>(),
+            _ => TimeSpanToUnitOfTimeValues(timeSpan)
+                .SelectMany(item => ConvertNumber(item.Value, range).Select(res => (item, res)))
+                .ToArray()
+        };
+    }
+
+    #region internal
+
+    internal static UnitOfTimeValue[] TimeSpanToUnitOfTimeValues(TimeSpan timeSpan)
+    {
+        return new[]
+        {
+            new UnitOfTimeValue(UnitOfTime.CalendarSecond, (decimal)timeSpan.TotalSeconds),
+            new UnitOfTimeValue(UnitOfTime.CalendarMinute, (decimal)timeSpan.TotalMinutes),
+            new UnitOfTimeValue(UnitOfTime.CalendarHour, (decimal)timeSpan.TotalMinutes / 60),
+            new UnitOfTimeValue(UnitOfTime.CalendarDay, (decimal)timeSpan.TotalMinutes / (60 * 24)),
+            new UnitOfTimeValue(UnitOfTime.CalendarWeek, (decimal)timeSpan.TotalMinutes / (60 * 24 * 7)),
+            new UnitOfTimeValue(UnitOfTime.CalendarMonth, (decimal)timeSpan.TotalMinutes / (60 * 24 * 30)),
+            new UnitOfTimeValue(UnitOfTime.CalendarYear, (decimal)timeSpan.TotalMinutes / (60 * 24 * 365.25m))
+        };
+    }
+
     internal static ushort TimeSpanToUnitOfTimeByTimeFrame(TimeSpan timeSpan, TimeFrameEnum timeFrame)
     {
         if (timeSpan.TotalMilliseconds < 0)
@@ -33,68 +91,10 @@ internal static class TimeConverter
             : ushort.MaxValue;
     }
 
-    internal static TimeSpan GetTimeSpan(decimal value, TimeFrameEnum timeFrame)
-    {
-        var (unitOfTime, correctValue) = timeFrame switch
-        {
-            TimeFrameEnum.tick => (UnitOfTime.CalendarSecond, value),
-            TimeFrameEnum.min1 => (UnitOfTime.CalendarMinute, value),
-            TimeFrameEnum.min4 => (UnitOfTime.CalendarSecond, value * 4),
-            TimeFrameEnum.H1 => (UnitOfTime.CalendarHour, value),
-            TimeFrameEnum.D1 => (UnitOfTime.CalendarDay, value),
-            TimeFrameEnum.W1 => (UnitOfTime.CalendarWeek, value),
-            TimeFrameEnum.M1 => (UnitOfTime.CalendarMonth, value),
-            TimeFrameEnum.Seasonly => (UnitOfTime.CalendarMonth, value * 3),
-            TimeFrameEnum.Y1 => (UnitOfTime.CalendarYear, value),
-            _ => throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame, null)
-        };
-
-        return GetTimeSpan(unitOfTime, correctValue);
-    }
-
-    internal static TimeConverterResultItem[] ConvertTimeSpan(TimeSpan timeSpan, TimeRange range)
+    internal static IEnumerable<UnitOfTimeValue> GetActualValuesByUnitOfTime(UnitOfTime unitOfTime, decimal value, TimeRange range)
     {
         if (range.IsZeroLength)
-            return Array.Empty<TimeConverterResultItem>();
-
-        return timeSpan.Minutes switch
-        {
-            < 0 => throw new InvalidOperationException("Значение продолжительности по времени должно иметь положительное значение"),
-            < 5 => Array.Empty<TimeConverterResultItem>(),
-            _ => TimeSpanToUnitOfTimeValues(timeSpan)
-                .SelectMany(item => ConvertNumber(item.Value, range))
-                .ToArray()
-        };
-    }
-
-    internal static TimeConverterResultItem[] ConvertNumber(decimal value, TimeRange range)
-    {
-        if (range.IsZeroLength)
-            return Array.Empty<TimeConverterResultItem>();
-
-        return Enum.GetValues<UnitOfTime>()
-            .SelectMany(unitOfTime => GetActualValuesByUnitOfTime(unitOfTime, value, range))
-            .ToArray();
-    }
-
-    internal static UnitOfTimeValue[] TimeSpanToUnitOfTimeValues(TimeSpan timeSpan)
-    {
-        return new[]
-        {
-            new UnitOfTimeValue(UnitOfTime.CalendarSecond, (decimal)timeSpan.TotalSeconds),
-            new UnitOfTimeValue(UnitOfTime.CalendarMinute, (decimal)timeSpan.TotalMinutes),
-            new UnitOfTimeValue(UnitOfTime.CalendarHour, (decimal)timeSpan.TotalMinutes / 60),
-            new UnitOfTimeValue(UnitOfTime.CalendarDay, (decimal)timeSpan.TotalMinutes / (60 * 24)),
-            new UnitOfTimeValue(UnitOfTime.CalendarWeek, (decimal)timeSpan.TotalMinutes / (60 * 24 * 7)),
-            new UnitOfTimeValue(UnitOfTime.CalendarMonth, (decimal)timeSpan.TotalMinutes / (60 * 24 * 30)),
-            new UnitOfTimeValue(UnitOfTime.CalendarYear, (decimal)timeSpan.TotalMinutes / (60 * 24 * 365.25m))
-        };
-    }
-
-    internal static IEnumerable<TimeConverterResultItem> GetActualValuesByUnitOfTime(UnitOfTime unitOfTime, decimal value, TimeRange range)
-    {
-        if (range.IsZeroLength)
-            return Array.Empty<TimeConverterResultItem>();
+            return Array.Empty<UnitOfTimeValue>();
 
         //Уходим вниз диапазона
         while (GetTimeSpan(unitOfTime, value) >= range.MinValue)
@@ -102,14 +102,14 @@ internal static class TimeConverter
             value /= 10;
         }
 
-        var result = new List<TimeConverterResultItem>();
+        var result = new List<UnitOfTimeValue>();
 
         var item = GetTimeSpan(unitOfTime, value);
 
         while (item <= range.MaxValue)
         {
             if (item >= range.MinValue && item <= range.MaxValue)
-                result.Add(new TimeConverterResultItem(item, $"{Description.GetDescription(unitOfTime)}: {value.ToHumanReadableNumber()}"));
+                result.Add(new UnitOfTimeValue(unitOfTime, value));
 
             value *= 10;
             item = GetTimeSpan(unitOfTime, value);
@@ -146,4 +146,6 @@ internal static class TimeConverter
             }
         }
     }
+
+    #endregion
 }

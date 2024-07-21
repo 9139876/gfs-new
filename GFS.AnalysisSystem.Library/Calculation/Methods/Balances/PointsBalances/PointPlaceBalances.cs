@@ -24,20 +24,17 @@ public class AbsPricePointBalance : PointPlaceBalances
     private ForecastCalculationResult CalculateFromPoint(CalculationContext context, Point point)
     {
         var result = new ForecastCalculationResult();
+
         var priceTimePosition = context.GetPriceTimePosition(point);
         var startPointText = $"{priceTimePosition.Price.ToHumanReadableNumber()} {priceTimePosition.Date.GetDateStringByTimeFrame(context.TimeFrame)}";
-        
-        var rangeLeft = TimeConverter.GetTimeSpan(Math.Max(context.ForecastWindow.Left - point.X, 5), context.TimeFrame);
-        var rangeRight = TimeConverter.GetTimeSpan(Math.Max(context.ForecastWindow.Right - point.X, 5), context.TimeFrame);
-        var range = new TimeRange(rangeLeft,rangeRight);
-        
-        var timeValues = TimeConverter.ConvertNumber(priceTimePosition.Price, range);
-        
-        foreach (var value in timeValues)
+
+        var timeValues = TimeConverter.ConvertNumber(priceTimePosition.Price, context.GetForecastTimeRange());
+
+        foreach (var item in timeValues)
         {
-            var timeValue = context.DateToCell(priceTimePosition.Date.Add(value.Value));
-            var description = $"Баланс от {startPointText} - значение цены {priceTimePosition.Price.ToHumanReadableNumber()} и {value.Description}";
-        
+            var timeValue = context.DateToCell(priceTimePosition.Date.Add(item.TimeSpanValue));
+            var description = $"Баланс от {startPointText} - значение цены {priceTimePosition.Price.ToHumanReadableNumber()} и {item.Description}";
+
             context.AddTimeValueWithSpread(timeValue, description, result);
         }
 

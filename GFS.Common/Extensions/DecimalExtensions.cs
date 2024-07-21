@@ -27,10 +27,10 @@ public static class DecimalExtensions
         return number switch
         {
             >= 1000 => $"{number:0}",
-            >= 100 => $"{number:0.##}",
-            >= 10 => $"{number:0.####}",
-            >= 1 => $"{number:0.######}",
-            _ => $"{number:0.########}",
+            >= 100 => $"{number:0.#}",
+            >= 10 => $"{number:0.##}",
+            >= 1 => $"{number:0.###}",
+            _ => $"{number:0.######}",
         };
     }
 }

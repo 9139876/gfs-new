@@ -1,4 +1,5 @@
 using System.Drawing;
+using GFS.AnalysisSystem.Library.Internal.TimeConverter;
 using GFS.GrailCommon.Enums;
 using GFS.GrailCommon.Extensions;
 using GFS.GrailCommon.Models;
@@ -140,6 +141,13 @@ namespace GFS.AnalysisSystem.Library.Calculation.Models
                     result.AddForecastCalculationResultItem(new ForecastCalculationResultItem(new Point(x, priceInCells + spread), description));
                 }
             }
+        }
+
+        internal TimeRange GetForecastTimeRange()
+        {
+            var rangeLeft = TimeConverter.GetTimeSpan(Math.Max(ForecastWindow.Left - TargetPoint.X, 5), TimeFrame);
+            var rangeRight = TimeConverter.GetTimeSpan(Math.Max(ForecastWindow.Right - TargetPoint.X, 5), TimeFrame);
+            return new TimeRange(rangeLeft,rangeRight);
         }
     }
 }

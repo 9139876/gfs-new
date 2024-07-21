@@ -27,7 +27,7 @@ public class TimeConverterTests
     public void ConvertNumber_Test()
     {
         var timeRange = new TimeRange(TimeSpan.FromDays(1), TimeSpan.FromDays(1));
-        
+
         Assert.Empty(TimeConverter.ConvertNumber(10m, timeRange));
     }
 
@@ -44,7 +44,7 @@ public class TimeConverterTests
         Parallel.ForEach(Enumerable.Range(1, 1000), item =>
         {
             TimeConverter.ConvertTimeSpan(TimeSpan.FromDays(item), timeRange)
-                .Select(x => x.Value)
+                .Select(x => x.Item2.TimeSpanValue)
                 .ToList()
                 .ForEach(x => Assert.True(x >= timeRange.MinValue && x <= timeRange.MaxValue));
         });
@@ -57,7 +57,7 @@ public class TimeConverterTests
         Assert.Throws<InvalidOperationException>(() => new TimeRange(TimeSpan.Zero, TimeSpan.MaxValue));
 
         Assert.True(new TimeRange(TimeSpan.FromDays(1), TimeSpan.FromDays(1)).IsZeroLength);
-        
+
         var timeRange1 = new TimeRange(TimeSpan.FromDays(1), TimeSpan.MaxValue);
         Assert.True(timeRange1.MaxValue >= timeRange1.MinValue);
 
@@ -74,7 +74,7 @@ public class TimeConverterTests
         foreach (var timeFrame in Enum.GetValues<TimeFrameEnum>())
         {
             Assert.Throws<InvalidOperationException>(() => TimeConverter.TimeSpanToUnitOfTimeByTimeFrame(TimeSpan.MinValue, timeFrame));
-            Assert.Equal(TimeConverter.TimeSpanToUnitOfTimeByTimeFrame(TimeSpan.Zero, timeFrame), 0);
+            Assert.Equal(0, TimeConverter.TimeSpanToUnitOfTimeByTimeFrame(TimeSpan.Zero, timeFrame));
             TimeConverter.TimeSpanToUnitOfTimeByTimeFrame(TimeSpan.MaxValue, timeFrame);
         }
 
