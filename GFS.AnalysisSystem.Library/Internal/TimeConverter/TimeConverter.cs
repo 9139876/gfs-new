@@ -11,15 +11,11 @@ internal static class TimeConverter
     {
         var (unitOfTime, correctValue) = timeFrame switch
         {
-            TimeFrameEnum.tick => (UnitOfTime.CalendarSecond, value),
             TimeFrameEnum.min1 => (UnitOfTime.CalendarMinute, value),
-            TimeFrameEnum.min4 => (UnitOfTime.CalendarSecond, value * 4),
             TimeFrameEnum.H1 => (UnitOfTime.CalendarHour, value),
             TimeFrameEnum.D1 => (UnitOfTime.CalendarDay, value),
             TimeFrameEnum.W1 => (UnitOfTime.CalendarWeek, value),
             TimeFrameEnum.M1 => (UnitOfTime.CalendarMonth, value),
-            TimeFrameEnum.Seasonly => (UnitOfTime.CalendarMonth, value * 3),
-            TimeFrameEnum.Y1 => (UnitOfTime.CalendarYear, value),
             _ => throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame, null)
         };
 
@@ -74,15 +70,11 @@ internal static class TimeConverter
 
         var value = timeFrame switch
         {
-            TimeFrameEnum.tick => (decimal)timeSpan.TotalSeconds,
             TimeFrameEnum.min1 => (decimal)timeSpan.TotalMinutes,
-            TimeFrameEnum.min4 => Math.Round((decimal)timeSpan.TotalMinutes / 4),
             TimeFrameEnum.H1 => (decimal)timeSpan.TotalHours,
             TimeFrameEnum.D1 => (decimal)timeSpan.TotalDays,
             TimeFrameEnum.W1 => Math.Round((decimal)timeSpan.TotalDays / 7),
             TimeFrameEnum.M1 => Math.Round((decimal)timeSpan.TotalDays / 30),
-            TimeFrameEnum.Seasonly => Math.Round((decimal)timeSpan.TotalDays / 90),
-            TimeFrameEnum.Y1 => Math.Round((decimal)timeSpan.TotalDays / 365.25m),
             _ => throw new ArgumentOutOfRangeException(nameof(timeFrame), timeFrame, null)
         };
 

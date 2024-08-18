@@ -28,19 +28,16 @@ internal interface ITinkoffAdapter : IQuotesProviderAdapter
 internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 {
     private readonly InvestApiClient _apiClient;
-    private readonly IHttpClientFactory _httpClientFactory;
     private readonly IMapper _mapper;
     private readonly string _historyDataBaseUri;
     private readonly string _token;
 
     public TinkoffAdapter(
         InvestApiClient apiClient,
-        IHttpClientFactory httpClientFactory,
         IMapper mapper,
         IConfiguration configuration)
     {
         _apiClient = apiClient;
-        _httpClientFactory = httpClientFactory;
         _mapper = mapper;
 
         _historyDataBaseUri = configuration.GetSection("TinkoffApi:UriHistoryData").Value
@@ -133,8 +130,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         };
     }
 
-    // public override ICollection<TimeFrameEnum> NativeSupportedTimeFrames => new[] { TimeFrameEnum.min1, TimeFrameEnum.H1, TimeFrameEnum.D1 };
-    public override ICollection<TimeFrameEnum> NativeSupportedTimeFrames => new[] { TimeFrameEnum.D1 };
+    public override ICollection<TimeFrameEnum> NativeSupportedTimeFrames => new[] { TimeFrameEnum.min1, TimeFrameEnum.H1, TimeFrameEnum.D1 };
 
     public override QuotesProviderTypeEnum ProviderType => QuotesProviderTypeEnum.Tinkoff;
 
@@ -166,11 +162,10 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         if (request.TimeFrame != TimeFrameEnum.min1)
             throw new NotSupportedException($"{nameof(request.TimeFrame)} is {request.TimeFrame}");
 
-        using var httpClient = _httpClientFactory.CreateClient();
-
+        using var httpClient = new HttpClient(new SocketsHttpHandler(), true);
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
 
-        var tinkoffResponse = await httpClient.SendAsync(BuildRequestGetQuotesBatchFromArchive(request.Asset, request.BatchBeginningDate));
+        var tinkoffResponse = await httpClient.GetAsync(BuildRequestUriGetQuotesBatchFromArchive(request.Asset, request.BatchBeginningDate));
 
         if (!tinkoffResponse.IsSuccessStatusCode)
         {
@@ -219,11 +214,11 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         return new GetQuotesBatchAdapterResponseModel
         {
             Quotes = result,
-            NextBatchBeginningDate = request.BatchBeginningDate.AddYears(1)
+            NextBatchBeginningDate = DateWithTimeFrameHelpers.GetMinDate(request.BatchBeginningDate.AddYears(1), DateTime.UtcNow)
         };
     }
 
-    private HttpRequestMessage BuildRequestGetQuotesBatchFromArchive(AssetEntity asset, DateTime batchEndDate)
+    private Uri BuildRequestUriGetQuotesBatchFromArchive(AssetEntity asset, DateTime batchEndDate)
     {
         var builder = new UriBuilder(_historyDataBaseUri);
 
@@ -233,13 +228,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
 
         builder.Query = query.ToString();
 
-        var httpRequest = new HttpRequestMessage
-        {
-            Method = HttpMethod.Get,
-            RequestUri = builder.Uri
-        };
-
-        return httpRequest;
+        return builder.Uri;
     }
 
     #endregion

@@ -77,7 +77,7 @@ internal class UpdateQuotesWorker : SimpleWorker<UpdateQuotesTaskData>
 
         var newTask = quotesBatchResponse.IsLastBatch || !quotes.Any()
             ? null
-            : taskDataItem.GetNewTask(quotes.Last().Date);
+            : taskDataItem.GetNewTask(quotesBatchResponse.NextBatchBeginningDate!.Value);
 
         var message = quotes.Any()
             ? $"Получено {quotes.Count} котировок, последняя от {quotes.Last().Date}"

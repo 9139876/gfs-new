@@ -36,6 +36,6 @@ public class AssetProviderCompatibilityEntityConfiguration : IEntityTypeConfigur
             .WithMany(e => e.ProviderCompatibilities)
             .HasForeignKey(e => e.AssetId)
             .OnDelete(DeleteBehavior.Cascade);
-        builder.HasIndex(e => new { e.AssetId, e.QuotesProviderType }).IsUnique();
+        builder.HasIndex(e => new { e.AssetId, e.QuotesProviderType, e.TimeFrame }).IsUnique();
     }
 }

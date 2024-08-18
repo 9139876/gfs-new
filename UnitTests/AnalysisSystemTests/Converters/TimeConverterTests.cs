@@ -77,16 +77,12 @@ public class TimeConverterTests
             Assert.Equal(0, TimeConverter.TimeSpanToUnitOfTimeByTimeFrame(TimeSpan.Zero, timeFrame));
             TimeConverter.TimeSpanToUnitOfTimeByTimeFrame(TimeSpan.MaxValue, timeFrame);
         }
-
-        TimeSpanToUnitOfTimeByTimeFrame_InnerTest(TimeSpan.FromSeconds(1), TimeFrameEnum.tick);
+        
         TimeSpanToUnitOfTimeByTimeFrame_InnerTest(TimeSpan.FromMinutes(1), TimeFrameEnum.min1);
-        TimeSpanToUnitOfTimeByTimeFrame_InnerTest(TimeSpan.FromMinutes(4), TimeFrameEnum.min4);
         TimeSpanToUnitOfTimeByTimeFrame_InnerTest(TimeSpan.FromHours(1), TimeFrameEnum.H1);
         TimeSpanToUnitOfTimeByTimeFrame_InnerTest(TimeSpan.FromDays(1), TimeFrameEnum.D1);
         TimeSpanToUnitOfTimeByTimeFrame_InnerTest(TimeSpan.FromDays(7), TimeFrameEnum.W1);
         TimeSpanToUnitOfTimeByTimeFrame_InnerTest(TimeSpan.FromDays(30), TimeFrameEnum.M1);
-        TimeSpanToUnitOfTimeByTimeFrame_InnerTest(TimeSpan.FromDays(30 * 3), TimeFrameEnum.Seasonly);
-        TimeSpanToUnitOfTimeByTimeFrame_InnerTest(TimeSpan.FromDays(365), TimeFrameEnum.Y1);
     }
 
     private void TimeSpanToUnitOfTimeByTimeFrame_InnerTest(TimeSpan timeSpan, TimeFrameEnum timeFrame)

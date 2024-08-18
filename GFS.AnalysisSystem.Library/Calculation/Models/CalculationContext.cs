@@ -110,7 +110,7 @@ namespace GFS.AnalysisSystem.Library.Calculation.Models
 
             for (var i = 0; i < CellTimeValues.Length; i++)
             {
-                var newDelta =  DateWithTimeFrameExtensions.DatesDifferent(date, CellTimeValues[i], TimeFrameEnum.tick);
+                var newDelta =  DateWithTimeFrameHelpers.DatesDifferent(date, CellTimeValues[i], TimeFrameEnum.min1);
 
                 if (newDelta <= delta)
                     delta = newDelta;

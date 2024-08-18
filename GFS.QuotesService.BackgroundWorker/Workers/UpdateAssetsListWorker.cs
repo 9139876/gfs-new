@@ -60,8 +60,9 @@ internal class UpdateAssetsListWorker : SimpleWorker<UpdateAssetsListTaskData>
         if (!newAssets.Any())
             return result;
 
-        dbContext.GetRepository<AssetEntity>().InsertRange(newAssets);
-        await dbContext.SaveChangesAsync();
+        await dbContext.GetRepository<AssetEntity>().BulkInsertRangeAsync(newAssets);
+        await dbContext.GetRepository<AssetInfoEntity>().BulkInsertRangeAsync(newAssets.Select(asset => asset.AssetInfo!).ToList());
+        await dbContext.GetRepository<AssetProviderCompatibilityEntity>().BulkInsertRangeAsync(newAssets.SelectMany(asset => asset.ProviderCompatibilities).ToList());
 
         Logger.LogInformation("Новые активы успешно сохранены в БД");
 

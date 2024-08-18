@@ -83,14 +83,12 @@ internal class QuotesProviderService : IQuotesProviderService
             BatchBeginningDate = request.LastQuoteDate.AddDate(request.TimeFrame, 1)
         };
 
-        var (quoteEntitiesBatch, isLastBatch) = await GetNextQuotesBatch(adapter, adapterRequest);
-
-        return new GetQuotesBatchResponseModel { Quotes = quoteEntitiesBatch, IsLastBatch = isLastBatch };
+        return await GetNextQuotesBatch(adapter, adapterRequest);
     }
 
     #region private
 
-    private async Task<(List<QuoteEntity> quotes, bool)> GetNextQuotesBatch(IQuotesProviderAdapter adapter,
+    private async Task<GetQuotesBatchResponseModel> GetNextQuotesBatch(IQuotesProviderAdapter adapter,
         GetQuotesDateBatchAdapterRequestModel adapterRequest)
     {
         var batch = await adapter.GetQuotesBatch(adapterRequest);
@@ -107,7 +105,7 @@ internal class QuotesProviderService : IQuotesProviderService
             quote.Validate();
         });
 
-        return (quoteEntities.ToList(), batch.IsLastBatch);
+        return new GetQuotesBatchResponseModel(quoteEntities.ToList(), batch.IsLastBatch, batch.NextBatchBeginningDate);
     }
 
     #endregion

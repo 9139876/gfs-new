@@ -42,7 +42,7 @@ internal class FinamAdapter : QuotesProviderAbstractAdapter, IFinamAdapter
 
     // private async Task<string> GetDataAsync(GetQuotesDateBatchAdapterRequestModel request)
     // {
-    //     using var httpClient = _httpClientFactory.CreateClient();
+    //     using var httpClient = new HttpClient(new SocketsHttpHandler(), true);
     //
     //     var schemeAndHost = "http://export.finam.ru";
     //     var path = "export9.out";
@@ -107,7 +107,6 @@ internal class FinamAdapter : QuotesProviderAbstractAdapter, IFinamAdapter
     {
         return finamTimeFrame switch
         {
-            FinamTimeFrameEnum.Tick1 => TimeFrameEnum.tick,
             FinamTimeFrameEnum.Min1 => TimeFrameEnum.min1,
             FinamTimeFrameEnum.Hour1 => TimeFrameEnum.H1,
             FinamTimeFrameEnum.Day1 => TimeFrameEnum.D1,
