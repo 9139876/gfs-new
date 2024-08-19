@@ -33,7 +33,8 @@ namespace GFS.GrailCommon.Extensions
         /// </summary>
         /// <param name="date"> Дата </param>
         /// <param name="timeFrame"> Таймфрейм </param>
-        public static DateTime CorrectDateByTf(this DateTime date, TimeFrameEnum timeFrame)
+        /// <param name="kind">Тип даты (локальная, UTC...)</param>
+        public static DateTime CorrectDateByTf(this DateTime date, TimeFrameEnum timeFrame, DateTimeKind? kind = null)
         {
             int year = date.Year,
                 month = date.Month,
@@ -96,7 +97,7 @@ namespace GFS.GrailCommon.Extensions
                 hour: hour,
                 minute: min,
                 second: sec,
-                kind: date.Kind);
+                kind: kind ?? date.Kind);
         }
 
         /// <summary>
