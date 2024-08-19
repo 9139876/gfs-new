@@ -40,7 +40,7 @@ namespace GFS.GrailCommon.Extensions
                 day = date.Day,
                 hour = date.Hour,
                 min = date.Minute,
-                sec = date.Second;
+                sec;
 
             switch (timeFrame)
             {
@@ -138,59 +138,6 @@ namespace GFS.GrailCommon.Extensions
 
                 _ => throw new NotSupportedException($"Not supported timeframe '{timeFrame}'")
             };
-        }
-
-        /// <summary>
-        /// Возвращает среднее значение между двумя датами
-        /// </summary>
-        /// <param name="dt1">Первая дата</param>
-        /// <param name="dt2">Вторая дата</param>
-        /// <returns></returns>
-        public static DateTime GetMedian(DateTime dt1, DateTime dt2)
-        {
-            if (dt1 == dt2)
-                return dt1;
-
-            var min = new DateTime(Math.Min(dt1.Ticks, dt2.Ticks));
-            var max = new DateTime(Math.Max(dt1.Ticks, dt2.Ticks));
-
-            return new DateTime(min.Ticks + (max.Ticks - min.Ticks) / 2);
-        }
-
-        /// <summary>
-        /// Возвращает наименьшую из дат
-        /// </summary>
-        /// <param name="dates">Даты</param>
-        /// <exception cref="ArgumentException">Если не передано ни одной даты</exception>
-        public static DateTime GetMinDate(params DateTime[] dates)
-        {
-            if (!dates.Any())
-                throw new ArgumentException("В метод не передано ни одной даты", nameof(dates));
-            var result = dates[0];
-
-            foreach (var date in dates.Skip(1))
-                if (date < result)
-                    result = date;
-
-            return result;
-        }
-
-        /// <summary>
-        /// Возвращает наибольшую из дат
-        /// </summary>
-        /// <param name="dates">Даты</param>
-        /// <exception cref="ArgumentException">Если не передано ни одной даты</exception>
-        public static DateTime GetMaxDate(params DateTime[] dates)
-        {
-            if (!dates.Any())
-                throw new ArgumentException("В метод не передано ни одной даты", nameof(dates));
-            var result = dates[0];
-
-            foreach (var date in dates.Skip(1))
-                if (date > result)
-                    result = date;
-
-            return result;
         }
     }
 }

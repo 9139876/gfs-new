@@ -88,8 +88,7 @@ internal class QuotesProviderService : IQuotesProviderService
 
     #region private
 
-    private async Task<GetQuotesBatchResponseModel> GetNextQuotesBatch(IQuotesProviderAdapter adapter,
-        GetQuotesDateBatchAdapterRequestModel adapterRequest)
+    private async Task<GetQuotesBatchResponseModel> GetNextQuotesBatch(IQuotesProviderAdapter adapter, GetQuotesDateBatchAdapterRequestModel adapterRequest)
     {
         var batch = await adapter.GetQuotesBatch(adapterRequest);
         var quoteEntities = _mapper.Map<List<QuoteEntity>>(batch.Quotes);

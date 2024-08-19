@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Web;
 using AutoMapper;
 using GFS.Common.Extensions;
+using GFS.Common.Helpers;
 using GFS.GrailCommon.Enums;
 using GFS.GrailCommon.Extensions;
 using GFS.GrailCommon.Models;
@@ -214,7 +215,7 @@ internal class TinkoffAdapter : QuotesProviderAbstractAdapter, ITinkoffAdapter
         return new GetQuotesBatchAdapterResponseModel
         {
             Quotes = result,
-            NextBatchBeginningDate = DateWithTimeFrameHelpers.GetMinDate(request.BatchBeginningDate.AddYears(1), DateTime.UtcNow)
+            NextBatchBeginningDate = DateTimeHelpers.MinDate(request.BatchBeginningDate.AddYears(1), DateTime.UtcNow)
         };
     }
 
