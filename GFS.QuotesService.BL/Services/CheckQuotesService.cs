@@ -118,7 +118,7 @@ internal class CheckQuotesService : ICheckQuotesService
 
                     if (result.Differences.Count >= MAX_DIFFERENCES)
                     {
-                        result.Summary = "Превышено максимальное количество расхождений";
+                        result.Summary = $"Превышено максимальное количество расхождений - {MAX_DIFFERENCES}";
                         return result;
                     }
                 }
@@ -128,7 +128,7 @@ internal class CheckQuotesService : ICheckQuotesService
         }
 
         result.Summary = result.Differences.Any()
-            ? "Имеются расхождения"
+            ? $"Имеется {result.Differences.Count} расхождений"
             : "Расхождений нет";
 
         return result;

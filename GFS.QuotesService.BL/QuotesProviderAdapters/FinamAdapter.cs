@@ -1,5 +1,4 @@
 using System.Globalization;
-using GFS.Common.Exceptions;
 using GFS.Common.Extensions;
 using GFS.GrailCommon.Enums;
 using GFS.GrailCommon.Extensions;
@@ -25,20 +24,27 @@ internal class FinamAdapter : QuotesProviderAbstractAdapter, IFinamAdapter
     protected override async Task<GetQuotesBatchAdapterResponseModel> GetQuotesBatchInternal(GetQuotesDateBatchAdapterRequestModel request)
     {
         var data = await GetDataAsync(request);
-        var csvParser = new CsvParser<QuoteModel>(new CsvParserOptions(false, ';'), new CsvQuoteModelMapping());
+        var csvParser = new CsvParser<QuoteModel>(new CsvParserOptions(false, ';'), new CsvQuoteModelMapping(new FinamDateTimeConverter(request.TimeFrame)));
 
-        var result = csvParser
+        var quotes = csvParser
             .ReadFromString(new CsvReaderOptions(new[] { Environment.NewLine }), data)
             .Select(x => x.Result)
             .ToList();
 
-        result.ForEach(item =>
+        if (!quotes.Any())
+            return new GetQuotesBatchAdapterResponseModel { Quotes = new List<QuoteModel>(), NextBatchBeginningDate = null };
+
+        quotes.ForEach(item =>
         {
             item.TimeFrame = request.TimeFrame;
-            item.Date = item.Date.CorrectDateByTf(request.TimeFrame, DateTimeKind.Utc);
+            item.Date = item.Date.ToUniversalTime().CorrectDateByTf(request.TimeFrame);
         });
 
-        throw new NotImplementedYetException();
+        return new GetQuotesBatchAdapterResponseModel
+        {
+            Quotes = quotes,
+            NextBatchBeginningDate = GetBatchEndDate(request.BatchBeginningDate, request.TimeFrame).AddDate(request.TimeFrame, 1)
+        };
     }
 
     public override ICollection<TimeFrameEnum> NativeSupportedTimeFrames => Enum.GetValues<FinamTimeFrameEnum>().Select(ConvertTimeFrame).ToArray();
@@ -139,23 +145,36 @@ internal enum FinamTimeFrameEnum
 
 internal class CsvQuoteModelMapping : CsvMapping<QuoteModel>
 {
-    public CsvQuoteModelMapping()
+    public CsvQuoteModelMapping(IArrayTypeConverter<DateTime> converter)
     {
-        MapProperty(new RangeDefinition(0,1), q => q.Date, new Converter());
+        MapProperty(new RangeDefinition(0, 1), q => q.Date, converter);
         MapProperty(2, q => q.Open);
         MapProperty(3, q => q.High);
         MapProperty(4, q => q.Low);
         MapProperty(5, q => q.Close);
         MapProperty(6, q => q.Volume);
     }
-    
-    internal class Converter : IArrayTypeConverter<DateTime>
-    {
-        public bool TryConvert(string[] value, out DateTime result)
-        {
-            return DateTime.TryParseExact(string.Join(" ", value), "yyyyMMdd hh:mm:ss", null, DateTimeStyles.None, out result);
-        }
+}
 
-        public Type TargetType => typeof(DateTime);
+internal class FinamDateTimeConverter : IArrayTypeConverter<DateTime>
+{
+    private readonly TimeFrameEnum _timeFrame;
+
+    public FinamDateTimeConverter(TimeFrameEnum timeFrame)
+    {
+        _timeFrame = timeFrame;
     }
+
+    public bool TryConvert(string[] value, out DateTime result)
+    {
+        if (!DateTime.TryParseExact(string.Join(" ", value), "yyyyMMdd HH:mm:ss", null, DateTimeStyles.None, out result))
+            return false;
+
+        if (result.Hour == 0 && _timeFrame >= TimeFrameEnum.D1)
+            result = result.AddHours(12);
+
+        return true;
+    }
+
+    public Type TargetType => typeof(DateTime);
 }
